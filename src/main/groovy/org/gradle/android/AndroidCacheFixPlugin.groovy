@@ -2,6 +2,7 @@ package org.gradle.android
 
 import com.android.build.gradle.internal.Version
 import com.android.build.gradle.internal.pipeline.StreamBasedTask
+import com.android.build.gradle.internal.tasks.CheckManifest
 import com.android.build.gradle.internal.tasks.IncrementalTask
 import com.android.build.gradle.tasks.ExtractAnnotations
 import com.android.build.gradle.tasks.ProcessAndroidResources
@@ -26,6 +27,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new IncrementalTask_CombinedInput_Workaround(),
         new StreamBasedTask_CombinedInput_Workaround(),
         new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
+        new CheckManifest_Manifest_Workaround(),
     ] as List<Workaround>
 
     @Override
@@ -206,6 +208,19 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         void apply(Project project) {
             project.tasks.withType(ProcessAndroidResources) { ProcessAndroidResources task ->
                 task.inputs.property "mergeBlameLogFolder", ""
+            }
+        }
+    }
+
+    /**
+     * {@link com.android.build.gradle.internal.tasks.CheckManifest#getManifest()} should not be an {@literal @}{@link org.gradle.api.tasks.Input}.
+     */
+    @FixedInAndroid("3.0.1")
+    static class CheckManifest_Manifest_Workaround implements Workaround {
+        @Override
+        void apply(Project project) {
+            project.tasks.withType(CheckManifest) { CheckManifest task ->
+                task.inputs.property "manifest", ""
             }
         }
     }

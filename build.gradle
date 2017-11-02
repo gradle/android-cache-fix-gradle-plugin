@@ -15,7 +15,7 @@ apply plugin: 'java-gradle-plugin'
 apply plugin: "com.gradle.plugin-publish"
 
 group = "org.gradle.android"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     google()

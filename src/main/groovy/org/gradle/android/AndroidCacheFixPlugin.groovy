@@ -32,22 +32,24 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     @Override
 	void apply(Project project) {
-		def currentGradleVersion = GradleVersion.current()
-		def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
+        project.afterEvaluate {
+            def currentGradleVersion = GradleVersion.current()
+            def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
-		for (def workaround : WORKAROUNDS) {
-            def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
-            if (fixedInGradleAnnotation != null
-				&& currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.value())) {
-				continue
-			}
-            def fixedInAndroidAnnotation = workaround.class.getAnnotation(FixedInAndroid)
-            if (fixedInAndroidAnnotation != null
-				&& currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.value())) {
-				continue
-			}
-			workaround.apply(project)
-		}
+            for (def workaround : WORKAROUNDS) {
+                def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
+                if (fixedInGradleAnnotation != null
+                    && currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.value())) {
+                    continue
+                }
+                def fixedInAndroidAnnotation = workaround.class.getAnnotation(FixedInAndroid)
+                if (fixedInAndroidAnnotation != null
+                    && currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.value())) {
+                    continue
+                }
+                workaround.apply(project)
+            }
+        }
 	}
 
 	/**

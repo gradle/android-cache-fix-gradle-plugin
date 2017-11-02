@@ -5,6 +5,7 @@ import com.android.build.gradle.internal.pipeline.StreamBasedTask
 import com.android.build.gradle.internal.tasks.CheckManifest
 import com.android.build.gradle.internal.tasks.IncrementalTask
 import com.android.build.gradle.tasks.ExtractAnnotations
+import com.android.build.gradle.tasks.PackageApplication
 import com.android.build.gradle.tasks.ProcessAndroidResources
 import com.android.build.gradle.tasks.factory.AndroidJavaCompile
 import groovy.transform.CompileStatic
@@ -12,6 +13,7 @@ import groovy.transform.TypeCheckingMode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.util.GradleVersion
@@ -28,6 +30,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new StreamBasedTask_CombinedInput_Workaround(),
         new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
         new CheckManifest_Manifest_Workaround(),
+        new PackageApplication_Disable_Workaround(),
     ] as List<Workaround>
 
     @Override
@@ -223,6 +226,20 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         void apply(Project project) {
             project.tasks.withType(CheckManifest) { CheckManifest task ->
                 task.inputs.property "manifest", ""
+            }
+        }
+    }
+
+    /**
+     * Caching {@link PackageApplication} is not efficient with the current way caching works in Gradle.
+     */
+    static class PackageApplication_Disable_Workaround implements Workaround {
+        @Override
+        void apply(Project project) {
+            project.tasks.withType(PackageApplication) { PackageApplication task ->
+                task.outputs.doNotCacheIf("PackageApplication should not be cacheable") {
+                    PackageApplication.class.getAnnotation(CacheableTask) != null
+                }
             }
         }
     }

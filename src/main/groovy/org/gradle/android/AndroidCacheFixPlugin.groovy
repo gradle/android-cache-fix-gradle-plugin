@@ -25,8 +25,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new ExtractAnnotations_Source_Workaround(),
         new IncrementalTask_CombinedInput_Workaround(),
         new StreamBasedTask_CombinedInput_Workaround(),
-        new AndroidProcessResources_MergeBlameLogFolder_Workaround()
-    ]
+        new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
+    ] as List<Workaround>
 
     @Override
 	void apply(Project project) {
@@ -34,45 +34,25 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 		def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
 		for (def workaround : WORKAROUNDS) {
-			if (workaround.gradleFixVersion != null
-				&& currentGradleVersion >= workaround.gradleFixVersion) {
+            def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
+            if (fixedInGradleAnnotation != null
+				&& currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.value())) {
 				continue
 			}
-			if (workaround.androidFixVersion != null
-				&& currentAndroidVersion >= workaround.androidFixVersion) {
+            def fixedInAndroidAnnotation = workaround.class.getAnnotation(FixedInAndroid)
+            if (fixedInAndroidAnnotation != null
+				&& currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.value())) {
 				continue
 			}
 			workaround.apply(project)
 		}
 	}
 
-	static abstract class Workaround {
-        /**
-         * Version of Gradle that fixes the problem. Workaround not applied if current Gradle version is the same or later.
-         */
-		GradleVersion getGradleFixVersion() {
-			null
-		}
-
-        /**
-         * Version of Android plugin that fixes the problem. Workaround not applied if current Android plugin version is the same or later.
-         */
-		VersionNumber getAndroidFixVersion() {
-			null
-		}
-
-		abstract void apply(Project project)
-	}
-
 	/**
-	 * Workaround to avoid absolute paths making it into the configuration of JavaCompile and AndroidJavaCompile tasks
+	 * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link JavaCompile} and {@link AndroidJavaCompile}.
 	 */
-	static class JavaCompile_BootClasspath_Workaround extends Workaround {
-		@Override
-		GradleVersion getGradleFixVersion() {
-			GradleVersion.version("4.3")
-		}
-
+    @FixedInGradle("4.3")
+	static class JavaCompile_BootClasspath_Workaround implements Workaround {
 		@Override
 		void apply(Project project) {
 			project.tasks.withType(JavaCompile) { JavaCompile task ->
@@ -85,14 +65,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 	}
 
     /**
-     * Filter the annotation processor output folder from compiler arguments to avoid absolute path.
+     * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
      */
-    static class JavaCompile_AnnotationProcessorSource_Workaround extends Workaround {
-        @Override
-        GradleVersion getGradleFixVersion() {
-            GradleVersion.version("4.3")
-        }
-
+    @FixedInGradle("4.3")
+    static class JavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(JavaCompile) { JavaCompile task ->
@@ -134,14 +110,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     /**
-     * Override path sensitivity for AndroidJavaCompile.processorListFile.
+     * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#RELATIVE}.
      */
-    static class AndroidJavaCompile_ProcessorListFile_Workaround extends Workaround {
-        @Override
-        VersionNumber getAndroidFixVersion() {
-            return VersionNumber.parse("3.1")
-        }
-
+    @FixedInAndroid("3.1")
+    static class AndroidJavaCompile_ProcessorListFile_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
@@ -164,14 +136,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     /**
-     * Override path sensitivity for ExtractAnnotations.source.
+     * Override path sensitivity for {@link ExtractAnnotations#getSource()} to {@link PathSensitivity#RELATIVE}.
      */
-    static class ExtractAnnotations_Source_Workaround extends Workaround {
-        @Override
-        VersionNumber getAndroidFixVersion() {
-            return VersionNumber.parse("3.1")
-        }
-
+    @FixedInAndroid("3.1")
+    static class ExtractAnnotations_Source_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(ExtractAnnotations) { ExtractAnnotations task ->
@@ -189,14 +157,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     /**
-     * Fix IncrementalTask.combinedInputs.
+     * Fix {@link IncrementalTask#getCombinedInput()} relocatability.
      */
-    static class IncrementalTask_CombinedInput_Workaround extends Workaround {
-        @Override
-        VersionNumber getAndroidFixVersion() {
-            return VersionNumber.parse("3.0.1")
-        }
-
+    @FixedInAndroid("3.0.1")
+    static class IncrementalTask_CombinedInput_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(IncrementalTask) { IncrementalTask task ->
@@ -210,14 +174,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     /**
-     * Fix StreamBasedTask.combinedInputs.
+     * Fix {@link StreamBasedTask#getCombinedInput()} relocatability.
      */
-    static class StreamBasedTask_CombinedInput_Workaround extends Workaround {
-        @Override
-        VersionNumber getAndroidFixVersion() {
-            return VersionNumber.parse("3.0.1")
-        }
-
+    @FixedInAndroid("3.0.1")
+    static class StreamBasedTask_CombinedInput_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(StreamBasedTask) { StreamBasedTask task ->
@@ -230,19 +190,18 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
-    static Map<String, Boolean> fixCombinedInputs(String combinedInputs) {
+    private static Map<String, Boolean> fixCombinedInputs(String combinedInputs) {
         combinedInputs.split("\n").collectEntries {
             def (propertyName, value) = it.split("=", 2)
             [(propertyName): (value != "null")]
         }
     }
 
-    static class AndroidProcessResources_MergeBlameLogFolder_Workaround extends Workaround {
-        @Override
-        VersionNumber getAndroidFixVersion() {
-            return VersionNumber.parse("3.1")
-        }
-
+    /**
+     * {@link ProcessAndroidResources#getMergeBlameLogFolder()} shouldn't be an {@literal @}{@link org.gradle.api.tasks.Input}.
+     */
+    @FixedInAndroid("3.1")
+    static class ProcessAndroidResources_MergeBlameLogFolder_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(ProcessAndroidResources) { ProcessAndroidResources task ->

@@ -1,7 +1,4 @@
 language: groovy
-jdk:
-  - oraclejdk7
-sudo: false
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

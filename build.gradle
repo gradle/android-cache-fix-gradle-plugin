@@ -1,5 +1,21 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
+    }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
+
+apply plugin: "com.gradle.plugin-publish"
+
+group = "org.gradle.android"
+version = "0.1.0"
 
 repositories {
     google()
@@ -16,3 +32,19 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+pluginBundle {
+    website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+    vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+
+    description = 'Gradle plugin to fix Android caching problems Edit'
+
+    plugins {
+        androidCacheFixPlugin {
+            id = 'org.gradle.android.cache-fix'
+            displayName = 'Gradle Android cache fix plugin'
+            tags = ['android', 'cache', 'fix']
+            version = project.version
+        }
+    }
+}

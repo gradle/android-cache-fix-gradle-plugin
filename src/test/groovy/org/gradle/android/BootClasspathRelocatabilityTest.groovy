@@ -23,7 +23,7 @@ class BootClasspathRelocatabilityTest extends Specification {
             }
             
             plugins {
-                id "org.gradle.android-cache-fix"
+                id "org.gradle.android.cache-fix"
             }
             
             apply plugin: "java"

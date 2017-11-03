@@ -9,7 +9,7 @@ import spock.lang.Unroll
 
 import static groovy.util.GroovyCollections.combinations
 
-class BootClasspathRelocatabilityTest extends Specification {
+class VersionCheckTest extends Specification {
     @Rule TemporaryFolder temporaryFolder
     File projectDir
     File buildFile

@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 buildscript {
     repositories {
         maven {
@@ -17,6 +19,9 @@ apply plugin: "com.gradle.plugin-publish"
 group = "org.gradle.android"
 version = "0.1.2"
 
+def supportedGradleVersions = ["4.1", "4.2", "4.2.1", "4.3"]
+def supportedAndroidVersions = ["3.0.0"]
+
 repositories {
     google()
     jcenter()
@@ -32,6 +37,13 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+processResources {
+    filter(ReplaceTokens, tokens: [
+        SUPPORTED_GRADLE_VERSIONS: supportedGradleVersions.join(","),
+        SUPPORTED_ANDROID_VERSIONS: supportedAndroidVersions.join(",")
+    ])
+}
 
 pluginBundle {
     website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'

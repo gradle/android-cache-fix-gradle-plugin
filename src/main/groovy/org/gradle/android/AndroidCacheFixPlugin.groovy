@@ -15,15 +15,20 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.PathSensitivity
-import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.internal.Factory
+import org.gradle.util.DeprecationLogger
 import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @CompileStatic
 class AndroidCacheFixPlugin implements Plugin<Project> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AndroidCacheFixPlugin)
+
     private static List<Workaround> WORKAROUNDS = [
-        new JavaCompile_BootClasspath_Workaround(),
-        new JavaCompile_AnnotationProcessorSource_Workaround(),
+        new AndroidJavaCompile_BootClasspath_Workaround(),
+        new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
         new AndroidJavaCompile_ProcessorListFile_Workaround(),
         new ExtractAnnotations_Source_Workaround(),
         new IncrementalTask_CombinedInput_Workaround(),
@@ -33,11 +38,21 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new PackageApplication_Disable_Workaround(),
     ] as List<Workaround>
 
+
     @Override
 	void apply(Project project) {
         project.afterEvaluate {
-            def currentGradleVersion = GradleVersion.current()
-            def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
+            def currentGradleVersion = GradleVersion.current().baseVersion
+            def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion
+
+            if (!SupportedVersions.ANDROID_VERSIONS.contains(currentAndroidVersion)) {
+                DeprecationLogger.nagUserWith("Android plugin $currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
+                return
+            }
+            if (!SupportedVersions.GRADLE_VERSIONS.contains(currentGradleVersion)) {
+                DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
+                return
+            }
 
             for (def workaround : WORKAROUNDS) {
                 def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
@@ -50,23 +65,27 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                     && currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.value())) {
                     continue
                 }
+                LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
                 workaround.apply(project)
             }
         }
 	}
 
 	/**
-	 * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link JavaCompile} and {@link AndroidJavaCompile}.
+	 * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
 	 */
-    @FixedInGradle("4.3")
-	static class JavaCompile_BootClasspath_Workaround implements Workaround {
+	static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 		@Override
 		void apply(Project project) {
-			project.tasks.withType(JavaCompile) { JavaCompile task ->
-				task.inputs.property "options.bootClasspath", null
-				task.inputs.files({ task.options.bootClasspath?.split(File.pathSeparator) })
-						.withPathSensitivity(PathSensitivity.RELATIVE)
-						.withPropertyName("options.bootClasspath.workaround")
+			project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
+				task.inputs.property "options.bootClasspath", (String) null
+				task.inputs.files({
+                        DeprecationLogger.whileDisabled({
+                            task.options.bootClasspath?.split(File.pathSeparator)
+                        } as Factory)
+                    })
+                    .withPathSensitivity(PathSensitivity.RELATIVE)
+                    .withPropertyName("options.bootClasspath.workaround")
 			}
 		}
 	}
@@ -74,12 +93,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
      */
-    @FixedInGradle("4.3")
-    static class JavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
+    static class AndroidJavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
         @Override
         void apply(Project project) {
-            project.tasks.withType(JavaCompile) { JavaCompile task ->
-                task.inputs.property "options.compilerArgs", null
+            project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
+                task.inputs.property "options.compilerArgs", (String) null
                 task.inputs.property "options.compilerArgs.workaround", {
                     def filteredArgs = []
                     def iCompilerArgs = task.options.compilerArgs.iterator()
@@ -119,7 +137,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#RELATIVE}.
      */
-    @FixedInAndroid("3.1")
     static class AndroidJavaCompile_ProcessorListFile_Workaround implements Workaround {
         @Override
         void apply(Project project) {
@@ -145,7 +162,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link ExtractAnnotations#getSource()} to {@link PathSensitivity#RELATIVE}.
      */
-    @FixedInAndroid("3.1")
     static class ExtractAnnotations_Source_Workaround implements Workaround {
         @Override
         void apply(Project project) {
@@ -166,12 +182,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link IncrementalTask#getCombinedInput()} relocatability.
      */
-    @FixedInAndroid("3.0.1")
     static class IncrementalTask_CombinedInput_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(IncrementalTask) { IncrementalTask task ->
-                task.inputs.property "combinedInput", ""
+                task.inputs.property "combinedInput", (String) null
                 task.inputs.property "combinedInput.workaround", {
                     AndroidCacheFixPlugin.fixCombinedInputs(task.combinedInput)
                 }
@@ -183,12 +198,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link StreamBasedTask#getCombinedInput()} relocatability.
      */
-    @FixedInAndroid("3.0.1")
     static class StreamBasedTask_CombinedInput_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(StreamBasedTask) { StreamBasedTask task ->
-                task.inputs.property "combinedInput", ""
+                task.inputs.property "combinedInput", (String) null
                 task.inputs.property "combinedInput.workaround", {
                     AndroidCacheFixPlugin.fixCombinedInputs(task.combinedInput)
                 }
@@ -207,12 +221,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * {@link ProcessAndroidResources#getMergeBlameLogFolder()} shouldn't be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
-    @FixedInAndroid("3.1")
     static class ProcessAndroidResources_MergeBlameLogFolder_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(ProcessAndroidResources) { ProcessAndroidResources task ->
-                task.inputs.property "mergeBlameLogFolder", ""
+                task.inputs.property "mergeBlameLogFolder", (String) null
             }
         }
     }
@@ -220,12 +233,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * {@link com.android.build.gradle.internal.tasks.CheckManifest#getManifest()} should not be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
-    @FixedInAndroid("3.0.1")
     static class CheckManifest_Manifest_Workaround implements Workaround {
         @Override
         void apply(Project project) {
             project.tasks.withType(CheckManifest) { CheckManifest task ->
-                task.inputs.property "manifest", ""
+                task.inputs.property "manifest", (String) null
             }
         }
     }

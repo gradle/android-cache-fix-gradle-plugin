@@ -5,7 +5,6 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -65,10 +64,9 @@ class VersionCheckTest extends Specification {
             .withProjectDir(projectDir)
             .withArguments("tasks")
             .build()
-        result.output.contains("Gradle 4.4 is not supported by Android cache fix plugin, not applying workarounds")
+        result.output.contains("Gradle 4.4 is not supported by Android cache fix plugin, not applying workarounds.")
     }
 
-    @Ignore("Android Version class cannot be found")
     def "does not apply workarounds with Android 3.1.0-alpha01"() {
         def projectDir = temporaryFolder.newFolder()
         new AndroidProject(projectDir, cacheDir, "3.1.0-alpha01").writeProject()
@@ -77,7 +75,7 @@ class VersionCheckTest extends Specification {
             .withProjectDir(projectDir)
             .withArguments("tasks")
             .build()
-        result.output.contains("Android plugin 3.1.0-alpha01 is not supported by Android cache fix plugin, not applying workarounds")
+        result.output.contains("Android plugin 3.1.0 is not supported by Android cache fix plugin, not applying workarounds.")
     }
 
     def withGradleVersion(String gradleVersion) {

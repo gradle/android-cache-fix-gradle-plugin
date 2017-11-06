@@ -1,6 +1,5 @@
 package org.gradle.android
 
-import com.android.build.gradle.internal.Version
 import com.android.build.gradle.internal.pipeline.StreamBasedTask
 import com.android.build.gradle.internal.tasks.CheckManifest
 import com.android.build.gradle.internal.tasks.IncrementalTask
@@ -8,6 +7,7 @@ import com.android.build.gradle.tasks.ExtractAnnotations
 import com.android.build.gradle.tasks.PackageApplication
 import com.android.build.gradle.tasks.ProcessAndroidResources
 import com.android.build.gradle.tasks.factory.AndroidJavaCompile
+import com.android.builder.model.Version
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.gradle.api.Plugin
@@ -49,11 +49,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
             if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
                 if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
-                    DeprecationLogger.nagUserWith("Android plugin $currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
+                    DeprecationLogger.nagUserWith("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin, not applying workarounds.")
                     return
                 }
                 if (!Versions.SUPPORTED_GRADLE_VERSIONS.contains(currentGradleVersion)) {
-                    DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
+                    DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds.")
                     return
                 }
             }

@@ -12,6 +12,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.specs.Specs
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.internal.Factory
@@ -31,7 +32,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new AndroidJavaCompile_BootClasspath_Workaround(),
         new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
         new AndroidJavaCompile_ProcessorListFile_Workaround(),
-        new ExtractAnnotations_Source_Workaround(),
+        new ExtractAnnotations_Disable_Workaround(),
         new IncrementalTask_CombinedInput_Workaround(),
         new StreamBasedTask_CombinedInput_Workaround(),
         new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
@@ -164,25 +165,14 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     /**
-     * Override path sensitivity for {@link ExtractAnnotations#getSource()} to {@link PathSensitivity#RELATIVE}.
+     * Disables caching for {@link ExtractAnnotations#getSource()} as the path sensitivity of {@code source} cannot be overridden.
      */
-    static class ExtractAnnotations_Source_Workaround implements Workaround {
+    static class ExtractAnnotations_Disable_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(ExtractAnnotations) { ExtractAnnotations task ->
-                def originalValue = task.source
-                task.source = []
-                task.inputs.files(originalValue)
-                    .withPathSensitivity(PathSensitivity.RELATIVE)
-                    .withPropertyName("source.workaround")
-
-                def reverterTask = project.tasks.create("revertInputsFor" + task.name.capitalize()) { reverter ->
-                    reverter.doFirst {
-                        task.source = originalValue
-                    }
-                }
-                task.dependsOn reverterTask
+                task.outputs.doNotCacheIf("Has absolute source", Specs.SATISFIES_ALL)
             }
         }
     }
@@ -201,7 +191,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 }
             }
         }
-
     }
 
     /**

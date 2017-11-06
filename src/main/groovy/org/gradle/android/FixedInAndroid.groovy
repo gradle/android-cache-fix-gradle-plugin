@@ -13,5 +13,6 @@ import java.lang.annotation.Target
 @Documented
 @Target(ElementType.TYPE)
 @interface FixedInAndroid {
-    String value()
+    String version()
+    String link()
 }

@@ -13,5 +13,5 @@ import java.lang.annotation.Target
 @Documented
 @Target(ElementType.TYPE)
 @interface FixedInGradle {
-    String value()
+    String version()
 }

@@ -64,12 +64,12 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             for (def workaround : WORKAROUNDS) {
                 def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
                 if (fixedInGradleAnnotation != null
-                    && currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.value())) {
+                    && currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.version())) {
                     continue
                 }
                 def fixedInAndroidAnnotation = workaround.class.getAnnotation(FixedInAndroid)
                 if (fixedInAndroidAnnotation != null
-                    && currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.value())) {
+                    && currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.version())) {
                     continue
                 }
                 LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
@@ -192,6 +192,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link IncrementalTask#getCombinedInput()} relocatability.
      */
+    @FixedInAndroid(version = "3.0.1", link = "https://issuetracker.google.com/issues/68771542#comment3")
     static class IncrementalTask_CombinedInput_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override

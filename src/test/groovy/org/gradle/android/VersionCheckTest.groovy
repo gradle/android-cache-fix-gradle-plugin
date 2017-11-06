@@ -75,7 +75,7 @@ class VersionCheckTest extends Specification {
         expect:
         def result = withGradleVersion("4.3")
             .withProjectDir(projectDir)
-            .withArguments("tasks", "-S")
+            .withArguments("tasks")
             .build()
         result.output.contains("Android plugin 3.1.0-alpha01 is not supported by Android cache fix plugin, not applying workarounds")
     }

@@ -12,7 +12,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.internal.Factory
@@ -150,20 +149,17 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         void apply(Project project) {
             project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
                 def originalValue = task.processorListFile
-                setProcessorListFile(task, project.files())
-                task.inputs.files(originalValue)
-                    .withPathSensitivity(PathSensitivity.NONE)
-                    .withPropertyName("processorListFile.workaround")
+                if (originalValue != null) {
+                    task.processorListFile = project.files()
+                    task.inputs.files(originalValue)
+                        .withPathSensitivity(PathSensitivity.NONE)
+                        .withPropertyName("processorListFile.workaround")
 
-                task.doFirst {
-                    setProcessorListFile(task, originalValue)
+                    task.doFirst {
+                        task.processorListFile = originalValue
+                    }
                 }
             }
-        }
-
-        @CompileStatic(TypeCheckingMode.SKIP)
-        private static void setProcessorListFile(AndroidJavaCompile task, FileCollection value) {
-            task.processorListFile = value
         }
     }
 

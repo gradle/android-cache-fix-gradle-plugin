@@ -52,7 +52,7 @@ pluginBundle {
     website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
     vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
 
-    description = 'Gradle plugin to fix Android caching problems Edit'
+    description = 'Gradle plugin to fix Android caching problems'
 
     plugins {
         androidCacheFixPlugin {

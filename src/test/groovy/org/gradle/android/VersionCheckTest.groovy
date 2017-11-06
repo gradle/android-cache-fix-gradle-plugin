@@ -49,7 +49,7 @@ class VersionCheckTest extends Specification {
         !result.output.contains("not applying workarounds")
 
         where:
-        // [gradleVersion, androidVersion] << GroovyCollections.combinations(SupportedVersions.GRADLE_VERSIONS, SupportedVersions.ANDROID_VERSIONS)
+        // [gradleVersion, androidVersion] << GroovyCollections.combinations(Versions.SUPPORTED_GRADLE_VERSIONS, Versions.SUPPORTED_ANDROID_VERSIONS)
         gradleVersion = GradleVersion.current()
         androidVersion = VersionNumber.parse("3.0.0")
     }

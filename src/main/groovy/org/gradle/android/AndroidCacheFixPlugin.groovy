@@ -48,11 +48,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion
 
             if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
-                if (!SupportedVersions.ANDROID_VERSIONS.contains(currentAndroidVersion)) {
+                if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
                     DeprecationLogger.nagUserWith("Android plugin $currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
                     return
                 }
-                if (!SupportedVersions.GRADLE_VERSIONS.contains(currentGradleVersion)) {
+                if (!Versions.SUPPORTED_GRADLE_VERSIONS.contains(currentGradleVersion)) {
                     DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
                     return
                 }

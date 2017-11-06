@@ -1,5 +1,6 @@
 package org.gradle.android
 
+import com.android.build.gradle.api.AndroidBasePlugin
 import com.android.build.gradle.internal.pipeline.StreamBasedTask
 import com.android.build.gradle.internal.tasks.CheckManifest
 import com.android.build.gradle.internal.tasks.IncrementalTask
@@ -43,6 +44,9 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     @Override
 	void apply(Project project) {
+        if (!project.plugins.hasPlugin(AndroidBasePlugin)) {
+            throw new RuntimeException("The Android cache fix plugin must be applied after Android plugins.")
+        }
         project.afterEvaluate {
             def currentGradleVersion = GradleVersion.current().baseVersion
             def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion

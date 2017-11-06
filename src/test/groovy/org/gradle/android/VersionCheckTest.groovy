@@ -144,6 +144,17 @@ class VersionCheckTest extends Specification {
         androidVersion = VersionNumber.parse("3.0.0")
     }
 
+    def "fails when applied before Android plugin"() {
+        def projectDir = temporaryFolder.newFolder()
+        new AndroidProject(projectDir, cacheDir, "3.0.0", true).writeProject()
+        expect:
+        def result = withGradleVersion("4.3")
+            .withProjectDir(projectDir)
+            .withArguments("tasks")
+            .buildAndFail()
+        result.output.contains("The Android cache fix plugin must be applied after Android plugins.")
+    }
+
     @Ignore("Using different Gradle versions breaks TestKit")
     def "does not apply workarounds with Gradle 4.4"() {
         def projectDir = temporaryFolder.newFolder()
@@ -178,8 +189,10 @@ class VersionCheckTest extends Specification {
         final File projectDir
         private final File cacheDir
         final String androidVersion
+        private final boolean reverseApply
 
-        AndroidProject(File projectDir, File cacheDir, String androidVersion) {
+        AndroidProject(File projectDir, File cacheDir, String androidVersion, boolean reverseApply = false) {
+            this.reverseApply = reverseApply
             this.projectDir = projectDir
             this.cacheDir = cacheDir
             this.androidVersion = androidVersion
@@ -268,12 +281,21 @@ class VersionCheckTest extends Specification {
             configureAndroidSdkHome()
         }
 
-        private static subprojectConfiguration(String androidPlugin) {
-            """
-                apply plugin: "$androidPlugin"
-                
-                apply plugin: "org.gradle.android.cache-fix"
-
+        private subprojectConfiguration(String androidPlugin) {
+            def applyPlugins
+            def applyAndroid = "apply plugin: \"$androidPlugin\""
+            if (!reverseApply) {
+                applyPlugins = """
+                    $applyAndroid
+                    apply plugin: "org.gradle.android.cache-fix"
+                """
+            } else {
+                applyPlugins = """
+                    apply plugin: "org.gradle.android.cache-fix"
+                    $applyAndroid
+                """
+            }
+            applyPlugins + """
                 repositories {
                     google()
                     jcenter()

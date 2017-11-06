@@ -5,6 +5,7 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -143,6 +144,7 @@ class VersionCheckTest extends Specification {
         androidVersion = VersionNumber.parse("3.0.0")
     }
 
+    @Ignore("Using different Gradle versions breaks TestKit")
     def "does not apply workarounds with Gradle 4.4"() {
         def projectDir = temporaryFolder.newFolder()
         new AndroidProject(projectDir, cacheDir, "3.0.0").writeProject()

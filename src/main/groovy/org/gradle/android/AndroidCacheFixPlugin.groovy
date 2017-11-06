@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory
 class AndroidCacheFixPlugin implements Plugin<Project> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AndroidCacheFixPlugin)
 
+    private static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
+
     private static List<Workaround> WORKAROUNDS = [
         new AndroidJavaCompile_BootClasspath_Workaround(),
         new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
@@ -45,13 +47,15 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             def currentGradleVersion = GradleVersion.current().baseVersion
             def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion
 
-            if (!SupportedVersions.ANDROID_VERSIONS.contains(currentAndroidVersion)) {
-                DeprecationLogger.nagUserWith("Android plugin $currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
-                return
-            }
-            if (!SupportedVersions.GRADLE_VERSIONS.contains(currentGradleVersion)) {
-                DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
-                return
+            if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
+                if (!SupportedVersions.ANDROID_VERSIONS.contains(currentAndroidVersion)) {
+                    DeprecationLogger.nagUserWith("Android plugin $currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
+                    return
+                }
+                if (!SupportedVersions.GRADLE_VERSIONS.contains(currentGradleVersion)) {
+                    DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds")
+                    return
+                }
             }
 
             for (def workaround : WORKAROUNDS) {

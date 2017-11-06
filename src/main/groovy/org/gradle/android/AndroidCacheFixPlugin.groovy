@@ -181,9 +181,12 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                     .withPathSensitivity(PathSensitivity.RELATIVE)
                     .withPropertyName("source.workaround")
 
-                task.doFirst {
-                    task.source = originalValue
+                def reverterTask = project.tasks.create("revertInputsFor" + task.name.capitalize()) { reverter ->
+                    reverter.doFirst {
+                        task.source = originalValue
+                    }
                 }
+                task.dependsOn reverterTask
             }
         }
     }

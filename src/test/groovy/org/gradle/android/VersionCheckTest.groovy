@@ -15,13 +15,22 @@ class VersionCheckTest extends Specification {
     @Rule TemporaryFolder temporaryFolder
     File projectDir
     File buildFile
-    File defaultAndroidSdkHome = new File("${System.getProperty("user.home")}/Library/Android/sdk")
+    File androidSdkHome
 
     def setup() {
         projectDir = temporaryFolder.newFolder()
         buildFile = file("build.gradle")
+        androidSdkHome = determineAndroidHome()
         createAndroidStructureAtRoot()
         configureAndroidSdk()
+    }
+
+    private static def determineAndroidHome() {
+        def env = System.getenv("ANDROID_HOME")
+        if (env) {
+            return new File(env)
+        }
+        return new File("${System.getProperty("user.home")}/Library/Android/sdk")
     }
 
     @Unroll
@@ -117,8 +126,8 @@ class VersionCheckTest extends Specification {
     }
 
     def configureAndroidSdk() {
-        defaultAndroidSdkHome.mkdirs()
-        File androidLicensesFolder = new File(defaultAndroidSdkHome, "licenses")
+        androidSdkHome.mkdirs()
+        File androidLicensesFolder = new File(androidSdkHome, "licenses")
         androidLicensesFolder.mkdirs()
         File androidLicensesVersionFile = new File(androidLicensesFolder, "version")
         if (!androidLicensesVersionFile.exists() || Integer.valueOf(androidLicensesVersionFile.text) < ANDROID_LICENSE_FILE_VERSION) {
@@ -126,7 +135,7 @@ class VersionCheckTest extends Specification {
             androidLicensesVersionFile.text = ANDROID_LICENSE_FILE_VERSION
             new File(androidLicensesFolder, "android-sdk-license").text = "${System.lineSeparator()}d56f5187479451eabf01fb78af6dfcb131a6481e"
         }
-        file('local.properties').text = "sdk.dir=${defaultAndroidSdkHome.absolutePath.replace(File.separatorChar, '/' as char)}"
+        file('local.properties').text = "sdk.dir=${androidSdkHome.absolutePath.replace(File.separatorChar, '/' as char)}"
     }
 
     def file(String path) {

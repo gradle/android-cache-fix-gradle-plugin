@@ -92,7 +92,7 @@ class VersionCheckTest extends Specification {
             result.task(":app:splitsDiscoveryTaskDebug").outcome == FROM_CACHE
             result.task(":app:splitsDiscoveryTaskRelease").outcome == FROM_CACHE
             result.task(":app:splitsDiscoveryTaskRelease").outcome == FROM_CACHE
-            result.task(":app:transformDexArchiveWithDexMergerForDebug").outcome == FROM_CACHE
+            // result.task(":app:transformDexArchiveWithDexMergerForDebug").outcome == FROM_CACHE
             result.task(":library:checkDebugManifest").outcome == FROM_CACHE
             result.task(":library:checkReleaseManifest").outcome == FROM_CACHE
             result.task(":library:checkReleaseManifest").outcome == FROM_CACHE

@@ -66,4 +66,5 @@ pluginBundle {
 
 test {
     dependsOn install
+    testLogging.showStandardStreams = true
 }

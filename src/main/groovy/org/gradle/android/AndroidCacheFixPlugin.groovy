@@ -76,16 +76,18 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 	 */
 	static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 		@Override
+        @CompileStatic(TypeCheckingMode.SKIP)
 		void apply(Project project) {
 			project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
-				task.inputs.property "options.bootClasspath", (String) null
-				task.inputs.files({
+                task.inputs.property "options.bootClasspath", ""
+                task.inputs.files({
                         DeprecationLogger.whileDisabled({
                             task.options.bootClasspath?.split(File.pathSeparator)
                         } as Factory)
                     })
                     .withPathSensitivity(PathSensitivity.RELATIVE)
                     .withPropertyName("options.bootClasspath.workaround")
+                    .optional(true)
 			}
 		}
 	}
@@ -94,10 +96,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
      */
     static class AndroidJavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
-                task.inputs.property "options.compilerArgs", (String) null
+                task.inputs.property "options.compilerArgs", ""
                 task.inputs.property "options.compilerArgs.workaround", {
                     def filteredArgs = []
                     def iCompilerArgs = task.options.compilerArgs.iterator()
@@ -138,6 +141,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#RELATIVE}.
      */
     static class AndroidJavaCompile_ProcessorListFile_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
@@ -163,6 +167,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * Override path sensitivity for {@link ExtractAnnotations#getSource()} to {@link PathSensitivity#RELATIVE}.
      */
     static class ExtractAnnotations_Source_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(ExtractAnnotations) { ExtractAnnotations task ->
@@ -183,10 +188,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * Fix {@link IncrementalTask#getCombinedInput()} relocatability.
      */
     static class IncrementalTask_CombinedInput_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(IncrementalTask) { IncrementalTask task ->
-                task.inputs.property "combinedInput", (String) null
+                task.inputs.property "combinedInput", ""
                 task.inputs.property "combinedInput.workaround", {
                     AndroidCacheFixPlugin.fixCombinedInputs(task.combinedInput)
                 }
@@ -199,10 +205,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * Fix {@link StreamBasedTask#getCombinedInput()} relocatability.
      */
     static class StreamBasedTask_CombinedInput_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(StreamBasedTask) { StreamBasedTask task ->
-                task.inputs.property "combinedInput", (String) null
+                task.inputs.property "combinedInput", ""
                 task.inputs.property "combinedInput.workaround", {
                     AndroidCacheFixPlugin.fixCombinedInputs(task.combinedInput)
                 }
@@ -222,10 +229,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * {@link ProcessAndroidResources#getMergeBlameLogFolder()} shouldn't be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
     static class ProcessAndroidResources_MergeBlameLogFolder_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(ProcessAndroidResources) { ProcessAndroidResources task ->
-                task.inputs.property "mergeBlameLogFolder", (String) null
+                task.inputs.property "mergeBlameLogFolder", ""
             }
         }
     }
@@ -234,10 +242,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * {@link com.android.build.gradle.internal.tasks.CheckManifest#getManifest()} should not be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
     static class CheckManifest_Manifest_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(CheckManifest) { CheckManifest task ->
-                task.inputs.property "manifest", (String) null
+                task.inputs.property "manifest", ""
             }
         }
     }

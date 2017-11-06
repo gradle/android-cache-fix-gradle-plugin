@@ -108,6 +108,9 @@ class VersionCheckTest extends Specification {
             result.task(":library:compileReleaseRenderscript").outcome == FROM_CACHE
             result.task(":library:compileReleaseShaders").outcome == FROM_CACHE
             result.task(":library:compileReleaseShaders").outcome == FROM_CACHE
+            result.task(":library:extractDebugAnnotations").outcome == FROM_CACHE
+            // TODO This produces overlapping outputs in build/intermediates/typedefs.txt
+            // result.task(":library:extractReleaseAnnotations").outcome == FROM_CACHE
             result.task(":library:generateDebugBuildConfig").outcome == FROM_CACHE
             result.task(":library:generateDebugResValues").outcome == FROM_CACHE
             result.task(":library:generateDebugResValues").outcome == FROM_CACHE
@@ -140,7 +143,7 @@ class VersionCheckTest extends Specification {
 
         where:
         // [gradleVersion, androidVersion] << GroovyCollections.combinations(Versions.SUPPORTED_GRADLE_VERSIONS, Versions.SUPPORTED_ANDROID_VERSIONS)
-        gradleVersion = GradleVersion.version("4.1")
+        gradleVersion = GradleVersion.version("4.3")
         androidVersion = VersionNumber.parse("3.0.0")
     }
 

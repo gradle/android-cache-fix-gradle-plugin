@@ -160,7 +160,7 @@ class VersionCheckTest extends Specification {
         def projectDir = temporaryFolder.newFolder()
         new AndroidProject(projectDir, cacheDir, "3.1.0-alpha01").writeProject()
         expect:
-        def result = withGradleVersion("4.3")
+        def result = withGradleVersion("4.1")
             .withProjectDir(projectDir)
             .withArguments("tasks")
             .build()

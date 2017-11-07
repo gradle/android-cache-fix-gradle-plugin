@@ -3,6 +3,7 @@ package org.gradle.android
 import spock.lang.Unroll
 
 import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class RelocationTest extends AbstractTest {
 
@@ -97,7 +98,7 @@ class RelocationTest extends AbstractTest {
             result.task(":library:compileReleaseShaders").outcome == FROM_CACHE
             result.task(":library:extractDebugAnnotations").outcome == FROM_CACHE
             // TODO This produces overlapping outputs in build/intermediates/typedefs.txt
-            // result.task(":library:extractReleaseAnnotations").outcome == FROM_CACHE
+            result.task(":library:extractReleaseAnnotations").outcome == SUCCESS
             result.task(":library:generateDebugBuildConfig").outcome == FROM_CACHE
             result.task(":library:generateDebugResValues").outcome == FROM_CACHE
             result.task(":library:generateDebugResValues").outcome == FROM_CACHE

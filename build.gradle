@@ -41,6 +41,8 @@ targetCompatibility = "1.7"
 
 processResources {
     inputs.property "version", version
+    inputs.property "gradleVersions", supportedGradleVersions
+    inputs.property "androidVersions", supportedAndroidVersions
     filter(ReplaceTokens, tokens: [
         VERSION: version,
         SUPPORTED_GRADLE_VERSIONS: supportedGradleVersions.join(","),

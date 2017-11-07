@@ -1,7 +1,5 @@
 package org.gradle.android
 
-import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
 import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
@@ -131,8 +129,6 @@ class RelocationTest extends AbstractTest {
         }
 
         where:
-        // [gradleVersion, androidVersion] << GroovyCollections.combinations(Versions.SUPPORTED_GRADLE_VERSIONS, Versions.SUPPORTED_ANDROID_VERSIONS)
-        gradleVersion = GradleVersion.version("4.3")
-        androidVersion = VersionNumber.parse("3.0.0")
+        [gradleVersion, androidVersion] << GroovyCollections.combinations(Versions.SUPPORTED_GRADLE_VERSIONS, Versions.SUPPORTED_ANDROID_VERSIONS)
     }
 }

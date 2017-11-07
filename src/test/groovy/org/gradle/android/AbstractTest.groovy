@@ -17,6 +17,6 @@ class AbstractTest extends Specification {
         GradleRunner.create()
             .withGradleVersion(gradleVersion)
             .forwardOutput()
-            .withDebug(true)
+            .withDebug(false)
     }
 }

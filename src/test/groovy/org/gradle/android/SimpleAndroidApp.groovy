@@ -4,10 +4,10 @@ class SimpleAndroidApp {
     final File projectDir
     private final File cacheDir
     final String androidVersion
-    private final boolean reverseApply
+    private final boolean applyBeforeAndroidPlugin
 
-    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion, boolean reverseApply = false) {
-        this.reverseApply = reverseApply
+    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion, boolean applyBeforeAndroidPlugin = false) {
+        this.applyBeforeAndroidPlugin = applyBeforeAndroidPlugin
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
@@ -99,15 +99,15 @@ class SimpleAndroidApp {
     private subprojectConfiguration(String androidPlugin) {
         def applyPlugins
         def applyAndroid = "apply plugin: \"$androidPlugin\""
-        if (!reverseApply) {
+        if (applyBeforeAndroidPlugin) {
             applyPlugins = """
-                    $applyAndroid
                     apply plugin: "org.gradle.android.cache-fix"
+                    $applyAndroid
                 """
         } else {
             applyPlugins = """
-                    apply plugin: "org.gradle.android.cache-fix"
                     $applyAndroid
+                    apply plugin: "org.gradle.android.cache-fix"
                 """
         }
         applyPlugins + """

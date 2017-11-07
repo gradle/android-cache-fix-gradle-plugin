@@ -38,7 +38,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
         new CheckManifest_Manifest_Workaround(),
         new PackageApplication_Disable_Workaround(),
-    ] as List<Workaround>
+    ]
 
 
     @Override

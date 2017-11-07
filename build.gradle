@@ -1,0 +1,74 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'maven'
+
+apply plugin: "com.gradle.plugin-publish"
+
+group = "org.gradle.android"
+version = "0.1.7-SNAPSHOT"
+
+def supportedGradleVersions = ["4.1", "4.2", "4.2.1", "4.3"]
+def supportedAndroidVersions = ["3.0.0"]
+
+repositories {
+    google()
+    jcenter()
+}
+
+dependencies {
+    compile 'com.android.tools.build:gradle:3.0.0'
+    compile gradleApi()
+    testCompile gradleTestKit()
+    testCompile "junit:junit:4.12"
+    testCompile "org.spockframework:spock-core:1.1-groovy-2.4@jar"
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+processResources {
+    inputs.property "version", version
+    inputs.property "gradleVersions", supportedGradleVersions
+    inputs.property "androidVersions", supportedAndroidVersions
+    filter(ReplaceTokens, tokens: [
+        VERSION: version,
+        SUPPORTED_GRADLE_VERSIONS: supportedGradleVersions.join(","),
+        SUPPORTED_ANDROID_VERSIONS: supportedAndroidVersions.join(",")
+    ])
+}
+
+pluginBundle {
+    website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+    vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+
+    description = 'Gradle plugin to fix Android caching problems'
+
+    plugins {
+        androidCacheFixPlugin {
+            id = 'org.gradle.android.cache-fix'
+            displayName = 'Gradle Android cache fix plugin'
+            tags = ['android', 'cache', 'fix']
+            version = project.version
+        }
+    }
+}
+
+test {
+    dependsOn install
+    if (System.getenv("TRAVIS") == "true") {
+        testLogging.showStandardStreams = true
+    }
+}

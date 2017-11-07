@@ -42,7 +42,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
 
     @Override
-	void apply(Project project) {
+    void apply(Project project) {
         if (!project.plugins.hasPlugin(AndroidBasePlugin)) {
             throw new RuntimeException("The Android cache fix plugin must be applied after Android plugins.")
         }
@@ -76,28 +76,29 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 workaround.apply(project)
             }
         }
-	}
+    }
 
-	/**
-	 * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
-	 */
-	static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
-		@Override
+    /**
+     * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
+     */
+    static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
+        @Override
         @CompileStatic(TypeCheckingMode.SKIP)
-		void apply(Project project) {
-			project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
+        void apply(Project project) {
+            project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
                 task.inputs.property "options.bootClasspath", ""
                 task.inputs.files({
                         DeprecationLogger.whileDisabled({
+                            //noinspection GrDeprecatedAPIUsage
                             task.options.bootClasspath?.split(File.pathSeparator)
                         } as Factory)
                     })
                     .withPathSensitivity(PathSensitivity.RELATIVE)
                     .withPropertyName("options.bootClasspath.workaround")
                     .optional(true)
-			}
-		}
-	}
+            }
+        }
+    }
 
     /**
      * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
@@ -145,7 +146,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     /**
-     * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#RELATIVE}.
+     * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#NONE}.
      */
     static class AndroidJavaCompile_ProcessorListFile_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)

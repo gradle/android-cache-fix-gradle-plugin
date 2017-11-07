@@ -1,7 +1,5 @@
 package org.gradle.android
 
-import spock.lang.Ignore
-
 class VersionCheckTest extends AbstractTest {
 
     def "fails when applied before Android plugin"() {
@@ -15,7 +13,6 @@ class VersionCheckTest extends AbstractTest {
         result.output.contains("The Android cache fix plugin must be applied after Android plugins.")
     }
 
-    @Ignore("Using different Gradle versions breaks TestKit")
     def "does not apply workarounds with Gradle 4.4"() {
         def projectDir = temporaryFolder.newFolder()
         new SimpleAndroidApp(projectDir, cacheDir, "3.0.0").writeProject()

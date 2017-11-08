@@ -1,6 +1,5 @@
 package org.gradle.android
 
-import com.android.build.gradle.api.AndroidBasePlugin
 import com.android.build.gradle.internal.pipeline.StreamBasedTask
 import com.android.build.gradle.internal.tasks.CheckManifest
 import com.android.build.gradle.internal.tasks.IncrementalTask
@@ -40,41 +39,33 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (!project.plugins.hasPlugin(AndroidBasePlugin)) {
-            throw new RuntimeException("The Android cache fix plugin must be applied after Android plugins.")
-        }
-        if (project.state.executed) {
-            throw new RuntimeException("The Android cache fix plugin must not be applied in an afterEvaluate {} block.")
-        }
-        project.afterEvaluate {
-            def currentGradleVersion = GradleVersion.current().baseVersion
-            def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion
+        def currentGradleVersion = GradleVersion.current().baseVersion
+        def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion
 
-            if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
-                if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
-                    DeprecationLogger.nagUserWith("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin, not applying workarounds.")
-                    return
-                }
-                if (!Versions.SUPPORTED_GRADLE_VERSIONS.contains(currentGradleVersion)) {
-                    DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds.")
-                    return
-                }
+        if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
+            if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
+                DeprecationLogger.nagUserWith("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin, not applying workarounds.")
+                return
             }
+            if (!Versions.SUPPORTED_GRADLE_VERSIONS.contains(currentGradleVersion)) {
+                DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds.")
+                return
+            }
+        }
 
-            for (def workaround : WORKAROUNDS) {
-                def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
-                if (fixedInGradleAnnotation != null
-                    && currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.version())) {
-                    continue
-                }
-                def fixedInAndroidAnnotation = workaround.class.getAnnotation(FixedInAndroid)
-                if (fixedInAndroidAnnotation != null
-                    && currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.version())) {
-                    continue
-                }
-                LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
-                workaround.apply(project)
+        for (def workaround : WORKAROUNDS) {
+            def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
+            if (fixedInGradleAnnotation != null
+                && currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.version())) {
+                continue
             }
+            def fixedInAndroidAnnotation = workaround.class.getAnnotation(FixedInAndroid)
+            if (fixedInAndroidAnnotation != null
+                && currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.version())) {
+                continue
+            }
+            LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
+            workaround.apply(project)
         }
     }
 

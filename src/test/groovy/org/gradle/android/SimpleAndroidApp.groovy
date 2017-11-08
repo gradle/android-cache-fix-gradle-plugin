@@ -4,10 +4,8 @@ class SimpleAndroidApp {
     final File projectDir
     private final File cacheDir
     final String androidVersion
-    private final PluginApplicationType applicationType
 
-    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion, PluginApplicationType applicationType = PluginApplicationType.AFTER_ANDROID_PLUGIN) {
-        this.applicationType = applicationType
+    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion) {
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
@@ -96,18 +94,21 @@ class SimpleAndroidApp {
         configureAndroidSdkHome()
     }
 
-    private subprojectConfiguration(String androidPlugin) {
-        applicationType.applyWithAndroidPlugin(androidPlugin) + """
-                repositories {
-                    google()
-                    jcenter()
-                }
-    
-                android {
-                    compileSdkVersion 26
-                    buildToolsVersion "26.0.2"
-                }
-            """.stripIndent()
+    private static subprojectConfiguration(String androidPlugin) {
+        """
+            apply plugin: "$androidPlugin"
+            apply plugin: "org.gradle.android.cache-fix"
+
+            repositories {
+                google()
+                jcenter()
+            }
+
+            android {
+                compileSdkVersion 26
+                buildToolsVersion "26.0.2"
+            }
+        """.stripIndent()
     }
 
     private writeActivity(String basedir, String packageName, String className) {
@@ -157,10 +158,10 @@ class SimpleAndroidApp {
 
     private static String activityDependency() {
         """
-                dependencies {
-                    implementation 'joda-time:joda-time:2.7'
-                }
-            """.stripIndent()
+            dependencies {
+                implementation 'joda-time:joda-time:2.7'
+            }
+        """.stripIndent()
     }
 
     private void configureAndroidSdkHome() {
@@ -175,39 +176,5 @@ class SimpleAndroidApp {
         def file = new File(projectDir, path)
         file.parentFile.mkdirs()
         return file
-    }
-
-    enum PluginApplicationType {
-        AFTER_ANDROID_PLUGIN {
-            @Override
-            String applyWithAndroidPlugin(String androidPlugin) {
-                """
-                    apply plugin: "$androidPlugin"
-                    apply plugin: "org.gradle.android.cache-fix"
-                """
-            }
-        },
-        BEFORE_ANDROID_PLUGIN {
-            @Override
-            String applyWithAndroidPlugin(String androidPlugin) {
-                """
-                    apply plugin: "org.gradle.android.cache-fix"
-                    apply plugin: "$androidPlugin"
-                """
-            }
-        },
-        IN_AFTER_EVALUATE {
-            @Override
-            String applyWithAndroidPlugin(String androidPlugin) {
-                """
-                    apply plugin: "$androidPlugin"
-                    afterEvaluate {
-                        apply plugin: "org.gradle.android.cache-fix"
-                    }
-                """
-            }
-        }
-
-        abstract String applyWithAndroidPlugin(String androidPlugin)
     }
 }

@@ -43,6 +43,9 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         if (!project.plugins.hasPlugin(AndroidBasePlugin)) {
             throw new RuntimeException("The Android cache fix plugin must be applied after Android plugins.")
         }
+        if (project.state.executed) {
+            throw new RuntimeException("The Android cache fix plugin must not be applied in an afterEvaluate {} block.")
+        }
         project.afterEvaluate {
             def currentGradleVersion = GradleVersion.current().baseVersion
             def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion

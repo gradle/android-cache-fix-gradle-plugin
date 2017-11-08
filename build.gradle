@@ -20,7 +20,7 @@ apply plugin: "com.gradle.plugin-publish"
 group = "org.gradle.android"
 version = "0.1.7-SNAPSHOT"
 
-def supportedGradleVersions = ["4.1", "4.2", "4.2.1", "4.3"]
+def supportedGradleVersions = ["4.1", "4.2", "4.2.1", "4.3", "4.3.1"]
 def supportedAndroidVersions = ["3.0.0"]
 
 repositories {

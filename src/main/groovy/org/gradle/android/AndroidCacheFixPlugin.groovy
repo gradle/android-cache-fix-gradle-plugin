@@ -26,7 +26,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     private static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
 
-    private static List<Workaround> WORKAROUNDS = [
+    private static final List<Workaround> WORKAROUNDS = [
         new AndroidJavaCompile_BootClasspath_Workaround(),
         new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
         new AndroidJavaCompile_ProcessorListFile_Workaround(),

@@ -1,16 +1,30 @@
 package org.gradle.android
 
-class VersionCheckTest extends AbstractTest {
+import static org.gradle.android.SimpleAndroidApp.PluginApplicationType.BEFORE_ANDROID_PLUGIN
+import static org.gradle.android.SimpleAndroidApp.PluginApplicationType.IN_AFTER_EVALUATE
+
+class PluginApplicationTest extends AbstractTest {
 
     def "fails when applied before Android plugin"() {
         def projectDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(projectDir, cacheDir, "3.0.0", true).writeProject()
+        new SimpleAndroidApp(projectDir, cacheDir, "3.0.0", BEFORE_ANDROID_PLUGIN).writeProject()
         expect:
         def result = withGradleVersion("4.3")
             .withProjectDir(projectDir)
             .withArguments("tasks")
             .buildAndFail()
         result.output.contains("The Android cache fix plugin must be applied after Android plugins.")
+    }
+
+    def "fails when applied in afterEvaluate block"() {
+        def projectDir = temporaryFolder.newFolder()
+        new SimpleAndroidApp(projectDir, cacheDir, "3.0.0", IN_AFTER_EVALUATE).writeProject()
+        expect:
+        def result = withGradleVersion("4.3")
+            .withProjectDir(projectDir)
+            .withArguments("tasks")
+            .buildAndFail()
+        result.output.contains("The Android cache fix plugin must not be applied in an afterEvaluate {} block.")
     }
 
     def "does not apply workarounds with Gradle 4.4"() {

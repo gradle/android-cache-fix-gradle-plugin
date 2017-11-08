@@ -4,10 +4,10 @@ class SimpleAndroidApp {
     final File projectDir
     private final File cacheDir
     final String androidVersion
-    private final boolean applyBeforeAndroidPlugin
+    private final PluginApplicationType applicationType
 
-    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion, boolean applyBeforeAndroidPlugin = false) {
-        this.applyBeforeAndroidPlugin = applyBeforeAndroidPlugin
+    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion, PluginApplicationType applicationType = PluginApplicationType.AFTER_ANDROID_PLUGIN) {
+        this.applicationType = applicationType
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
@@ -97,20 +97,7 @@ class SimpleAndroidApp {
     }
 
     private subprojectConfiguration(String androidPlugin) {
-        def applyPlugins
-        def applyAndroid = "apply plugin: \"$androidPlugin\""
-        if (applyBeforeAndroidPlugin) {
-            applyPlugins = """
-                    apply plugin: "org.gradle.android.cache-fix"
-                    $applyAndroid
-                """
-        } else {
-            applyPlugins = """
-                    $applyAndroid
-                    apply plugin: "org.gradle.android.cache-fix"
-                """
-        }
-        applyPlugins + """
+        applicationType.applyWithAndroidPlugin(androidPlugin) + """
                 repositories {
                     google()
                     jcenter()
@@ -188,5 +175,39 @@ class SimpleAndroidApp {
         def file = new File(projectDir, path)
         file.parentFile.mkdirs()
         return file
+    }
+
+    enum PluginApplicationType {
+        AFTER_ANDROID_PLUGIN {
+            @Override
+            String applyWithAndroidPlugin(String androidPlugin) {
+                """
+                    apply plugin: "$androidPlugin"
+                    apply plugin: "org.gradle.android.cache-fix"
+                """
+            }
+        },
+        BEFORE_ANDROID_PLUGIN {
+            @Override
+            String applyWithAndroidPlugin(String androidPlugin) {
+                """
+                    apply plugin: "org.gradle.android.cache-fix"
+                    apply plugin: "$androidPlugin"
+                """
+            }
+        },
+        IN_AFTER_EVALUATE {
+            @Override
+            String applyWithAndroidPlugin(String androidPlugin) {
+                """
+                    apply plugin: "$androidPlugin"
+                    afterEvaluate {
+                        apply plugin: "org.gradle.android.cache-fix"
+                    }
+                """
+            }
+        }
+
+        abstract String applyWithAndroidPlugin(String androidPlugin)
     }
 }

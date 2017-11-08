@@ -153,16 +153,20 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         @Override
         void apply(Project project) {
             project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
-                def originalValue = task.processorListFile
-                if (originalValue != null) {
-                    task.processorListFile = project.files()
-                    task.inputs.files(originalValue)
-                        .withPathSensitivity(PathSensitivity.NONE)
-                        .withPropertyName("processorListFile.workaround")
+                def originalValue
 
-                    task.doFirst {
-                        task.processorListFile = originalValue
+                project.gradle.taskGraph.beforeTask {
+                    if (task == it) {
+                        originalValue = task.processorListFile
+                        task.processorListFile = project.files()
+                        task.inputs.files(originalValue)
+                            .withPathSensitivity(PathSensitivity.NONE)
+                            .withPropertyName("processorListFile.workaround")
                     }
+                }
+
+                task.doFirst {
+                    task.processorListFile = originalValue
                 }
             }
         }
@@ -176,12 +180,18 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         @Override
         void apply(Project project) {
             project.tasks.withType(ExtractAnnotations) { ExtractAnnotations task ->
-                def originalValue = task.source
-                task.source = []
-                task.inputs.files(originalValue)
-                    .withPathSensitivity(PathSensitivity.RELATIVE)
-                    .withPropertyName("source.workaround")
-                    .skipWhenEmpty(true)
+                def originalValue
+
+                project.gradle.taskGraph.beforeTask {
+                    if (task == it) {
+                        originalValue = task.source
+                        task.source = []
+                        task.inputs.files(originalValue)
+                            .withPathSensitivity(PathSensitivity.RELATIVE)
+                            .withPropertyName("source.workaround")
+                            .skipWhenEmpty(true)
+                    }
+                }
 
                 task.doFirst {
                     task.source = originalValue

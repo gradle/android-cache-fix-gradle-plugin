@@ -7,11 +7,13 @@ import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
 
 /**
- * Version of Gradle that fixes the problem. Workaround not applied if current Gradle version is the same or later.
+ * Version of Android plugin that fixes the problem. Workaround not applied if current Android plugin version is the same or later.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(ElementType.TYPE)
-@interface FixedInGradle {
-    String version()
+@interface AndroidIssue {
+    String introducedIn()
+    String fixedIn() default ""
+    String link()
 }

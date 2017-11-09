@@ -235,6 +235,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * {@link ProcessAndroidResources#getMergeBlameLogFolder()} shouldn't be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
+    @FixedInAndroid(version = "3.0.1", link = "https://issuetracker.google.com/issues/68385486#comment3")
     static class ProcessAndroidResources_MergeBlameLogFolder_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override

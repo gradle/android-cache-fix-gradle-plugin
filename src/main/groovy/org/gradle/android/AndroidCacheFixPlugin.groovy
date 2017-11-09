@@ -32,6 +32,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new AndroidJavaCompile_BootClasspath_Workaround(),
         new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
         new AndroidJavaCompile_ProcessorListFile_Workaround(),
+        new AndroidJavaCompile_DataBindingDependencyArtifacts_Workaround(),
         new ExtractAnnotations_Source_Workaround(),
         new CombinedInput_Workaround(),
         new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
@@ -152,6 +153,36 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
                 task.doFirst {
                     task.processorListFile = originalValue
+                }
+            }
+        }
+    }
+
+    /**
+     * Override path sensitivity for {@link AndroidJavaCompile#getDataBindingDependencyArtifacts()} to {@link PathSensitivity#RELATIVE}.
+     */
+    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68759178")
+    static class AndroidJavaCompile_DataBindingDependencyArtifacts_Workaround implements Workaround {
+        @CompileStatic(TypeCheckingMode.SKIP)
+        @Override
+        void apply(Project project) {
+            project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
+                def originalValue
+
+                project.gradle.taskGraph.beforeTask {
+                    if (task == it) {
+                        originalValue = task.dataBindingDependencyArtifacts
+                        if (originalValue != null) {
+                            task.dataBindingDependencyArtifacts = project.files()
+                            task.inputs.files(originalValue)
+                                .withPathSensitivity(PathSensitivity.RELATIVE)
+                                .withPropertyName("dataBindingDependencyArtifacts.workaround")
+                        }
+                    }
+                }
+
+                task.doFirst {
+                    task.dataBindingDependencyArtifacts = originalValue
                 }
             }
         }

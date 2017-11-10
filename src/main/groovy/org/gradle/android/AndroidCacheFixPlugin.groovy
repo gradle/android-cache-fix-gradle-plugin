@@ -30,7 +30,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
         new AndroidJavaCompile_ProcessorListFile_Workaround(),
         new ExtractAnnotations_Source_Workaround(),
-        new IncrementalTask_CombinedInput_Workaround(),
+        new CombinedInput_Workaround(),
         new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
         new CheckManifest_Manifest_Workaround(),
     ] as List<Workaround>
@@ -196,7 +196,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * Fix {@link IncrementalTask#getCombinedInput()} and {@link StreamBasedTask#getCombinedInput()} relocatability.
      */
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.0.1", link = "https://issuetracker.google.com/issues/68771542")
-    static class IncrementalTask_CombinedInput_Workaround implements Workaround {
+    static class CombinedInput_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {

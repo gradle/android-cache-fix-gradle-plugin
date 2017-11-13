@@ -13,7 +13,6 @@ buildscript {
 
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
-apply plugin: 'maven'
 apply plugin: 'codenarc'
 
 apply plugin: "com.gradle.plugin-publish"
@@ -80,10 +79,28 @@ pluginBundle {
     }
 }
 
+def localRepo = file("$buildDir/local-repo")
+
+artifacts {
+    runtime jar
+}
+
+task install(type: Upload) {
+    repositories {
+        ivy {
+            url = localRepo.toURI()
+        }
+    }
+    descriptorDestination = file('$buildDir/pom.xml')
+    uploadDescriptor = true
+    configuration = configurations.runtime
+}
+
 def travis = System.getenv("TRAVIS") == "true"
 
 test {
     dependsOn install
+    systemProperty "local.repo", localRepo.toURI()
     systemProperty "travis", travis
     if (travis) {
         testLogging.showStandardStreams = true

@@ -39,7 +39,9 @@ class SimpleAndroidApp {
                     repositories {
                         google()
                         jcenter()
-                        mavenLocal()
+                        ivy {
+                            url = "${System.getProperty("local.repo")}"
+                        }
                     }
                     dependencies {
                         classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }

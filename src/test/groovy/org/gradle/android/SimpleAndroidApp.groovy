@@ -36,7 +36,7 @@ class SimpleAndroidApp {
                         mavenLocal()
                     }
                     dependencies {
-                        classpath 'com.android.tools.build:gradle:$androidVersion'
+                        classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
                         classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
                     }
                 }

@@ -38,27 +38,24 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         def currentGradleVersion = GradleVersion.current().baseVersion
-        def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION).baseVersion
+        def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
         if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
             if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
-                DeprecationLogger.nagUserWith("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin, not applying workarounds.")
-                return
+                throw new RuntimeException("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             }
             if (!Versions.SUPPORTED_GRADLE_VERSIONS.contains(currentGradleVersion)) {
-                DeprecationLogger.nagUserWith("$currentGradleVersion is not supported by Android cache fix plugin, not applying workarounds.")
-                return
+                throw new RuntimeException("$currentGradleVersion is not supported by Android cache fix plugin. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             }
         }
 
         for (def workaround : WORKAROUNDS) {
             def androidIssue = workaround.class.getAnnotation(AndroidIssue)
             def introducedIn = VersionNumber.parse(androidIssue.introducedIn())
-            def fixedIn = VersionNumber.parse(androidIssue.fixedIn())
             if (currentAndroidVersion < introducedIn) {
                 continue
             }
-            if (fixedIn != VersionNumber.UNKNOWN && currentAndroidVersion >= fixedIn) {
+            if (androidIssue.fixedIn().any { String supportedAndroidVersion -> currentAndroidVersion == VersionNumber.parse(supportedAndroidVersion) }) {
                 continue
             }
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)

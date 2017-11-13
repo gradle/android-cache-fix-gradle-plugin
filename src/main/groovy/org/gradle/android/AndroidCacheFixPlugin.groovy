@@ -30,12 +30,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
         new AndroidJavaCompile_ProcessorListFile_Workaround(),
         new ExtractAnnotations_Source_Workaround(),
-        new IncrementalTask_CombinedInput_Workaround(),
-        new StreamBasedTask_CombinedInput_Workaround(),
+        new CombinedInput_Workaround(),
         new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
         new CheckManifest_Manifest_Workaround(),
-    ]
-
+    ] as List<Workaround>
 
     @Override
     void apply(Project project) {
@@ -54,14 +52,13 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         }
 
         for (def workaround : WORKAROUNDS) {
-            def fixedInGradleAnnotation = workaround.class.getAnnotation(FixedInGradle)
-            if (fixedInGradleAnnotation != null
-                && currentGradleVersion >= GradleVersion.version(fixedInGradleAnnotation.version())) {
+            def androidIssue = workaround.class.getAnnotation(AndroidIssue)
+            def introducedIn = VersionNumber.parse(androidIssue.introducedIn())
+            def fixedIn = VersionNumber.parse(androidIssue.fixedIn())
+            if (currentAndroidVersion < introducedIn) {
                 continue
             }
-            def fixedInAndroidAnnotation = workaround.class.getAnnotation(FixedInAndroid)
-            if (fixedInAndroidAnnotation != null
-                && currentAndroidVersion >= VersionNumber.parse(fixedInAndroidAnnotation.version())) {
+            if (fixedIn != VersionNumber.UNKNOWN && currentAndroidVersion >= fixedIn) {
                 continue
             }
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
@@ -72,6 +69,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
      */
+    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68392933")
     static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
         @Override
         @CompileStatic(TypeCheckingMode.SKIP)
@@ -94,6 +92,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
      */
+    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68391973")
     static class AndroidJavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -139,6 +138,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#NONE}.
      */
+    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68759178")
     static class AndroidJavaCompile_ProcessorListFile_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -166,6 +166,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link ExtractAnnotations#getSource()} to {@link PathSensitivity#RELATIVE}.
      */
+    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68759476")
     static class ExtractAnnotations_Source_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -192,50 +193,40 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     /**
-     * Fix {@link IncrementalTask#getCombinedInput()} relocatability.
+     * Fix {@link IncrementalTask#getCombinedInput()} and {@link StreamBasedTask#getCombinedInput()} relocatability.
      */
-    @FixedInAndroid(version = "3.0.1", link = "https://issuetracker.google.com/issues/68771542#comment3")
-    static class IncrementalTask_CombinedInput_Workaround implements Workaround {
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.0.1", link = "https://issuetracker.google.com/issues/68771542")
+    static class CombinedInput_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
         void apply(Project project) {
             project.tasks.withType(IncrementalTask) { IncrementalTask task ->
                 task.inputs.property "combinedInput", ""
                 task.inputs.property "combinedInput.workaround", {
-                    AndroidCacheFixPlugin.fixCombinedInputs(task.combinedInput)
+                    fixCombinedInputs(task.combinedInput)
                 }
             }
-        }
-    }
-
-    /**
-     * Fix {@link StreamBasedTask#getCombinedInput()} relocatability.
-     */
-    static class StreamBasedTask_CombinedInput_Workaround implements Workaround {
-        @CompileStatic(TypeCheckingMode.SKIP)
-        @Override
-        void apply(Project project) {
             project.tasks.withType(StreamBasedTask) { StreamBasedTask task ->
                 task.inputs.property "combinedInput", ""
                 task.inputs.property "combinedInput.workaround", {
-                    AndroidCacheFixPlugin.fixCombinedInputs(task.combinedInput)
+                    fixCombinedInputs(task.combinedInput)
                 }
             }
         }
-    }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
-    private static Map<String, Boolean> fixCombinedInputs(String combinedInputs) {
-        combinedInputs.split("\n").collectEntries {
-            def (propertyName, value) = it.split("=", 2)
-            [(propertyName): (value != "null")]
+        @CompileStatic(TypeCheckingMode.SKIP)
+        private static Map<String, Boolean> fixCombinedInputs(String combinedInputs) {
+            combinedInputs.split("\n").collectEntries {
+                def (propertyName, value) = it.split("=", 2)
+                [(propertyName): (value != "null")]
+            }
         }
     }
 
     /**
      * {@link ProcessAndroidResources#getMergeBlameLogFolder()} shouldn't be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
-    @FixedInAndroid(version = "3.0.1", link = "https://issuetracker.google.com/issues/68385486#comment3")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.0.1", link = "https://issuetracker.google.com/issues/68385486")
     static class ProcessAndroidResources_MergeBlameLogFolder_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -249,6 +240,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * {@link com.android.build.gradle.internal.tasks.CheckManifest#getManifest()} should not be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
+    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68772035")
     static class CheckManifest_Manifest_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override

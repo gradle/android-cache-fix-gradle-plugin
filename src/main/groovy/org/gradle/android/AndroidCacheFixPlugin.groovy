@@ -111,23 +111,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                     }
                     return filteredArgs
                 }
-
-                // AndroidJavaCompile already declares this as annotationProcessorOutputFolder
-                if (!(task instanceof AndroidJavaCompile)) {
-                    task.outputs.dir {
-                        def outputDir = null
-                        def iCompilerArgs = task.options.compilerArgs.iterator()
-                        while (iCompilerArgs.hasNext()) {
-                            def compilerArg = iCompilerArgs.next()
-                            if (compilerArg == "-s") {
-                                if (iCompilerArgs.hasNext()) {
-                                    outputDir = iCompilerArgs.next()
-                                }
-                            }
-                        }
-                        return outputDir
-                    } withPropertyName("options.compilerArgs.annotationProcessorOutputFolder.workaround") optional()
-                }
             }
         }
     }

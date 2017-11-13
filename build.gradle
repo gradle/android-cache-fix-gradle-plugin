@@ -1,4 +1,4 @@
-import org.apache.tools.ant.filters.ReplaceTokens
+import groovy.json.JsonBuilder
 
 buildscript {
     repositories {
@@ -21,8 +21,11 @@ apply plugin: "com.gradle.plugin-publish"
 group = "org.gradle.android"
 version = "0.1.9-SNAPSHOT"
 
-def supportedGradleVersions = ["4.1", "4.2", "4.2.1", "4.3", "4.3.1"]
-def supportedAndroidVersions = ["3.0.0"]
+// Maps supported Android plugin versions to the versions of Gradle that should support it
+def supportedVersions = [
+    "3.0.0": ["4.1", "4.2", "4.2.1", "4.3", "4.3.1"],
+    "3.1.0-alpha01": ["4.3.1"]
+]
 
 repositories {
     google()
@@ -40,15 +43,25 @@ dependencies {
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
-processResources {
+def generatedResources = "$buildDir/generated-resources/main"
+
+task generateVersions {
+    def outputFile = file("$generatedResources/versions.json")
     inputs.property "version", version
-    inputs.property "gradleVersions", supportedGradleVersions
-    inputs.property "androidVersions", supportedAndroidVersions
-    filter(ReplaceTokens, tokens: [
-        VERSION: version,
-        SUPPORTED_GRADLE_VERSIONS: supportedGradleVersions.join(","),
-        SUPPORTED_ANDROID_VERSIONS: supportedAndroidVersions.join(",")
-    ])
+    inputs.property "supportedVersions", supportedVersions
+    outputs.dir generatedResources
+    doLast {
+        outputFile.text = new JsonBuilder([
+            version: version,
+            supportedVersions: supportedVersions
+        ]).toPrettyString()
+    }
+}
+
+sourceSets {
+    main {
+        output.dir(generatedResources, builtBy: generateVersions)
+    }
 }
 
 pluginBundle {
@@ -67,9 +80,12 @@ pluginBundle {
     }
 }
 
+def travis = System.getenv("TRAVIS") == "true"
+
 test {
     dependsOn install
-    if (System.getenv("TRAVIS") == "true") {
+    systemProperty "travis", travis
+    if (travis) {
         testLogging.showStandardStreams = true
     }
 }

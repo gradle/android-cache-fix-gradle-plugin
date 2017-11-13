@@ -18,7 +18,7 @@ apply plugin: 'codenarc'
 apply plugin: "com.gradle.plugin-publish"
 
 group = "org.gradle.android"
-version = "0.1.9-SNAPSHOT"
+version = "0.1.9"
 
 // Maps supported Android plugin versions to the versions of Gradle that should support it
 def supportedVersions = [

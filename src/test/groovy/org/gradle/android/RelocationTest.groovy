@@ -64,10 +64,17 @@ class RelocationTest extends AbstractTest {
             "Expecting ${outcomes.values().findAll { resolve(it, gradleVersion) == FROM_CACHE }.size()} tasks out of ${outcomes.size()} to be cached"
         }
 
-        void verify(BuildResult result, GradleVersion gradleVersion) {
+        boolean verify(BuildResult result, GradleVersion gradleVersion) {
+            boolean allMatched = true
             outcomes.each { taskName, outcome ->
-                assert result.task(taskName).outcome == resolve(outcome, gradleVersion)
+                def expectedOutcome = resolve(outcome, gradleVersion)
+                def taskOutcome = result.task(taskName).outcome
+                if (taskOutcome != expectedOutcome) {
+                    println "> Task '$taskName' was $taskOutcome but should have been $expectedOutcome"
+                    allMatched = false
+                }
             }
+            return allMatched
         }
 
         TaskOutcome resolve(Object outcome, GradleVersion gradleVersion) {

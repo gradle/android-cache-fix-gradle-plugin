@@ -91,7 +91,7 @@ task install(type: Upload) {
             url = localRepo.toURI()
         }
     }
-    descriptorDestination = file('$buildDir/pom.xml')
+    descriptorDestination = file("$buildDir/ivy/ivy.xml")
     uploadDescriptor = true
     configuration = configurations.runtime
 }

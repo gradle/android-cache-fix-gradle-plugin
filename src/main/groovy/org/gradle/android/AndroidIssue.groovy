@@ -14,6 +14,6 @@ import java.lang.annotation.Target
 @Target(ElementType.TYPE)
 @interface AndroidIssue {
     String introducedIn()
-    String fixedIn() default ""
+    String[] fixedIn() default []
     String link()
 }

@@ -1,11 +1,17 @@
 package org.gradle.android
 
+import org.gradle.util.VersionNumber
+
 class SimpleAndroidApp {
     final File projectDir
     private final File cacheDir
-    final String androidVersion
+    final VersionNumber androidVersion
 
     SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion) {
+        this(projectDir, cacheDir, VersionNumber.parse(androidVersion))
+    }
+
+    SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion) {
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
@@ -36,7 +42,7 @@ class SimpleAndroidApp {
                         mavenLocal()
                     }
                     dependencies {
-                        classpath 'com.android.tools.build:gradle:$androidVersion'
+                        classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
                         classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
                     }
                 }

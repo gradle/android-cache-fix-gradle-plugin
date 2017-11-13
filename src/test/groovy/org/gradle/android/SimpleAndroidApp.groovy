@@ -117,6 +117,11 @@ class SimpleAndroidApp {
             android {
                 compileSdkVersion 26
                 buildToolsVersion "26.0.2"
+                dataBinding.enabled = true
+                defaultConfig {
+                    minSdkVersion 26
+                    targetSdkVersion 26
+                }
             }
         """.stripIndent()
     }

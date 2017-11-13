@@ -147,7 +147,13 @@ class RelocationTest extends AbstractTest {
             ':app:transformClassesWithDexBuilderForDebug': SUCCESS,
             ':app:transformClassesWithPreDexForRelease': SUCCESS,
             // TODO For some reason this doesn't load from cache on Travis
-            ':app:transformDexArchiveWithDexMergerForDebug': { Boolean.getBoolean("travis") ? SUCCESS : FROM_CACHE } as DynamicTaskOutcome,
+            ':app:transformDexArchiveWithDexMergerForDebug': { GradleVersion gradleVersion ->
+                if (Boolean.getBoolean("travis") && gradleVersion < GradleVersion.version("4.2")) {
+                    SUCCESS
+                } else {
+                    FROM_CACHE
+                }
+            } as DynamicTaskOutcome,
             ':app:transformDexArchiveWithExternalLibsDexMergerForDebug': SUCCESS,
             ':app:transformDexWithDexForRelease': SUCCESS,
             ':app:transformNativeLibsWithMergeJniLibsForDebug': SUCCESS,

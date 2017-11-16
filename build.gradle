@@ -23,7 +23,9 @@ version = "0.1.10"
 // Maps supported Android plugin versions to the versions of Gradle that should support it
 def supportedVersions = [
     "3.0.0": ["4.1", "4.2", "4.2.1", "4.3", "4.3.1"],
-    "3.1.0-alpha01": ["4.3.1"]
+    "3.1.0-alpha01": ["4.3.1"],
+    "3.1.0-alpha02": ["4.3.1"],
+    "3.1.0-alpha03": ["4.3.1"],
 ]
 
 repositories {

@@ -19,7 +19,7 @@ class CompilerArgsProcessor {
         this.project = project
         this.rules = [new Rule(Pattern.compile(".*")) {
             @Override
-            void configure(AndroidJavaCompile task, Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+            void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
                 processedArgs.add(match.group())
             }
         }] as List<Rule>
@@ -55,7 +55,7 @@ class CompilerArgsProcessor {
             for (Rule rule : rules) {
                 def matcher = rule.pattern.matcher(arg)
                 if (matcher.matches()) {
-                    rule.configure(task, matcher, processedArgs, remainingArgs)
+                    rule.process(matcher, processedArgs, remainingArgs)
                     break
                 }
             }
@@ -81,9 +81,19 @@ class CompilerArgsProcessor {
             return new AnnotationProcessorOverride(property, action)
         }
 
-        void configure(AndroidJavaCompile task, Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
             // Skip the arg
-            action.execute(task, match.group(1))
+        }
+
+        void configureTask(AndroidJavaCompile task) {
+            for (String arg : task.options.compilerArgs) {
+                def matcher = pattern.matcher(arg)
+                if (matcher.matches()) {
+                    def path = matcher.group(1)
+                    action.execute(task, path)
+                    break
+                }
+            }
         }
     }
 
@@ -101,7 +111,7 @@ class CompilerArgsProcessor {
         }
 
         @Override
-        void configure(AndroidJavaCompile task, Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
         }
     }
 
@@ -119,7 +129,7 @@ class CompilerArgsProcessor {
         }
 
         @Override
-        void configure(AndroidJavaCompile task, Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
             if (remainingArgs.hasNext()) {
                 remainingArgs.next()
             }
@@ -137,7 +147,7 @@ class CompilerArgsProcessor {
             this.pattern = pattern
         }
 
-        abstract void configure(AndroidJavaCompile task, Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs)
+        abstract void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs)
 
         @Override
         String toString() {

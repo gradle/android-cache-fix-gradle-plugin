@@ -159,26 +159,35 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             def compilerArgsProcessor = context.compilerArgsProcessor
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.sdkDir=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.bindingBuildFolder=.*"))
-            compilerArgsProcessor.addRule(AnnotationProcessorOverride.of("android.databinding.generationalFileOutDir") { AndroidJavaCompile task, String path ->
-                task.outputs.dir(path)
-                    .withPropertyName("android.databinding.generationalFileOutDir.workaround")
-            })
-            compilerArgsProcessor.addRule(AnnotationProcessorOverride.of("android.databinding.xmlOutDir") { AndroidJavaCompile task, String path ->
-                task.outputs.dir(path)
-                    .withPropertyName("android.databinding.xmlOutDir.workaround")
-            })
-            compilerArgsProcessor.addRule(AnnotationProcessorOverride.of("android.databinding.exportClassListTo") { AndroidJavaCompile task, String path ->
-                task.outputs.file(path)
-                    .withPropertyName("android.databinding.exportClassListTo")
-            })
+
+            def outputRules = [
+                AnnotationProcessorOverride.of("android.databinding.generationalFileOutDir") { AndroidJavaCompile task, String path ->
+                    task.outputs.dir(path)
+                        .withPropertyName("android.databinding.generationalFileOutDir.workaround")
+                },
+                AnnotationProcessorOverride.of("android.databinding.xmlOutDir") { AndroidJavaCompile task, String path ->
+                    task.outputs.dir(path)
+                        .withPropertyName("android.databinding.xmlOutDir.workaround")
+                },
+                AnnotationProcessorOverride.of("android.databinding.exportClassListTo") { AndroidJavaCompile task, String path ->
+                    task.outputs.file(path)
+                        .withPropertyName("android.databinding.exportClassListTo")
+                }
+            ]
+            outputRules.each {
+                compilerArgsProcessor.addRule it
+            }
+
             project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
                 reconfigurePathSensitivityForDataBindingDependencyArtifacts(project, task)
                 filterDataBindingInfoFromSource(project, task)
+                configureAdditionalOutputs(project, task, outputRules)
             }
         }
 
         @CompileStatic(TypeCheckingMode.SKIP)
-        private static void reconfigurePathSensitivityForDataBindingDependencyArtifacts(Project project, AndroidJavaCompile task) {
+        private
+        static void reconfigurePathSensitivityForDataBindingDependencyArtifacts(Project project, AndroidJavaCompile task) {
             def originalValue
 
             project.gradle.taskGraph.beforeTask {
@@ -221,6 +230,19 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             task.doFirst {
                 task.source = originalValue
             }
+        }
+
+
+        @CompileStatic(TypeCheckingMode.SKIP)
+        private static void configureAdditionalOutputs(Project project, AndroidJavaCompile task, List<AnnotationProcessorOverride> overrides) {
+            def configTask = project.tasks.create("configure" + task.name.capitalize()) { configTask ->
+                configTask.doFirst {
+                    overrides.each {
+                        it.configureTask(task)
+                    }
+                }
+            }
+            task.dependsOn configTask
         }
     }
 

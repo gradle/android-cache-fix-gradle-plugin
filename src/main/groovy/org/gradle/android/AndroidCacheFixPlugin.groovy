@@ -95,6 +95,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             def project = context.project
             project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
                 task.inputs.property "options.bootClasspath", ""
+                // Override workaround introduced in 3.1.0-alpha02
+                task.inputs.property "options.bootClasspath.filtered", ""
                 task.inputs.files({
                         DeprecationLogger.whileDisabled({
                             //noinspection GrDeprecatedAPIUsage
@@ -159,15 +161,12 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             def compilerArgsProcessor = context.compilerArgsProcessor
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.sdkDir=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.bindingBuildFolder=.*"))
+            compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.xmlOutDir=.*"))
 
             def outputRules = [
                 AnnotationProcessorOverride.of("android.databinding.generationalFileOutDir") { AndroidJavaCompile task, String path ->
                     task.outputs.dir(path)
                         .withPropertyName("android.databinding.generationalFileOutDir.workaround")
-                },
-                AnnotationProcessorOverride.of("android.databinding.xmlOutDir") { AndroidJavaCompile task, String path ->
-                    task.outputs.dir(path)
-                        .withPropertyName("android.databinding.xmlOutDir.workaround")
                 },
                 AnnotationProcessorOverride.of("android.databinding.exportClassListTo") { AndroidJavaCompile task, String path ->
                     task.outputs.file(path)

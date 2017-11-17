@@ -66,6 +66,7 @@ class CompilerArgsProcessor {
     @CompileStatic(TypeCheckingMode.SKIP)
     private static void overrideProperty(AndroidJavaCompile task, List processedArgs) {
         task.inputs.property "options.compilerArgs", ""
+        task.inputs.property "options.compilerArgs.filtered", ""
         task.inputs.property "options.compilerArgs.workaround", processedArgs
     }
 

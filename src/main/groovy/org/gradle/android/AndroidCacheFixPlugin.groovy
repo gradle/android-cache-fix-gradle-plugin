@@ -42,10 +42,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
         if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
             if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
-                throw new RuntimeException("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
+                throw new RuntimeException("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin. Supported Android plugin versions: ${Versions.SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             }
             if (!Versions.SUPPORTED_GRADLE_VERSIONS.contains(currentGradleVersion)) {
-                throw new RuntimeException("$currentGradleVersion is not supported by Android cache fix plugin. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
+                throw new RuntimeException("$currentGradleVersion is not supported by Android cache fix plugin. Supported Gradle versions: ${Versions.SUPPORTED_GRADLE_VERSIONS*.version.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             }
         }
 

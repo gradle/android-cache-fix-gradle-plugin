@@ -1,9 +1,11 @@
 package org.gradle.android
 
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 class PluginApplicationTest extends AbstractTest {
 
+    @Ignore("4.4 is supported now, 4.5 is not yet availbale, and Android would fail with <4.1 earlier")
     def "does not apply workarounds with Gradle 4.4"() {
         def projectDir = temporaryFolder.newFolder()
         new SimpleAndroidApp(projectDir, cacheDir, "3.0.0").writeProject()

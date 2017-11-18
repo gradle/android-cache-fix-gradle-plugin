@@ -7,6 +7,8 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
+import static org.gradle.android.Versions.android
+import static org.gradle.android.Versions.gradle
 import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
@@ -136,10 +138,10 @@ class RelocationTest extends AbstractTest {
         builder.put(':app:splitsDiscoveryTaskRelease', FROM_CACHE)
         builder.put(':app:transformClassesWithDexBuilderForDebug', SUCCESS)
 
-        if (androidVersion <= VersionNumber.parse("3.0.1")) {
+        if (androidVersion <= android("3.0.1")) {
             builder.put(':app:transformClassesWithPreDexForRelease', SUCCESS)
             builder.put(':app:transformDexArchiveWithDexMergerForDebug',
-                Boolean.getBoolean("travis") && gradleVersion <= GradleVersion.version("4.1")
+                Boolean.getBoolean("travis") && gradleVersion <= gradle("4.1")
                     ? SUCCESS
                     : FROM_CACHE
             )
@@ -190,11 +192,11 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:javaPreCompileDebug', FROM_CACHE)
         builder.put(':library:javaPreCompileRelease', FROM_CACHE)
 
-        if (androidVersion <= VersionNumber.parse("3.0.1")) {
+        if (androidVersion <= android("3.0.1")) {
             builder.put(':library:mergeDebugAssets', FROM_CACHE)
             builder.put(':library:mergeReleaseAssets', FROM_CACHE)
             // TODO This produces overlapping outputs in build/intermediates/typedefs.txt
-            builder.put(':library:mergeReleaseResources', gradleVersion < GradleVersion.version("4.2")
+            builder.put(':library:mergeReleaseResources', gradleVersion < gradle("4.2")
                 ? FROM_CACHE
                 : SUCCESS
             )
@@ -222,7 +224,7 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:processDebugJavaRes', NO_SOURCE)
         builder.put(':library:processDebugManifest', FROM_CACHE)
 
-        if (androidVersion <= VersionNumber.parse("3.1.0-alpha01")) {
+        if (androidVersion <= android("3.1.0-alpha01")) {
             builder.put(':library:processDebugResources', FROM_CACHE)
             builder.put(':library:processReleaseResources', FROM_CACHE)
         } else {

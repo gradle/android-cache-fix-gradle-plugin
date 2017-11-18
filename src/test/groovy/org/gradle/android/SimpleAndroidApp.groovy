@@ -2,13 +2,15 @@ package org.gradle.android
 
 import org.gradle.util.VersionNumber
 
+import static org.gradle.android.Versions.android
+
 class SimpleAndroidApp {
     final File projectDir
     private final File cacheDir
     final VersionNumber androidVersion
 
     SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion) {
-        this(projectDir, cacheDir, VersionNumber.parse(androidVersion))
+        this(projectDir, cacheDir, android(androidVersion))
     }
 
     SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion) {

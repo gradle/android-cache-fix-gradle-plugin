@@ -15,9 +15,10 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.internal.Factory
 import org.gradle.util.DeprecationLogger
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import static org.gradle.android.Versions.android
 
 @CompileStatic
 class AndroidCacheFixPlugin implements Plugin<Project> {
@@ -38,7 +39,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         def currentGradleVersion = GradleVersion.current().baseVersion
-        def currentAndroidVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
+        def currentAndroidVersion = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
         if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
             if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
@@ -51,11 +52,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
         for (def workaround : WORKAROUNDS) {
             def androidIssue = workaround.class.getAnnotation(AndroidIssue)
-            def introducedIn = VersionNumber.parse(androidIssue.introducedIn())
+            def introducedIn = android(androidIssue.introducedIn())
             if (currentAndroidVersion < introducedIn) {
                 continue
             }
-            if (androidIssue.fixedIn().any { String supportedAndroidVersion -> currentAndroidVersion == VersionNumber.parse(supportedAndroidVersion) }) {
+            if (androidIssue.fixedIn().any { String supportedAndroidVersion -> currentAndroidVersion == android(supportedAndroidVersion) }) {
                 continue
             }
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)

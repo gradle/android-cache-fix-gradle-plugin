@@ -38,7 +38,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        def currentGradleVersion = GradleVersion.current().baseVersion
+        def currentGradleVersion = GradleVersion.current()
         def currentAndroidVersion = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
         if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {

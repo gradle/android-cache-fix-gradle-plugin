@@ -67,7 +67,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha02", "3.1.0-alpha03"], link = "https://issuetracker.google.com/issues/68392933")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha02", "3.1.0-alpha03", "3.1.0-alpha04"], link = "https://issuetracker.google.com/issues/68392933")
     static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
         @Override
         @CompileStatic(TypeCheckingMode.SKIP)

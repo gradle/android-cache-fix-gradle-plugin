@@ -38,14 +38,14 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        def currentGradleVersion = GradleVersion.current().baseVersion
+        def currentGradleVersion = GradleVersion.current()
         def currentAndroidVersion = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
         if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
             if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
                 throw new RuntimeException("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin. Supported Android plugin versions: ${Versions.SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             }
-            if (!Versions.SUPPORTED_GRADLE_VERSIONS.contains(currentGradleVersion)) {
+            if (!Versions.SUPPORTED_GRADLE_VERSIONS*.baseVersion.contains(currentGradleVersion.baseVersion)) {
                 throw new RuntimeException("$currentGradleVersion is not supported by Android cache fix plugin. Supported Gradle versions: ${Versions.SUPPORTED_GRADLE_VERSIONS*.version.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             }
         }
@@ -67,7 +67,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha02", "3.1.0-alpha03"], link = "https://issuetracker.google.com/issues/68392933")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha02", "3.1.0-alpha03", "3.1.0-alpha04"], link = "https://issuetracker.google.com/issues/68392933")
     static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
         @Override
         @CompileStatic(TypeCheckingMode.SKIP)

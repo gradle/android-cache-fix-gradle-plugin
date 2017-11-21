@@ -12,6 +12,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.internal.Factory
@@ -164,11 +165,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.xmlOutDir=.*"))
 
             def outputRules = [
-                AnnotationProcessorOverride.of("android.databinding.generationalFileOutDir") { AndroidJavaCompile task, String path ->
+                AnnotationProcessorOverride.of("android.databinding.generationalFileOutDir") { Task task, String path ->
                     task.outputs.dir(path)
                         .withPropertyName("android.databinding.generationalFileOutDir.workaround")
                 },
-                AnnotationProcessorOverride.of("android.databinding.exportClassListTo") { AndroidJavaCompile task, String path ->
+                AnnotationProcessorOverride.of("android.databinding.exportClassListTo") { Task task, String path ->
                     task.outputs.file(path)
                         .withPropertyName("android.databinding.exportClassListTo")
                 }
@@ -237,7 +238,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             def configTask = project.tasks.create("configure" + task.name.capitalize()) { configTask ->
                 configTask.doFirst {
                     overrides.each {
-                        it.configureTask(task)
+                        it.configureAndroidJavaCompile(task)
                     }
                 }
             }

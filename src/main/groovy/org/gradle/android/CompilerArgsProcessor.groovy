@@ -4,6 +4,7 @@ import com.android.build.gradle.tasks.factory.AndroidJavaCompile
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.internal.BiAction
 
 import java.util.regex.Matcher
@@ -40,14 +41,14 @@ class CompilerArgsProcessor {
         project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
             project.gradle.taskGraph.beforeTask {
                 if (task == it) {
-                    def processedArgs = processArgs(task, task.options.compilerArgs)
+                    def processedArgs = processArgs(task.options.compilerArgs)
                     overrideProperty(task, processedArgs)
                 }
             }
         }
     }
 
-    List<String> processArgs(AndroidJavaCompile task, List<String> args) {
+    List<String> processArgs(List<String> args) {
         def processedArgs = []
         def remainingArgs = args.iterator()
         while (remainingArgs.hasNext()) {
@@ -71,14 +72,14 @@ class CompilerArgsProcessor {
     }
 
     static class AnnotationProcessorOverride extends Rule {
-        private final BiAction<? super AndroidJavaCompile, String> action
+        private final BiAction<? super Task, String> action
 
-        AnnotationProcessorOverride(String property, BiAction<? super AndroidJavaCompile, String> action) {
+        AnnotationProcessorOverride(String property, BiAction<? super Task, String> action) {
             super(Pattern.compile("-A${Pattern.quote(property)}=(.*)"))
             this.action = action
         }
 
-        static AnnotationProcessorOverride of(String property, BiAction<? super AndroidJavaCompile, String> action) {
+        static AnnotationProcessorOverride of(String property, BiAction<? super Task, String> action) {
             return new AnnotationProcessorOverride(property, action)
         }
 
@@ -86,8 +87,12 @@ class CompilerArgsProcessor {
             // Skip the arg
         }
 
-        void configureTask(AndroidJavaCompile task) {
-            for (String arg : task.options.compilerArgs) {
+        void configureAndroidJavaCompile(AndroidJavaCompile task) {
+            configureTask(task, task.options.compilerArgs)
+        }
+
+        void configureTask(Task task, List<String> args) {
+            for (String arg : (args)) {
                 def matcher = pattern.matcher(arg)
                 if (matcher.matches()) {
                     def path = matcher.group(1)
@@ -99,10 +104,6 @@ class CompilerArgsProcessor {
     }
 
     static class Skip extends Rule {
-        Skip(String arg) {
-            super(arg)
-        }
-
         Skip(Pattern pattern) {
             super(pattern)
         }
@@ -117,10 +118,6 @@ class CompilerArgsProcessor {
     }
 
     static class SkipNext extends Rule {
-        SkipNext(String arg) {
-            super(arg)
-        }
-
         SkipNext(Pattern pattern) {
             super(pattern)
         }
@@ -139,10 +136,6 @@ class CompilerArgsProcessor {
 
     static abstract class Rule {
         final Pattern pattern
-
-        Rule(String arg) {
-            this(Pattern.compile(Pattern.quote(arg)))
-        }
 
         Rule(Pattern pattern) {
             this.pattern = pattern

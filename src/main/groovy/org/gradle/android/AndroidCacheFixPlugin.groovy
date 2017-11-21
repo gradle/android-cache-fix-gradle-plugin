@@ -176,7 +176,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link IncrementalTask#getCombinedInput()} and {@link StreamBasedTask#getCombinedInput()} relocatability.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.0.1", link = "https://issuetracker.google.com/issues/68771542")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha04"], link = "https://issuetracker.google.com/issues/68771542")
     static class CombinedInput_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override

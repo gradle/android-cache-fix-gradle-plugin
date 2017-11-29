@@ -21,6 +21,9 @@ class RelocationTest extends AbstractTest {
         assert gradleVersion instanceof GradleVersion
         assert androidVersion instanceof VersionNumber
 
+        println "> Using Android plugin $androidVersion"
+        println "> Running with $gradleVersion"
+
         def originalDir = temporaryFolder.newFolder()
         new SimpleAndroidApp(originalDir, cacheDir, androidVersion).writeProject()
 
@@ -64,7 +67,7 @@ class RelocationTest extends AbstractTest {
         }
 
         String describe() {
-            "Expecting ${outcomes.values().count(FROM_CACHE)} tasks out of ${outcomes.size()} to be cached"
+            "> Expecting ${outcomes.values().count(FROM_CACHE)} tasks out of ${outcomes.size()} to be cached"
         }
 
         boolean verify(BuildResult result) {
@@ -140,18 +143,18 @@ class RelocationTest extends AbstractTest {
 
         if (androidVersion <= android("3.0.1")) {
             builder.put(':app:transformClassesWithPreDexForRelease', SUCCESS)
-            builder.put(':app:transformDexArchiveWithDexMergerForDebug',
-                Boolean.getBoolean("travis") && gradleVersion <= gradle("4.1")
-                    ? SUCCESS
-                    : FROM_CACHE
-            )
             builder.put(':app:transformDexWithDexForRelease', SUCCESS)
         } else {
             builder.put(':app:transformClassesWithDexBuilderForRelease', SUCCESS)
-            builder.put(':app:transformDexArchiveWithDexMergerForDebug', SUCCESS)
             builder.put(':app:transformDexArchiveWithDexMergerForRelease', SUCCESS)
             builder.put(':app:transformDexArchiveWithExternalLibsDexMergerForRelease', SUCCESS)
         }
+
+        builder.put(':app:transformDexArchiveWithDexMergerForDebug',
+            androidVersion != android("3.0.0") || Boolean.getBoolean("travis") && gradleVersion <= gradle("4.1")
+                ? SUCCESS
+                : FROM_CACHE
+        )
 
         builder.put(':app:transformNativeLibsWithMergeJniLibsForDebug', SUCCESS)
         builder.put(':app:transformNativeLibsWithMergeJniLibsForRelease', SUCCESS)

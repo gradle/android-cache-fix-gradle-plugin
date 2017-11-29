@@ -21,6 +21,9 @@ class RelocationTest extends AbstractTest {
         assert gradleVersion instanceof GradleVersion
         assert androidVersion instanceof VersionNumber
 
+        println "> Using Android plugin $androidVersion"
+        println "> Running with $gradleVersion"
+
         def originalDir = temporaryFolder.newFolder()
         new SimpleAndroidApp(originalDir, cacheDir, androidVersion).writeProject()
 
@@ -64,7 +67,7 @@ class RelocationTest extends AbstractTest {
         }
 
         String describe() {
-            "Expecting ${outcomes.values().count(FROM_CACHE)} tasks out of ${outcomes.size()} to be cached"
+            "> Expecting ${outcomes.values().count(FROM_CACHE)} tasks out of ${outcomes.size()} to be cached"
         }
 
         boolean verify(BuildResult result) {

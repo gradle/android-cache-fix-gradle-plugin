@@ -20,5 +20,6 @@ class WorkaroundTest extends Specification {
         "3.1.0-alpha02" | ["AndroidJavaCompile_BootClasspath", "AndroidJavaCompile_AnnotationProcessorSource", "CombinedInput", "CheckManifest_Manifest"]
         "3.1.0-alpha03" | ["AndroidJavaCompile_BootClasspath", "AndroidJavaCompile_AnnotationProcessorSource", "CombinedInput", "CheckManifest_Manifest"]
         "3.1.0-alpha04" | ["AndroidJavaCompile_BootClasspath", "AndroidJavaCompile_AnnotationProcessorSource", "CheckManifest_Manifest"]
+        "3.1.0-alpha05" | ["AndroidJavaCompile_BootClasspath", "AndroidJavaCompile_AnnotationProcessorSource"]
     }
 }

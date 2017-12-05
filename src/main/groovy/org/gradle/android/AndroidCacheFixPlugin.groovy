@@ -234,7 +234,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * {@link com.android.build.gradle.internal.tasks.CheckManifest#getManifest()} should not be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68772035")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha05", link = "https://issuetracker.google.com/issues/68772035")
     static class CheckManifest_Manifest_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override

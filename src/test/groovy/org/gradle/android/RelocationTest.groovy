@@ -84,12 +84,17 @@ class RelocationTest extends AbstractTest {
     }
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, GradleVersion gradleVersion) {
+        def isAndroid30x = androidVersion <= android("3.0.1")
         def builder = ImmutableMap.<String, TaskOutcome>builder()
         builder.put(':app:assemble', SUCCESS)
         builder.put(':app:assembleDebug', SUCCESS)
         builder.put(':app:assembleRelease', SUCCESS)
-        builder.put(':app:checkDebugManifest', FROM_CACHE)
-        builder.put(':app:checkReleaseManifest', FROM_CACHE)
+        builder.put(':app:checkDebugManifest', isAndroid30x
+            ? FROM_CACHE
+            : SUCCESS)
+        builder.put(':app:checkReleaseManifest', isAndroid30x
+            ? FROM_CACHE
+            : SUCCESS)
         builder.put(':app:compileDebugAidl', FROM_CACHE)
         builder.put(':app:compileDebugJavaWithJavac', FROM_CACHE)
         builder.put(':app:compileDebugNdk', NO_SOURCE)
@@ -141,7 +146,7 @@ class RelocationTest extends AbstractTest {
         builder.put(':app:splitsDiscoveryTaskRelease', FROM_CACHE)
         builder.put(':app:transformClassesWithDexBuilderForDebug', SUCCESS)
 
-        if (androidVersion <= android("3.0.1")) {
+        if (isAndroid30x) {
             builder.put(':app:transformClassesWithPreDexForRelease', SUCCESS)
             builder.put(':app:transformDexWithDexForRelease', SUCCESS)
         } else {
@@ -166,8 +171,12 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:assembleRelease', SUCCESS)
         builder.put(':library:bundleDebug', SUCCESS)
         builder.put(':library:bundleRelease', SUCCESS)
-        builder.put(':library:checkDebugManifest', FROM_CACHE)
-        builder.put(':library:checkReleaseManifest', FROM_CACHE)
+        builder.put(':library:checkDebugManifest', isAndroid30x
+            ? FROM_CACHE
+            : SUCCESS)
+        builder.put(':library:checkReleaseManifest', isAndroid30x
+            ? FROM_CACHE
+            : SUCCESS)
         builder.put(':library:compileDebugAidl', FROM_CACHE)
         builder.put(':library:compileDebugJavaWithJavac', FROM_CACHE)
         builder.put(':library:compileDebugNdk', NO_SOURCE)
@@ -198,7 +207,7 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:javaPreCompileDebug', FROM_CACHE)
         builder.put(':library:javaPreCompileRelease', FROM_CACHE)
 
-        if (androidVersion <= android("3.0.1")) {
+        if (isAndroid30x) {
             builder.put(':library:mergeDebugAssets', FROM_CACHE)
             builder.put(':library:mergeReleaseAssets', FROM_CACHE)
             // TODO This produces overlapping outputs in build/intermediates/typedefs.txt
@@ -230,7 +239,7 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:processDebugJavaRes', NO_SOURCE)
         builder.put(':library:processDebugManifest', FROM_CACHE)
 
-        if (androidVersion <= android("3.1.0-alpha01")) {
+        if (isAndroid30x) {
             builder.put(':library:processDebugResources', FROM_CACHE)
             builder.put(':library:processReleaseResources', FROM_CACHE)
         } else {

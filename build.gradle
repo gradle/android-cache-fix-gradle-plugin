@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.tools.build:gradle:3.1.0-alpha05'
+    compile 'com.android.tools.build:gradle:3.0.0'
     compile gradleApi()
     testCompile gradleTestKit()
     testCompile "junit:junit:4.12"

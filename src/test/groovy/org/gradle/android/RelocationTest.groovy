@@ -155,12 +155,7 @@ class RelocationTest extends AbstractTest {
             builder.put(':app:transformDexArchiveWithExternalLibsDexMergerForRelease', SUCCESS)
         }
 
-        builder.put(':app:transformDexArchiveWithDexMergerForDebug',
-            androidVersion != android("3.0.0") || Boolean.getBoolean("travis") && gradleVersion <= gradle("4.1")
-                ? SUCCESS
-                : FROM_CACHE
-        )
-
+        builder.put(':app:transformDexArchiveWithDexMergerForDebug', SUCCESS)
         builder.put(':app:transformNativeLibsWithMergeJniLibsForDebug', SUCCESS)
         builder.put(':app:transformNativeLibsWithMergeJniLibsForRelease', SUCCESS)
         builder.put(':app:transformResourcesWithMergeJavaResForDebug', SUCCESS)

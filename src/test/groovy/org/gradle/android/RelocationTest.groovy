@@ -45,7 +45,7 @@ class RelocationTest extends AbstractTest {
         when:
         def result = withGradleVersion(gradleVersion.version)
             .withProjectDir(relocatedDir)
-            .withArguments("assemble", "--build-cache")
+            .withArguments("assemble", "--build-cache", "--stacktrace")
             .build()
 
         then:
@@ -155,12 +155,7 @@ class RelocationTest extends AbstractTest {
             builder.put(':app:transformDexArchiveWithExternalLibsDexMergerForRelease', SUCCESS)
         }
 
-        builder.put(':app:transformDexArchiveWithDexMergerForDebug',
-            androidVersion != android("3.0.0") || Boolean.getBoolean("travis") && gradleVersion <= gradle("4.1")
-                ? SUCCESS
-                : FROM_CACHE
-        )
-
+        builder.put(':app:transformDexArchiveWithDexMergerForDebug', SUCCESS)
         builder.put(':app:transformNativeLibsWithMergeJniLibsForDebug', SUCCESS)
         builder.put(':app:transformNativeLibsWithMergeJniLibsForRelease', SUCCESS)
         builder.put(':app:transformResourcesWithMergeJavaResForDebug', SUCCESS)
@@ -189,11 +184,9 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:compileReleaseRenderscript', FROM_CACHE)
         builder.put(':library:compileReleaseShaders', FROM_CACHE)
         builder.put(':library:compileReleaseSources', UP_TO_DATE)
-        builder.put(':library:extractDebugAnnotations', FROM_CACHE)
-        builder.put(':library:extractReleaseAnnotations', androidVersion >= VersionNumber.parse("3.1.0-alpha04")
-            ? FROM_CACHE
-            : SUCCESS
-        )
+        // TODO Does not load from cache because of data binding generates random UUID in source
+        builder.put(':library:extractDebugAnnotations', SUCCESS)
+        builder.put(':library:extractReleaseAnnotations', SUCCESS)
         builder.put(':library:generateDebugAssets', UP_TO_DATE)
         builder.put(':library:generateDebugBuildConfig', FROM_CACHE)
         builder.put(':library:generateDebugResources', UP_TO_DATE)

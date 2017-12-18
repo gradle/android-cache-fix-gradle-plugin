@@ -20,11 +20,12 @@ apply plugin: "com.gradle.plugin-publish"
 group = "org.gradle.android"
 version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
 
-// Maps supported Android plugin versions to the versions of Gradle that should support it
+// Maps supported Android plugin versions to the versions of Gradle that support it
+def gradle441 = "4.4.1-20171218083510+0000"
 def supportedVersions = [
-    "3.1.0-alpha05": ["4.4"],
-    "3.0.0": ["4.1", "4.2", "4.2.1", "4.3", "4.3.1", "4.4"],
-    "3.0.1": ["4.1", "4.2", "4.2.1", "4.3", "4.3.1", "4.4"],
+    "3.1.0-alpha05": ["4.4", gradle441],
+    "3.0.0": ["4.1", "4.2", "4.2.1", "4.3", "4.3.1", "4.4", gradle441],
+    "3.0.1": ["4.1", "4.2", "4.2.1", "4.3", "4.3.1", "4.4", gradle441],
 ]
 
 repositories {

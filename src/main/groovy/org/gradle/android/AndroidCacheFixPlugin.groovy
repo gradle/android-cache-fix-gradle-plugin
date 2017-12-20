@@ -88,7 +88,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68392933")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha06", link = "https://issuetracker.google.com/issues/68392933")
     static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -114,7 +114,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
      */
-    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68391973")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha06", link = "https://issuetracker.google.com/issues/68391973")
     static class AndroidJavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
         @Override
         void apply(WorkaroundContext context) {
@@ -160,6 +160,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         void apply(WorkaroundContext context) {
             def project = context.project
             def compilerArgsProcessor = context.compilerArgsProcessor
+            compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.classLogFile=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.sdkDir=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.bindingBuildFolder=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.xmlOutDir=.*"))

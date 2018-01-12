@@ -18,7 +18,7 @@ class PluginApplicationTest extends AbstractTest {
         result.output =~ /Gradle ${quote(gradleVersion)} is not supported by Android cache fix plugin. Supported Gradle versions: .*. Override with -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true./
 
         where:
-        gradleVersion << ["4.5-20171119235929+0000"]
+        gradleVersion << ["4.6-20180111235836+0000"]
     }
 
     @Unroll

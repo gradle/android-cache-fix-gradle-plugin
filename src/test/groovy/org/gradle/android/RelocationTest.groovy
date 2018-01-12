@@ -56,8 +56,7 @@ class RelocationTest extends AbstractTest {
         relocatedDir.deleteDir()
 
         where:
-        //[androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
-        [androidVersion, gradleVersion] << [[android("3.1.0-alpha07"), gradle("4.4.1")]]
+        [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
     }
 
     static class ExpectedResults {

@@ -21,5 +21,6 @@ class WorkaroundTest extends Specification {
         "3.1.0-alpha05" | ["AndroidJavaCompile_BootClasspath", "AndroidJavaCompile_AnnotationProcessorSource", "DataBindingDependencyArtifacts"]
         "3.1.0-alpha06" | ["DataBindingDependencyArtifacts"]
         "3.1.0-alpha07" | ["DataBindingDependencyArtifacts"]
+        "3.1.0-alpha08" | ["DataBindingDependencyArtifacts"]
     }
 }

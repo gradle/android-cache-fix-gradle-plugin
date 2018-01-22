@@ -4,8 +4,8 @@
 
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions.
 
-* Supported Gradle versions: 4.1 to 4.4.1, 4.5-rc-1
-* Supported Android versions: 3.0.0, 3.0.1, 3.1.0-alpha08
+* Supported Gradle versions: 4.1 to 4.4.1, 4.5-rc-2
+* Supported Android versions: 3.0.0, 3.0.1, 3.1.0-alpha09
 
 ## List of issues
 

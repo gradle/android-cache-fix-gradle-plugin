@@ -25,10 +25,10 @@ class RelocationTest extends AbstractTest {
         println "> Running with $gradleVersion"
 
         def originalDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(originalDir, cacheDir, androidVersion).writeProject()
+        new SimpleAndroidApp(originalDir, cacheDir, androidVersion, true).writeProject()
 
         def relocatedDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(relocatedDir, cacheDir, androidVersion).writeProject()
+        new SimpleAndroidApp(relocatedDir, cacheDir, androidVersion, true).writeProject()
 
         def expectedResults = expectedResults(androidVersion, gradleVersion)
 

@@ -8,12 +8,14 @@ class SimpleAndroidApp {
     final File projectDir
     private final File cacheDir
     final VersionNumber androidVersion
+    private final boolean dataBindingEnabled
 
-    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion) {
-        this(projectDir, cacheDir, android(androidVersion))
+    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion, boolean dataBindingEnabled) {
+        this(projectDir, cacheDir, android(androidVersion), dataBindingEnabled)
     }
 
-    SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion) {
+    SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, boolean dataBindingEnabled) {
+        this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
@@ -34,7 +36,7 @@ class SimpleAndroidApp {
                         directory = "${cacheDir.absolutePath.replace(File.separatorChar, '/' as char)}"
                     }
                 }
-            """
+            """.stripIndent()
 
         file("build.gradle") << """
                 buildscript {
@@ -50,7 +52,7 @@ class SimpleAndroidApp {
                         classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
                     }
                 }
-            """
+            """.stripIndent()
 
         writeActivity(library, libPackage, libraryActivity)
         file("${library}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
@@ -88,7 +90,7 @@ class SimpleAndroidApp {
         file('settings.gradle') << """
                 include ':${app}'
                 include ':${library}'
-            """
+            """.stripIndent()
 
         file("${app}/build.gradle") << subprojectConfiguration("com.android.application") << """
                 android.defaultConfig.applicationId "org.gradle.android.test.app"
@@ -104,7 +106,7 @@ class SimpleAndroidApp {
         configureAndroidSdkHome()
     }
 
-    private static subprojectConfiguration(String androidPlugin) {
+    private subprojectConfiguration(String androidPlugin) {
         """
             apply plugin: "$androidPlugin"
             apply plugin: "org.gradle.android.cache-fix"
@@ -117,7 +119,7 @@ class SimpleAndroidApp {
             android {
                 compileSdkVersion 26
                 buildToolsVersion "26.0.2"
-                dataBinding.enabled = true
+                dataBinding.enabled = $dataBindingEnabled
                 defaultConfig {
                     minSdkVersion 26
                     targetSdkVersion 26

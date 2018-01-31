@@ -9,7 +9,7 @@ class PluginApplicationTest extends AbstractTest {
     @Unroll
     def "does not apply workarounds with Gradle #gradleVersion"() {
         def projectDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(projectDir, cacheDir, "3.0.0").writeProject()
+        new SimpleAndroidApp(projectDir, cacheDir, "3.0.0", true).writeProject()
         expect:
         def result = withGradleVersion(gradleVersion)
             .withProjectDir(projectDir)
@@ -24,7 +24,7 @@ class PluginApplicationTest extends AbstractTest {
     @Unroll
     def "does not apply workarounds with Android #androidVersion"() {
         def projectDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(projectDir, cacheDir, androidVersion).writeProject()
+        new SimpleAndroidApp(projectDir, cacheDir, androidVersion, true).writeProject()
         expect:
         def result = withGradleVersion("4.1")
             .withProjectDir(projectDir)
@@ -34,5 +34,34 @@ class PluginApplicationTest extends AbstractTest {
 
         where:
         androidVersion << ["2.3.0", "3.1.0-alpha01"]
+    }
+
+    @Unroll
+    def "does #description about being useless for Android version #androidVersion (data binding: #dataBinding)"() {
+        def projectDir = temporaryFolder.newFolder()
+        new SimpleAndroidApp(projectDir, cacheDir, androidVersion, dataBinding).writeProject()
+        def message = "WARNING: Android cache-fix plugin is not required when using Android plugin $androidVersion or later, unless Android data binding is used."
+
+        expect:
+        def result = withGradleVersion("4.5")
+            .withProjectDir(projectDir)
+            .withArguments("tasks")
+            .withDebug(true)
+            .build()
+        if (warns) {
+            assert result.output.contains(message)
+        } else {
+            assert !(result.output.contains(message))
+        }
+
+        where:
+        warns | dataBinding | androidVersion
+        false | true        | "3.0.0"
+        false | false       | "3.0.0"
+        false | true        | "3.0.1"
+        false | false       | "3.0.1"
+        false | true        | "3.1.0-beta1"
+        true  | false       | "3.1.0-beta1"
+        description = warns ? "warn" : "not warn"
     }
 }

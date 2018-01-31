@@ -1,5 +1,6 @@
 package org.gradle.android
 
+import com.android.build.gradle.AndroidConfig
 import com.android.build.gradle.internal.pipeline.StreamBasedTask
 import com.android.build.gradle.internal.tasks.CheckManifest
 import com.android.build.gradle.internal.tasks.IncrementalTask
@@ -63,6 +64,14 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         getWorkaroundsToApply(currentAndroidVersion).each { Workaround workaround ->
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
             workaround.apply(context)
+        }
+
+        if (currentAndroidVersion.baseVersion >= android("3.1.0-alpha06")) {
+            project.afterEvaluate {
+                if (!project.getExtensions().getByType(AndroidConfig).dataBinding.enabled) {
+                    LOGGER.warn("WARNING: Android cache-fix plugin is not required when using Android plugin {} or later, unless Android data binding is used.", currentAndroidVersion)
+                }
+            }
         }
     }
 

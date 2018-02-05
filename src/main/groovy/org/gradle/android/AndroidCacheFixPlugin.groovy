@@ -97,7 +97,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha06", link = "https://issuetracker.google.com/issues/68392933")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha06", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68392933")
     static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -123,7 +123,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha06", link = "https://issuetracker.google.com/issues/68391973")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha06", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68391973")
     static class AndroidJavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
         @Override
         void apply(WorkaroundContext context) {
@@ -134,7 +134,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#NONE}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha01", link = "https://issuetracker.google.com/issues/68759178")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha01", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68759178")
     static class AndroidJavaCompile_ProcessorListFile_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -259,7 +259,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link ExtractAnnotations#getSource()} to {@link PathSensitivity#RELATIVE}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha01", link = "https://issuetracker.google.com/issues/68759476")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha01", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68759476")
     static class ExtractAnnotations_Source_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -289,7 +289,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Fix {@link IncrementalTask#getCombinedInput()} and {@link StreamBasedTask#getCombinedInput()} relocatability.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.0.1", "3.1.0-alpha04"], link = "https://issuetracker.google.com/issues/68771542")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.0.1", "3.1.0-alpha04", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68771542")
     static class CombinedInput_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -321,7 +321,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * {@link ProcessAndroidResources#getMergeBlameLogFolder()} shouldn't be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.0.1", "3.1.0-alpha02"], link = "https://issuetracker.google.com/issues/68385486")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.0.1", "3.1.0-alpha02", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68385486")
     static class ProcessAndroidResources_MergeBlameLogFolder_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override
@@ -336,7 +336,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * {@link com.android.build.gradle.internal.tasks.CheckManifest#getManifest()} should not be an {@literal @}{@link org.gradle.api.tasks.Input}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.1.0-alpha05", link = "https://issuetracker.google.com/issues/68772035")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha05", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68772035")
     static class CheckManifest_Manifest_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
         @Override

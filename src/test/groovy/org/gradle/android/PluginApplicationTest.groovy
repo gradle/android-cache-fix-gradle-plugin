@@ -43,7 +43,7 @@ class PluginApplicationTest extends AbstractTest {
         def message = "WARNING: Android cache-fix plugin is not required when using Android plugin $androidVersion or later, unless Android data binding is used."
 
         expect:
-        def result = withGradleVersion("4.5")
+        def result = withGradleVersion("4.5.1")
             .withProjectDir(projectDir)
             .withArguments("tasks")
             .withDebug(true)

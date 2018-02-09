@@ -1,5 +1,6 @@
 package org.gradle.android
 
+import org.gradle.internal.impldep.com.google.common.collect.Iterables
 import spock.lang.Unroll
 
 import static java.util.regex.Pattern.quote
@@ -7,26 +8,11 @@ import static java.util.regex.Pattern.quote
 class PluginApplicationTest extends AbstractTest {
 
     @Unroll
-    def "does not apply workarounds with Gradle #gradleVersion"() {
-        def projectDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(projectDir, cacheDir, "3.0.0", true).writeProject()
-        expect:
-        def result = withGradleVersion(gradleVersion)
-            .withProjectDir(projectDir)
-            .withArguments("tasks")
-            .buildAndFail()
-        result.output =~ /Gradle ${quote(gradleVersion)} is not supported by Android cache fix plugin. Supported Gradle versions: .*. Override with -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true./
-
-        where:
-        gradleVersion << ["4.6-20180111235836+0000"]
-    }
-
-    @Unroll
     def "does not apply workarounds with Android #androidVersion"() {
         def projectDir = temporaryFolder.newFolder()
         new SimpleAndroidApp(projectDir, cacheDir, androidVersion, true).writeProject()
         expect:
-        def result = withGradleVersion("4.1")
+        def result = withGradleVersion(Iterables.getLast(Versions.SUPPORTED_GRADLE_VERSIONS).version)
             .withProjectDir(projectDir)
             .withArguments("tasks")
             .buildAndFail()
@@ -43,7 +29,7 @@ class PluginApplicationTest extends AbstractTest {
         def message = "WARNING: Android cache-fix plugin is not required when using Android plugin $androidVersion or later, unless Android data binding is used."
 
         expect:
-        def result = withGradleVersion("4.5.1")
+        def result = withGradleVersion(Iterables.getLast(Versions.SUPPORTED_GRADLE_VERSIONS).version)
             .withProjectDir(projectDir)
             .withArguments("tasks")
             .withDebug(true)
@@ -60,8 +46,10 @@ class PluginApplicationTest extends AbstractTest {
         false | false       | "3.0.0"
         false | true        | "3.0.1"
         false | false       | "3.0.1"
-        false | true        | "3.1.0-beta1"
-        true  | false       | "3.1.0-beta1"
+        false | true        | "3.1.0-beta2"
+        true  | false       | "3.1.0-beta2"
+        false | true        | "3.2.0-alpha01"
+        true  | false       | "3.2.0-alpha01"
         description = warns ? "warn" : "not warn"
     }
 }

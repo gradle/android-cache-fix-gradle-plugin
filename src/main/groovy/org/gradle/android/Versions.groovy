@@ -1,6 +1,7 @@
 package org.gradle.android
 
 import com.google.common.collect.ImmutableMultimap
+import com.google.common.collect.ImmutableSortedSet
 import com.google.common.collect.Multimap
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
@@ -26,8 +27,8 @@ class Versions {
         def matrix = builder.build()
 
         SUPPORTED_VERSIONS_MATRIX = matrix
-        SUPPORTED_ANDROID_VERSIONS = matrix.keySet()
-        SUPPORTED_GRADLE_VERSIONS = (matrix.values() as Set)
+        SUPPORTED_ANDROID_VERSIONS = ImmutableSortedSet.copyOf(matrix.keySet())
+        SUPPORTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
     }
 
     static VersionNumber android(String version) {

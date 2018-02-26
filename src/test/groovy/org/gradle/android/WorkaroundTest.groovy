@@ -26,6 +26,7 @@ class WorkaroundTest extends Specification {
         "3.1.0-beta1"   | ["DataBindingDependencyArtifacts"]
         "3.1.0-beta2"   | ["DataBindingDependencyArtifacts"]
         "3.1.0-beta3"   | ["DataBindingDependencyArtifacts"]
+        "3.1.0-beta4"   | ["DataBindingDependencyArtifacts"]
         "3.2.0-alpha01" | ["DataBindingDependencyArtifacts"]
     }
 }

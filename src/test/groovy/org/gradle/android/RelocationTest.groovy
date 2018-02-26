@@ -85,6 +85,7 @@ class RelocationTest extends AbstractTest {
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, GradleVersion gradleVersion) {
         def isAndroid30x = androidVersion <= android("3.0.1")
+        def isAndroid32x = androidVersion >= android("3.2.0-alpha04")
         def builder = ImmutableMap.<String, TaskOutcome>builder()
         builder.put(':app:assemble', SUCCESS)
         builder.put(':app:assembleDebug', SUCCESS)
@@ -95,13 +96,17 @@ class RelocationTest extends AbstractTest {
         builder.put(':app:checkReleaseManifest', isAndroid30x
             ? FROM_CACHE
             : SUCCESS)
-        builder.put(':app:compileDebugAidl', FROM_CACHE)
+        builder.put(':app:compileDebugAidl', isAndroid32x
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':app:compileDebugJavaWithJavac', FROM_CACHE)
         builder.put(':app:compileDebugNdk', NO_SOURCE)
         builder.put(':app:compileDebugRenderscript', FROM_CACHE)
         builder.put(':app:compileDebugShaders', FROM_CACHE)
         builder.put(':app:compileDebugSources', UP_TO_DATE)
-        builder.put(':app:compileReleaseAidl', FROM_CACHE)
+        builder.put(':app:compileReleaseAidl', isAndroid32x
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':app:compileReleaseJavaWithJavac', FROM_CACHE)
         builder.put(':app:compileReleaseNdk', NO_SOURCE)
         builder.put(':app:compileReleaseRenderscript', FROM_CACHE)
@@ -172,13 +177,17 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:checkReleaseManifest', isAndroid30x
             ? FROM_CACHE
             : SUCCESS)
-        builder.put(':library:compileDebugAidl', FROM_CACHE)
+        builder.put(':library:compileDebugAidl', isAndroid32x
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':library:compileDebugJavaWithJavac', FROM_CACHE)
         builder.put(':library:compileDebugNdk', NO_SOURCE)
         builder.put(':library:compileDebugRenderscript', FROM_CACHE)
         builder.put(':library:compileDebugShaders', FROM_CACHE)
         builder.put(':library:compileDebugSources', UP_TO_DATE)
-        builder.put(':library:compileReleaseAidl', FROM_CACHE)
+        builder.put(':library:compileReleaseAidl', isAndroid32xz
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':library:compileReleaseJavaWithJavac', FROM_CACHE)
         builder.put(':library:compileReleaseNdk', NO_SOURCE)
         builder.put(':library:compileReleaseRenderscript', FROM_CACHE)

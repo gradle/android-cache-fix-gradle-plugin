@@ -56,7 +56,8 @@ class RelocationTest extends AbstractTest {
         relocatedDir.deleteDir()
 
         where:
-        [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
+        // [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
+        [androidVersion, gradleVersion] << [[android("3.2.0-alpha06"), gradle("4.6")]]
     }
 
     static class ExpectedResults {
@@ -85,7 +86,7 @@ class RelocationTest extends AbstractTest {
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, GradleVersion gradleVersion) {
         def isAndroid30x = androidVersion <= android("3.0.1")
-        def isAndroid32x = androidVersion >= android("3.2.0-alpha04")
+        def isAndroid32x = androidVersion >= android("3.2.0-alpha06")
         def builder = ImmutableMap.<String, TaskOutcome>builder()
         builder.put(':app:assemble', SUCCESS)
         builder.put(':app:assembleDebug', SUCCESS)
@@ -185,7 +186,7 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:compileDebugRenderscript', FROM_CACHE)
         builder.put(':library:compileDebugShaders', FROM_CACHE)
         builder.put(':library:compileDebugSources', UP_TO_DATE)
-        builder.put(':library:compileReleaseAidl', isAndroid32xz
+        builder.put(':library:compileReleaseAidl', isAndroid32x
             ? NO_SOURCE
             : FROM_CACHE)
         builder.put(':library:compileReleaseJavaWithJavac', FROM_CACHE)

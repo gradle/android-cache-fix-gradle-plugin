@@ -39,13 +39,13 @@ class RelocationTest extends AbstractTest {
 
         withGradleVersion(gradleVersion.version)
             .withProjectDir(originalDir)
-            .withArguments("assemble", "--build-cache")
+            .withArguments("assemble", "--build-cache", "--scan")
             .build()
 
         when:
         def result = withGradleVersion(gradleVersion.version)
             .withProjectDir(relocatedDir)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments("assemble", "--build-cache", "--stacktrace", "--scan")
             .build()
 
         then:
@@ -57,7 +57,7 @@ class RelocationTest extends AbstractTest {
 
         where:
         // [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
-        [androidVersion, gradleVersion] << [[android("3.2.0-alpha06"), gradle("4.6")]]
+        [androidVersion, gradleVersion] << [[android("3.2.0-alpha07"), gradle("4.6")]]
     }
 
     static class ExpectedResults {

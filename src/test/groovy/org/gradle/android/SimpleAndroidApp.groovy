@@ -52,6 +52,9 @@ class SimpleAndroidApp {
                         classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
                     }
                 }
+                buildScan {
+                    server = "https://e.grdev.net"
+                }
             """.stripIndent()
 
         writeActivity(library, libPackage, libraryActivity)
@@ -99,7 +102,32 @@ class SimpleAndroidApp {
                 dependencies {
                     implementation project(':${library}')
                 }
-            """.stripIndent()
+            """.stripIndent() << """
+            import org.gradle.api.internal.tasks.*
+            import org.gradle.api.internal.tasks.properties.*
+
+afterEvaluate {
+    compileDebugJavaWithJavac { task ->
+        task.doFirst {
+            println ">> Task \${task.path} with type \${task.getClass().name}"
+            def visitor = new PropertyVisitor.Adapter() {
+                void visitInputProperty(TaskInputPropertySpec prop) {
+                    println ">> - input \${prop.propertyName} - \${prop.value}"
+                }
+                
+                void visitInputFileProperty(TaskInputFilePropertySpec prop) {
+                    println ">> - input file \${prop.propertyName} / \${prop.pathNormalizationStrategy} - \${prop.propertyFiles.files}"
+                }
+                
+                void visitOutputFileProperty(TaskOutputFilePropertySpec prop) {
+                    println ">> - output file \${prop.propertyName} - \${prop.propertyFiles.files}"
+                }
+            }
+            TaskPropertyUtils.visitProperties(new DefaultPropertyWalker(new DefaultPropertyMetadataStore([])), task, visitor)
+        }
+    }
+}
+            """
 
         file("${library}/build.gradle") << subprojectConfiguration("com.android.library") << activityDependency()
 

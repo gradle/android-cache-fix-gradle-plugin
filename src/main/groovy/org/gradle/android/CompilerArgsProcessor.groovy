@@ -5,6 +5,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskInputs
 import org.gradle.internal.BiAction
 
 import java.util.regex.Matcher
@@ -20,7 +22,7 @@ class CompilerArgsProcessor {
         this.project = project
         this.rules = [new Rule(Pattern.compile(".*")) {
             @Override
-            void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+            void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs, TaskInputs inputs) {
                 processedArgs.add(match.group())
             }
         }] as List<Rule>
@@ -41,14 +43,14 @@ class CompilerArgsProcessor {
         project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
             project.gradle.taskGraph.beforeTask {
                 if (task == it) {
-                    def processedArgs = processArgs(task.options.compilerArgs)
+                    def processedArgs = processArgs(task.options.compilerArgs, task.inputs)
                     overrideProperty(task, processedArgs)
                 }
             }
         }
     }
 
-    List<String> processArgs(List<String> args) {
+    List<String> processArgs(List<String> args, TaskInputs inputs) {
         def processedArgs = []
         def remainingArgs = args.iterator()
         while (remainingArgs.hasNext()) {
@@ -56,7 +58,7 @@ class CompilerArgsProcessor {
             for (Rule rule : rules) {
                 def matcher = rule.pattern.matcher(arg)
                 if (matcher.matches()) {
-                    rule.process(matcher, processedArgs, remainingArgs)
+                    rule.process(matcher, processedArgs, remainingArgs, inputs)
                     break
                 }
             }
@@ -83,7 +85,7 @@ class CompilerArgsProcessor {
             return new AnnotationProcessorOverride(property, action)
         }
 
-        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs, TaskInputs inputs) {
             // Skip the arg
         }
 
@@ -103,6 +105,26 @@ class CompilerArgsProcessor {
         }
     }
 
+    static class InputDirectory extends Rule {
+        private final String argumentName
+
+        InputDirectory(String argumentName) {
+            super(Pattern.compile("-A" + Pattern.quote(argumentName) + "=(.*)"))
+            this.argumentName = argumentName
+        }
+
+        static InputDirectory withAnnotationProcessorArgument(String argumentName) {
+            return new InputDirectory(argumentName)
+        }
+
+        @Override
+        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs, TaskInputs inputs) {
+            inputs.dir(match.group(1))
+                .withPathSensitivity(PathSensitivity.RELATIVE)
+                .withPropertyName(argumentName)
+        }
+    }
+
     static class Skip extends Rule {
         Skip(Pattern pattern) {
             super(pattern)
@@ -113,7 +135,7 @@ class CompilerArgsProcessor {
         }
 
         @Override
-        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs, TaskInputs inputs) {
         }
     }
 
@@ -127,7 +149,7 @@ class CompilerArgsProcessor {
         }
 
         @Override
-        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs) {
+        void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs, TaskInputs inputs) {
             if (remainingArgs.hasNext()) {
                 remainingArgs.next()
             }
@@ -141,7 +163,7 @@ class CompilerArgsProcessor {
             this.pattern = pattern
         }
 
-        abstract void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs)
+        abstract void process(Matcher match, Collection<String> processedArgs, Iterator<String> remainingArgs, TaskInputs inputs)
 
         @Override
         String toString() {

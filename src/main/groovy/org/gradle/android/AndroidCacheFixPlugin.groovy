@@ -22,9 +22,7 @@ import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import static org.gradle.android.CompilerArgsProcessor.AnnotationProcessorOverride
-import static org.gradle.android.CompilerArgsProcessor.Skip
-import static org.gradle.android.CompilerArgsProcessor.SkipNext
+import static org.gradle.android.CompilerArgsProcessor.*
 import static org.gradle.android.Versions.android
 
 @CompileStatic
@@ -168,6 +166,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.sdkDir=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.bindingBuildFolder=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.xmlOutDir=.*"))
+            compilerArgsProcessor.addRule(InputDirectory.withAnnotationProcessorArgument("android.databinding.baseFeatureInfo"))
 
             def outputRules = [
                 AnnotationProcessorOverride.of("android.databinding.generationalFileOutDir") { Task task, String path ->

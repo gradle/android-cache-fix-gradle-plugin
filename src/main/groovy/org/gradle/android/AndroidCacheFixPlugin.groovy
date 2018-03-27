@@ -158,7 +158,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link AndroidJavaCompile#getDataBindingDependencyArtifacts()} to {@link PathSensitivity#RELATIVE}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/68759178")
+    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/69243050")
     static class DataBindingDependencyArtifacts_Workaround implements Workaround {
         @Override
         void apply(WorkaroundContext context) {

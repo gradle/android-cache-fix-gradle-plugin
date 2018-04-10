@@ -26,7 +26,7 @@ class PluginApplicationTest extends AbstractTest {
     def "does #description about being useless for Android version #androidVersion (data binding: #dataBinding)"() {
         def projectDir = temporaryFolder.newFolder()
         new SimpleAndroidApp(projectDir, cacheDir, androidVersion, dataBinding).writeProject()
-        def message = "WARNING: Android cache-fix plugin is not required when using Android plugin $androidVersion or later, unless Android data binding is used."
+        def message = "WARNING: Android cache-fix plugin is not required for project ':library' when using Android plugin $androidVersion or later, unless Android data binding is used."
 
         expect:
         def result = withGradleVersion(Iterables.getLast(Versions.SUPPORTED_GRADLE_VERSIONS).version)

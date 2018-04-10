@@ -63,8 +63,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
         if (currentAndroidVersion.baseVersion >= android("3.1.0-alpha06")) {
             project.afterEvaluate {
-                if (!project.getExtensions().getByType(AndroidConfig).dataBinding.enabled) {
-                    LOGGER.warn("WARNING: Android cache-fix plugin is not required when using Android plugin {} or later, unless Android data binding is used.", currentAndroidVersion)
+                if (!project.getExtensions().findByType(AndroidConfig)?.dataBinding?.enabled) {
+                    LOGGER.warn("WARNING: Android cache-fix plugin is not required for {} when using Android plugin {} or later, unless Android data binding is used.", project, currentAndroidVersion)
                 }
             }
         }

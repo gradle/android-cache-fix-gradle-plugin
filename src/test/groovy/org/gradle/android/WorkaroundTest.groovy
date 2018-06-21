@@ -35,5 +35,13 @@ class WorkaroundTest extends Specification {
         "3.1.2"         | ["DataBindingDependencyArtifacts"]
         "3.1.3"         | ["DataBindingDependencyArtifacts"]
         "3.2.0-alpha01" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha02" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha03" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha04" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha05" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha06" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha07" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha09" | ["DataBindingDependencyArtifacts"]
+        "3.2.0-alpha18" | []
     }
 }

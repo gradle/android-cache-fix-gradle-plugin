@@ -22,9 +22,7 @@ import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import static org.gradle.android.CompilerArgsProcessor.AnnotationProcessorOverride
-import static org.gradle.android.CompilerArgsProcessor.Skip
-import static org.gradle.android.CompilerArgsProcessor.SkipNext
+import static org.gradle.android.CompilerArgsProcessor.*
 import static org.gradle.android.Versions.android
 
 @CompileStatic
@@ -158,7 +156,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * Override path sensitivity for {@link AndroidJavaCompile#getDataBindingDependencyArtifacts()} to {@link PathSensitivity#RELATIVE}.
      */
-    @AndroidIssue(introducedIn = "3.0.0", link = "https://issuetracker.google.com/issues/69243050")
+    @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.2.0-alpha18", link = "https://issuetracker.google.com/issues/69243050")
     static class DataBindingDependencyArtifacts_Workaround implements Workaround {
         @Override
         void apply(WorkaroundContext context) {
@@ -168,6 +166,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.sdkDir=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.bindingBuildFolder=.*"))
             compilerArgsProcessor.addRule(Skip.matching("-Aandroid.databinding.xmlOutDir=.*"))
+            compilerArgsProcessor.addRule(InputDirectory.withAnnotationProcessorArgument("android.databinding.baseFeatureInfo"))
 
             def outputRules = [
                 AnnotationProcessorOverride.of("android.databinding.generationalFileOutDir") { Task task, String path ->

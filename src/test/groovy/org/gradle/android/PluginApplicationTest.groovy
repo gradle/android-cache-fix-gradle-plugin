@@ -52,8 +52,10 @@ class PluginApplicationTest extends AbstractTest {
         true  | false       | "3.1.1"
         false | true        | "3.1.2"
         true  | false       | "3.1.2"
-        false | true        | "3.2.0-alpha01"
-        true  | false       | "3.2.0-alpha01"
+        false | true        | "3.1.3"
+        true  | false       | "3.1.3"
+        false | true        | "3.2.0-alpha18"
+        true  | false       | "3.2.0-alpha18"
         description = warns ? "warn" : "not warn"
     }
 }

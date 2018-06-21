@@ -3,6 +3,7 @@ package org.gradle.android
 import com.android.build.gradle.tasks.factory.AndroidJavaCompile
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.gradle.android.CompilerArgsProcessor.Rule
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.PathSensitivity

@@ -39,7 +39,7 @@ class RelocationTest extends AbstractTest {
 
         withGradleVersion(gradleVersion.version)
             .withProjectDir(originalDir)
-            .withArguments("assemble", "--build-cache")
+            .withArguments("assemble", "--build-cache", "--stacktrace")
             .build()
 
         when:

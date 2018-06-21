@@ -57,7 +57,7 @@ class RelocationTest extends AbstractTest {
 
         where:
         // [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
-        [androidVersion, gradleVersion] << [[android("3.2.0-alpha10"), gradle("4.6")]]
+        [androidVersion, gradleVersion] << [[android("3.2.0-alpha18"), gradle("4.8")]]
     }
 
     static class ExpectedResults {

@@ -37,8 +37,10 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.tools.build:gradle:3.0.0'
+    compileOnly 'com.android.tools.build:gradle:3.0.0'
+    compile 'com.google.guava:guava:22.0'
     compile gradleApi()
+    testCompile 'com.android.tools.build:gradle:3.0.0'
     testCompile gradleTestKit()
     testCompile "junit:junit:4.12"
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4@jar"

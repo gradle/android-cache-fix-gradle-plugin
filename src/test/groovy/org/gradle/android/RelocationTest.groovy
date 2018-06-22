@@ -56,6 +56,7 @@ class RelocationTest extends AbstractTest {
         relocatedDir.deleteDir()
 
         where:
+        //noinspection GroovyAssignabilityCheck
         [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
     }
 
@@ -85,6 +86,7 @@ class RelocationTest extends AbstractTest {
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, GradleVersion gradleVersion) {
         def isAndroid30x = androidVersion <= android("3.0.1")
+        def isAndroid32x = androidVersion >= android("3.2.0-alpha18")
         def builder = ImmutableMap.<String, TaskOutcome>builder()
         builder.put(':app:assemble', SUCCESS)
         builder.put(':app:assembleDebug', SUCCESS)
@@ -95,20 +97,31 @@ class RelocationTest extends AbstractTest {
         builder.put(':app:checkReleaseManifest', isAndroid30x
             ? FROM_CACHE
             : SUCCESS)
-        builder.put(':app:compileDebugAidl', FROM_CACHE)
+        builder.put(':app:compileDebugAidl', isAndroid32x
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':app:compileDebugJavaWithJavac', FROM_CACHE)
         builder.put(':app:compileDebugNdk', NO_SOURCE)
         builder.put(':app:compileDebugRenderscript', FROM_CACHE)
         builder.put(':app:compileDebugShaders', FROM_CACHE)
         builder.put(':app:compileDebugSources', UP_TO_DATE)
-        builder.put(':app:compileReleaseAidl', FROM_CACHE)
+        builder.put(':app:compileReleaseAidl', isAndroid32x
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':app:compileReleaseJavaWithJavac', FROM_CACHE)
         builder.put(':app:compileReleaseNdk', NO_SOURCE)
         builder.put(':app:compileReleaseRenderscript', FROM_CACHE)
         builder.put(':app:compileReleaseShaders', FROM_CACHE)
         builder.put(':app:compileReleaseSources', UP_TO_DATE)
-        builder.put(':app:createDebugCompatibleScreenManifests', FROM_CACHE)
-        builder.put(':app:createReleaseCompatibleScreenManifests', FROM_CACHE)
+
+        // See https://issuetracker.google.com/issues/110408030
+        builder.put(':app:createDebugCompatibleScreenManifests', isAndroid32x
+            ? SUCCESS
+            : FROM_CACHE)
+        builder.put(':app:createReleaseCompatibleScreenManifests', isAndroid32x
+            ? SUCCESS
+            : FROM_CACHE)
+
         builder.put(':app:generateDebugAssets', UP_TO_DATE)
         builder.put(':app:generateDebugBuildConfig', FROM_CACHE)
         builder.put(':app:generateDebugResources', UP_TO_DATE)
@@ -172,21 +185,28 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:checkReleaseManifest', isAndroid30x
             ? FROM_CACHE
             : SUCCESS)
-        builder.put(':library:compileDebugAidl', FROM_CACHE)
+        builder.put(':library:compileDebugAidl', isAndroid32x
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':library:compileDebugJavaWithJavac', FROM_CACHE)
         builder.put(':library:compileDebugNdk', NO_SOURCE)
         builder.put(':library:compileDebugRenderscript', FROM_CACHE)
         builder.put(':library:compileDebugShaders', FROM_CACHE)
         builder.put(':library:compileDebugSources', UP_TO_DATE)
-        builder.put(':library:compileReleaseAidl', FROM_CACHE)
+        builder.put(':library:compileReleaseAidl', isAndroid32x
+            ? NO_SOURCE
+            : FROM_CACHE)
         builder.put(':library:compileReleaseJavaWithJavac', FROM_CACHE)
         builder.put(':library:compileReleaseNdk', NO_SOURCE)
         builder.put(':library:compileReleaseRenderscript', FROM_CACHE)
         builder.put(':library:compileReleaseShaders', FROM_CACHE)
         builder.put(':library:compileReleaseSources', UP_TO_DATE)
-        // TODO Does not load from cache because of data binding generates random UUID in source
-        builder.put(':library:extractDebugAnnotations', SUCCESS)
-        builder.put(':library:extractReleaseAnnotations', SUCCESS)
+        builder.put(':library:extractDebugAnnotations', isAndroid32x
+            ? FROM_CACHE
+            : SUCCESS)
+        builder.put(':library:extractReleaseAnnotations', isAndroid32x
+            ? FROM_CACHE
+            : SUCCESS)
         builder.put(':library:generateDebugAssets', UP_TO_DATE)
         builder.put(':library:generateDebugBuildConfig', FROM_CACHE)
         builder.put(':library:generateDebugResources', UP_TO_DATE)
@@ -224,7 +244,9 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:packageDebugResources', FROM_CACHE)
         builder.put(':library:packageReleaseRenderscript', NO_SOURCE)
         builder.put(':library:packageReleaseResources', FROM_CACHE)
-        builder.put(':library:platformAttrExtractor', FROM_CACHE)
+        if (!isAndroid32x) {
+            builder.put(':library:platformAttrExtractor', FROM_CACHE)
+        }
         builder.put(':library:preBuild', UP_TO_DATE)
         builder.put(':library:preDebugBuild', UP_TO_DATE)
         builder.put(':library:prepareLintJar', SUCCESS)

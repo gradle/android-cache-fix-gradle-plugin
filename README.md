@@ -5,9 +5,11 @@
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions.
 
 * Supported Gradle versions: 4.1+
-* Supported Android versions: 3.0.0, 3.0.1, 3.1.0, 3.1.1, 3.1.2, 3.2.0-alpha01
+* Supported Android versions: 3.0.0, 3.0.1, 3.1.0, 3.1.1, 3.1.2, 3.1.3
 
-**Note:** With Android 3.1.x and 3.2.x the cache-fix plugin is only required if you are using Android's data binding feature.
+**Note:** With Android 3.1.x the cache-fix plugin is only required if you are using Android's data binding feature.
+
+**Note:** With Android 3.2.x the cache-fix plugin is not required.
 
 ## List of issues
 

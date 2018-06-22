@@ -2,6 +2,7 @@ package org.gradle.android
 
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.TaskInputs
 import spock.lang.Specification
 
 import static org.gradle.android.CompilerArgsProcessor.AnnotationProcessorOverride
@@ -9,7 +10,7 @@ import static org.gradle.android.CompilerArgsProcessor.Skip
 import static org.gradle.android.CompilerArgsProcessor.SkipNext
 
 class CompilerArgsProcessorTest extends Specification {
-    def task = null
+    def inputs = Stub(TaskInputs)
     CompilerArgsProcessor processor
 
     def setup() {
@@ -18,22 +19,22 @@ class CompilerArgsProcessorTest extends Specification {
 
     def "processes arguments by default"() {
         expect:
-        processor.processArgs([]) == []
-        processor.processArgs(["alma", "bela", "-switch"]) == ["alma", "bela", "-switch"]
+        processor.processArgs([], inputs) == []
+        processor.processArgs(["alma", "bela", "-switch"], inputs) == ["alma", "bela", "-switch"]
     }
 
     def "can skip arg"() {
         processor.addRule(Skip.matching("-s"))
         expect:
-        processor.processArgs([]) == []
-        processor.processArgs(["alma", "bela", "-s", "-switch"]) == ["alma", "bela", "-switch"]
+        processor.processArgs([], inputs) == []
+        processor.processArgs(["alma", "bela", "-s", "-switch"], inputs) == ["alma", "bela", "-switch"]
     }
 
     def "can skip multiple args"() {
         processor.addRule(SkipNext.matching("-s"))
         expect:
-        processor.processArgs([]) == []
-        processor.processArgs(["alma", "bela", "-s", "file.txt", "-switch"]) == ["alma", "bela", "-switch"]
+        processor.processArgs([], inputs) == []
+        processor.processArgs(["alma", "bela", "-s", "file.txt", "-switch"], inputs) == ["alma", "bela", "-switch"]
     }
 
     def "can override annotation processor parameters"() {
@@ -47,8 +48,8 @@ class CompilerArgsProcessorTest extends Specification {
         processor.addRule(rule)
 
         expect:
-        processor.processArgs([]) == []
-        processor.processArgs(args) == ["alma", "bela", "-Abela=123"]
+        processor.processArgs([], inputs) == []
+        processor.processArgs(args, inputs) == ["alma", "bela", "-Abela=123"]
 
         when:
         rule.configureTask(task, args)

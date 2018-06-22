@@ -86,7 +86,7 @@ class RelocationTest extends AbstractTest {
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, GradleVersion gradleVersion) {
         def isAndroid30x = androidVersion <= android("3.0.1")
-        def isAndroid32x = androidVersion >= android("3.2.0-alpha18")
+        def isAndroid32x = androidVersion >= android("3.2.0-beta01")
         def builder = ImmutableMap.<String, TaskOutcome>builder()
         builder.put(':app:assemble', SUCCESS)
         builder.put(':app:assembleDebug', SUCCESS)
@@ -177,8 +177,10 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:assemble', SUCCESS)
         builder.put(':library:assembleDebug', SUCCESS)
         builder.put(':library:assembleRelease', SUCCESS)
-        builder.put(':library:bundleDebug', SUCCESS)
-        builder.put(':library:bundleRelease', SUCCESS)
+        if (!isAndroid32x) {
+            builder.put(':library:bundleDebug', SUCCESS)
+            builder.put(':library:bundleRelease', SUCCESS)
+        }
         builder.put(':library:checkDebugManifest', isAndroid30x
             ? FROM_CACHE
             : SUCCESS)

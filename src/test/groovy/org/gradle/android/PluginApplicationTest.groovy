@@ -53,6 +53,8 @@ class PluginApplicationTest extends AbstractTest {
         false       | "3.1.2"              | "WARNING: Android cache-fix plugin is not required for project ':library' when using Android plugin 3.1.2 or later, unless Android data binding is used."
         true        | "3.1.3"              | null
         false       | "3.1.3"              | "WARNING: Android cache-fix plugin is not required for project ':library' when using Android plugin 3.1.3 or later, unless Android data binding is used."
+        true        | "3.1.4"              | null
+        false       | "3.1.4"              | "WARNING: Android cache-fix plugin is not required for project ':library' when using Android plugin 3.1.4 or later, unless Android data binding is used."
         true        | "3.2.0-beta01"       | "WARNING: Android cache-fix plugin is not required for project ':library' when using Android plugin 3.2.0-beta01 or later."
         false       | "3.2.0-beta01"       | "WARNING: Android cache-fix plugin is not required for project ':library' when using Android plugin 3.2.0-beta01 or later."
         desc = message == null ? "does not print" : "prints"

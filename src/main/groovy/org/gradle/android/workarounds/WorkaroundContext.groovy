@@ -1,4 +1,4 @@
-package org.gradle.android
+package org.gradle.android.workarounds
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Project

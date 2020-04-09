@@ -1,13 +1,14 @@
 package org.gradle.android
 
+import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskInputs
 import spock.lang.Specification
 
-import static org.gradle.android.CompilerArgsProcessor.AnnotationProcessorOverride
-import static org.gradle.android.CompilerArgsProcessor.Skip
-import static org.gradle.android.CompilerArgsProcessor.SkipNext
+import static org.gradle.android.workarounds.CompilerArgsProcessor.AnnotationProcessorOverride
+import static org.gradle.android.workarounds.CompilerArgsProcessor.Skip
+import static org.gradle.android.workarounds.CompilerArgsProcessor.SkipNext
 
 class CompilerArgsProcessorTest extends Specification {
     def inputs = Stub(TaskInputs)

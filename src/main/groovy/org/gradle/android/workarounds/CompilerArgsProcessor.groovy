@@ -1,9 +1,8 @@
-package org.gradle.android
+package org.gradle.android.workarounds
 
-import com.android.build.gradle.tasks.factory.AndroidJavaCompile
+import com.android.build.gradle.tasks.AndroidJavaCompile
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.gradle.android.CompilerArgsProcessor.Rule
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.PathSensitivity

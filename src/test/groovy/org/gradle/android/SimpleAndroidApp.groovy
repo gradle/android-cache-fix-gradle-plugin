@@ -65,7 +65,7 @@ class SimpleAndroidApp {
         file("${app}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
                 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
                     package="${appPackage}">
-    
+
                     <application android:label="@string/app_name" >
                         <activity
                             android:name=".${appActivity}"
@@ -79,7 +79,7 @@ class SimpleAndroidApp {
                             android:name="${libPackage}.${libraryActivity}">
                         </activity>
                     </application>
-    
+
                 </manifest>
             """.stripIndent()
         file("${app}/src/main/res/values/strings.xml") << '''<?xml version="1.0" encoding="utf-8"?>
@@ -117,12 +117,12 @@ class SimpleAndroidApp {
             }
 
             android {
-                compileSdkVersion 26
-                buildToolsVersion "26.0.2"
+                compileSdkVersion 28
+                buildToolsVersion "28.0.3"
                 dataBinding.enabled = $dataBindingEnabled
                 defaultConfig {
-                    minSdkVersion 26
-                    targetSdkVersion 26
+                    minSdkVersion 28
+                    targetSdkVersion 28
                 }
             }
         """.stripIndent()
@@ -133,21 +133,21 @@ class SimpleAndroidApp {
 
         file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/HelloActivity.java") << """
                 package ${packageName};
-    
+
                 import org.joda.time.LocalTime;
-    
+
                 import android.app.Activity;
                 import android.os.Bundle;
                 import android.widget.TextView;
-    
+
                 public class HelloActivity extends Activity {
-    
+
                     @Override
                     public void onCreate(Bundle savedInstanceState) {
                         super.onCreate(savedInstanceState);
                         setContentView(R.layout.${resourceName}_layout);
                     }
-    
+
                     @Override
                     public void onStart() {
                         super.onStart();

@@ -1,28 +1,22 @@
 package org.gradle.android
 
-import com.android.build.gradle.AndroidConfig
 import com.android.build.gradle.internal.pipeline.StreamBasedTask
-import com.android.build.gradle.internal.tasks.CheckManifest
 import com.android.build.gradle.internal.tasks.IncrementalTask
 import com.android.build.gradle.tasks.ExtractAnnotations
 import com.android.build.gradle.tasks.ProcessAndroidResources
-import com.android.build.gradle.tasks.factory.AndroidJavaCompile
 import com.android.builder.model.Version
 import com.google.common.collect.ImmutableList
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
+import org.gradle.android.workarounds.CompilerArgsProcessor
+import org.gradle.android.workarounds.Workaround
+import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.tasks.PathSensitivity
-import org.gradle.api.tasks.util.PatternFilterable
-import org.gradle.internal.Factory
-import org.gradle.util.DeprecationLogger
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import static org.gradle.android.CompilerArgsProcessor.*
 import static org.gradle.android.Versions.android
 
 @CompileStatic
@@ -30,43 +24,33 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AndroidCacheFixPlugin)
 
     private static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
+    private static final VersionNumber CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
-    private static final List<Workaround> WORKAROUNDS = [
-        new AndroidJavaCompile_BootClasspath_Workaround(),
-        new AndroidJavaCompile_AnnotationProcessorSource_Workaround(),
-        new AndroidJavaCompile_ProcessorListFile_Workaround(),
-        new DataBindingDependencyArtifacts_Workaround(),
-        new ExtractAnnotations_Source_Workaround(),
-        new CombinedInput_Workaround(),
-        new ProcessAndroidResources_MergeBlameLogFolder_Workaround(),
-        new CheckManifest_Manifest_Workaround(),
-    ] as List<Workaround>
+    private static final List<Workaround> WORKAROUNDS = [] as List<Workaround>
+
+    static {
+        if (isSupportedAndroidVersion()) {
+            WORKAROUNDS.addAll(
+
+            )
+        }
+    }
+
+    private static boolean isSupportedAndroidVersion() {
+        return Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY) || Versions.SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
+    }
 
     @Override
     void apply(Project project) {
-        def currentAndroidVersion = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
-
-        if (!Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY)) {
-            if (!Versions.SUPPORTED_ANDROID_VERSIONS.contains(currentAndroidVersion)) {
-                throw new RuntimeException("Android plugin $currentAndroidVersion is not supported by Android cache fix plugin. Supported Android plugin versions: ${Versions.SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
-            }
+        if (!isSupportedAndroidVersion()) {
+            throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. Supported Android plugin versions: ${Versions.SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
         }
 
         def context = new WorkaroundContext(project, new CompilerArgsProcessor(project))
 
-        getWorkaroundsToApply(currentAndroidVersion).each { Workaround workaround ->
+        getWorkaroundsToApply(CURRENT_ANDROID_VERSION).each { Workaround workaround ->
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
             workaround.apply(context)
-        }
-
-        if (currentAndroidVersion.baseVersion >= android("3.2.0")) {
-            LOGGER.warn("WARNING: Android cache-fix plugin is not required for {} when using Android plugin {} or later.", project, currentAndroidVersion)
-        } else if (currentAndroidVersion.baseVersion >= android("3.1.0")) {
-            project.afterEvaluate {
-                if (!project.getExtensions().findByType(AndroidConfig)?.dataBinding?.enabled) {
-                    LOGGER.warn("WARNING: Android cache-fix plugin is not required for {} when using Android plugin {} or later, unless Android data binding is used.", project, currentAndroidVersion)
-                }
-            }
         }
     }
 
@@ -91,7 +75,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha06", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68392933")
     static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
@@ -114,10 +98,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             }
         }
     }
+     */
 
     /**
      * Filter the Java annotation processor output folder from compiler arguments to avoid absolute path.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha06", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68391973")
     static class AndroidJavaCompile_AnnotationProcessorSource_Workaround implements Workaround {
         @Override
@@ -125,10 +110,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             context.compilerArgsProcessor.addRule(SkipNext.matching("-s"))
         }
     }
+     */
 
     /**
      * Override path sensitivity for {@link AndroidJavaCompile#getProcessorListFile()} to {@link PathSensitivity#NONE}.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha01", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68759178")
     static class AndroidJavaCompile_ProcessorListFile_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
@@ -154,10 +140,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             }
         }
     }
+     */
 
     /**
      * Override path sensitivity for {@link AndroidJavaCompile#getDataBindingDependencyArtifacts()} to {@link PathSensitivity#RELATIVE}.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = "3.2.0-alpha18", link = "https://issuetracker.google.com/issues/69243050")
     static class DataBindingDependencyArtifacts_Workaround implements Workaround {
         @Override
@@ -251,10 +238,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             task.dependsOn configTask
         }
     }
+     */
 
     /**
      * Override path sensitivity for {@link ExtractAnnotations#getSource()} to {@link PathSensitivity#RELATIVE}.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha01", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68759476")
     static class ExtractAnnotations_Source_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
@@ -281,10 +269,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             }
         }
     }
+     */
 
     /**
      * Fix {@link IncrementalTask#getCombinedInput()} and {@link StreamBasedTask#getCombinedInput()} relocatability.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.0.1", "3.1.0-alpha04", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68771542")
     static class CombinedInput_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
@@ -313,10 +302,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             }
         }
     }
+     */
 
     /**
      * {@link ProcessAndroidResources#getMergeBlameLogFolder()} shouldn't be an {@literal @}{@link org.gradle.api.tasks.Input}.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.0.1", "3.1.0-alpha02", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68385486")
     static class ProcessAndroidResources_MergeBlameLogFolder_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
@@ -328,10 +318,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             }
         }
     }
+     */
 
     /**
      * {@link com.android.build.gradle.internal.tasks.CheckManifest#getManifest()} should not be an {@literal @}{@link org.gradle.api.tasks.Input}.
-     */
+
     @AndroidIssue(introducedIn = "3.0.0", fixedIn = ["3.1.0-alpha05", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-alpha01"], link = "https://issuetracker.google.com/issues/68772035")
     static class CheckManifest_Manifest_Workaround implements Workaround {
         @CompileStatic(TypeCheckingMode.SKIP)
@@ -343,4 +334,5 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             }
         }
     }
+     */
 }

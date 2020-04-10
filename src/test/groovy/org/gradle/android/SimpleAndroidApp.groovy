@@ -50,6 +50,7 @@ class SimpleAndroidApp {
                     dependencies {
                         classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
                         classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.71"
                     }
                 }
             """.stripIndent()
@@ -109,11 +110,16 @@ class SimpleAndroidApp {
     private subprojectConfiguration(String androidPlugin) {
         """
             apply plugin: "$androidPlugin"
+            apply plugin: "kotlin-android"
             apply plugin: "org.gradle.android.cache-fix"
 
             repositories {
                 google()
                 jcenter()
+            }
+
+            dependencies {
+                implementation "org.jetbrains.kotlin:kotlin-stdlib"
             }
 
             android {
@@ -156,6 +162,12 @@ class SimpleAndroidApp {
                         textView.setText("The current local time is: " + currentTime);
                     }
                 }
+            """.stripIndent()
+
+        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/Utility.kt") << """
+                package ${packageName};
+
+                class Utility { }
             """.stripIndent()
 
         file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>

@@ -61,9 +61,9 @@ class RelocationTest extends AbstractTest {
     }
 
     static class ExpectedResults {
-        private final Map<String, TaskOutcome> outcomes
+        private final Map<String, ExpectedOutcome> outcomes
 
-        ExpectedResults(Map<String, TaskOutcome> outcomes) {
+        ExpectedResults(Map<String, ExpectedOutcome> outcomes) {
             this.outcomes = outcomes
         }
 
@@ -76,7 +76,7 @@ class RelocationTest extends AbstractTest {
             def remainingTasks = result.tasks.collect { it.path }
             outcomes.each { taskName, expectedOutcome ->
                 def taskOutcome = result.task(taskName)?.outcome
-                if (taskOutcome != expectedOutcome) {
+                if (expectedOutcome != ExpectedOutcome.UNKNOWN && taskOutcome.name() != expectedOutcome.name()) {
                     println "> Task '$taskName' was $taskOutcome but should have been $expectedOutcome"
                     allMatched = false
                 }
@@ -93,11 +93,27 @@ class RelocationTest extends AbstractTest {
         }
     }
 
+    private enum ExpectedOutcome {
+        SUCCESS,
+        FAILED,
+        UP_TO_DATE,
+        SKIPPED,
+        FROM_CACHE,
+        NO_SOURCE,
+        UNKNOWN; // represents tasks where the outcome is indeterminant
+    }
+
+    private static class ExpectedOutcomeBuilder extends ImmutableMap.Builder<String, ExpectedOutcome> {
+        ImmutableMap.Builder<String, ExpectedOutcome> put(String key, TaskOutcome value) {
+            return super.put(key, value ? value : ExpectedOutcome.UNKNOWN)
+        }
+    }
+
     private static ExpectedResults expectedResults(VersionNumber androidVersion, GradleVersion gradleVersion) {
         def isAndroid350to352 = androidVersion >= android("3.5.0") && androidVersion <= android("3.5.2")
         def isAndroid35x = androidVersion >= android("3.5.0") && androidVersion < android("3.6.0")
         def isAndroid36x = androidVersion >= android("3.6.0")
-        def builder = ImmutableMap.<String, TaskOutcome>builder()
+        def builder = new ExpectedOutcomeBuilder()
 
         if (isAndroid350to352) {
             builder.put(':library:createFullJarDebug', FROM_CACHE)
@@ -138,8 +154,8 @@ class RelocationTest extends AbstractTest {
             builder.put(':library:extractDeepLinksRelease', FROM_CACHE)
             builder.put(':library:parseDebugLocalResources', FROM_CACHE)
             builder.put(':library:parseReleaseLocalResources', FROM_CACHE)
-            builder.put(':library:syncDebugLibJars', FROM_CACHE)
-            builder.put(':library:syncReleaseLibJars', FROM_CACHE)
+            builder.put(':library:syncDebugLibJars', SUCCESS)
+            builder.put(':library:syncReleaseLibJars', SUCCESS)
         }
 
         builder.put(':app:assemble', SUCCESS)
@@ -149,11 +165,13 @@ class RelocationTest extends AbstractTest {
         builder.put(':app:checkReleaseDuplicateClasses', FROM_CACHE)
         builder.put(':app:compileDebugAidl', NO_SOURCE)
         builder.put(':app:compileDebugJavaWithJavac', FROM_CACHE)
+        builder.put(':app:compileDebugKotlin', FROM_CACHE)
         builder.put(':app:compileDebugRenderscript', NO_SOURCE)
         builder.put(':app:compileDebugShaders', FROM_CACHE)
         builder.put(':app:compileDebugSources', UP_TO_DATE)
         builder.put(':app:compileReleaseAidl', NO_SOURCE)
         builder.put(':app:compileReleaseJavaWithJavac', FROM_CACHE)
+        builder.put(':app:compileReleaseKotlin', FROM_CACHE)
         builder.put(':app:compileReleaseRenderscript', NO_SOURCE)
         builder.put(':app:compileReleaseShaders', FROM_CACHE)
         builder.put(':app:compileReleaseSources', UP_TO_DATE)
@@ -185,7 +203,7 @@ class RelocationTest extends AbstractTest {
         builder.put(':app:mainApkListPersistenceDebug', FROM_CACHE)
         builder.put(':app:mainApkListPersistenceRelease', FROM_CACHE)
         builder.put(':app:mergeDebugAssets', FROM_CACHE)
-        builder.put(':app:mergeDebugJavaResource', FROM_CACHE)
+        builder.put(':app:mergeDebugJavaResource', SUCCESS)
         builder.put(':app:mergeDebugJniLibFolders', FROM_CACHE)
         builder.put(':app:mergeDebugNativeLibs', FROM_CACHE)
         builder.put(':app:mergeDebugResources', FROM_CACHE)
@@ -196,7 +214,7 @@ class RelocationTest extends AbstractTest {
         builder.put(':app:mergeLibDexDebug', FROM_CACHE)
         builder.put(':app:mergeProjectDexDebug', FROM_CACHE)
         builder.put(':app:mergeReleaseAssets', FROM_CACHE)
-        builder.put(':app:mergeReleaseJavaResource', FROM_CACHE)
+        builder.put(':app:mergeReleaseJavaResource', SUCCESS)
         builder.put(':app:mergeReleaseJniLibFolders', FROM_CACHE)
         builder.put(':app:mergeReleaseNativeLibs', FROM_CACHE)
         builder.put(':app:mergeReleaseResources', FROM_CACHE)
@@ -230,11 +248,13 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:bundleReleaseAar', SUCCESS)
         builder.put(':library:compileDebugAidl', NO_SOURCE)
         builder.put(':library:compileDebugJavaWithJavac', FROM_CACHE)
+        builder.put(':library:compileDebugKotlin', FROM_CACHE)
         builder.put(':library:compileDebugRenderscript', NO_SOURCE)
         builder.put(':library:compileDebugShaders', FROM_CACHE)
         builder.put(':library:compileDebugSources', UP_TO_DATE)
         builder.put(':library:compileReleaseAidl', NO_SOURCE)
         builder.put(':library:compileReleaseJavaWithJavac', FROM_CACHE)
+        builder.put(':library:compileReleaseKotlin', FROM_CACHE)
         builder.put(':library:compileReleaseRenderscript', NO_SOURCE)
         builder.put(':library:compileReleaseShaders', FROM_CACHE)
         builder.put(':library:compileReleaseSources', UP_TO_DATE)
@@ -264,13 +284,13 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:javaPreCompileRelease', FROM_CACHE)
         builder.put(':library:mergeDebugConsumerProguardFiles', SUCCESS)
         builder.put(':library:mergeDebugGeneratedProguardFiles', SUCCESS)
-        builder.put(':library:mergeDebugJavaResource', FROM_CACHE)
+        builder.put(':library:mergeDebugJavaResource', SUCCESS)
         builder.put(':library:mergeDebugJniLibFolders', FROM_CACHE)
         builder.put(':library:mergeDebugNativeLibs', FROM_CACHE)
         builder.put(':library:mergeDebugShaders', FROM_CACHE)
         builder.put(':library:mergeReleaseConsumerProguardFiles', SUCCESS)
         builder.put(':library:mergeReleaseGeneratedProguardFiles', SUCCESS)
-        builder.put(':library:mergeReleaseJavaResource', FROM_CACHE)
+        builder.put(':library:mergeReleaseJavaResource', SUCCESS)
         builder.put(':library:mergeReleaseJniLibFolders', FROM_CACHE)
         builder.put(':library:mergeReleaseNativeLibs', FROM_CACHE)
         builder.put(':library:mergeReleaseResources', FROM_CACHE)
@@ -292,7 +312,8 @@ class RelocationTest extends AbstractTest {
         builder.put(':library:processReleaseManifest', FROM_CACHE)
         builder.put(':library:stripDebugDebugSymbols', FROM_CACHE)
         builder.put(':library:stripReleaseDebugSymbols', FROM_CACHE)
-        builder.put(':library:verifyReleaseResources', FROM_CACHE)
+        // the outcome of this task is not consistent
+        builder.put(':library:verifyReleaseResources', null)
         new ExpectedResults(
             builder.build()
         )

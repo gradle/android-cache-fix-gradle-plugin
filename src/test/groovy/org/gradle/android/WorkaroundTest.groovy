@@ -12,12 +12,13 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/_Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "3.6.2"         | []
-        "3.6.1"         | []
-        "3.6.0"         | []
-        "3.5.3"         | []
-        "3.5.2"         | []
-        "3.5.1"         | []
-        "3.5.0"         | []
+        "4.0.0-beta04"  | ['MergeJavaResourcesWorkaround']
+        "3.6.2"         | ['MergeJavaResourcesWorkaround']
+        "3.6.1"         | ['MergeJavaResourcesWorkaround']
+        "3.6.0"         | ['MergeJavaResourcesWorkaround']
+        "3.5.3"         | ['MergeJavaResourcesWorkaround']
+        "3.5.2"         | ['MergeJavaResourcesWorkaround']
+        "3.5.1"         | ['MergeJavaResourcesWorkaround']
+        "3.5.0"         | ['MergeJavaResourcesWorkaround']
     }
 }

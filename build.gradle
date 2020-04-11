@@ -22,6 +22,7 @@ version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.tri
 
 // Maps supported Android plugin versions to the versions of Gradle that support it
 def supportedVersions = [
+    "4.0.0-beta04": ["6.1.1", "6.2.2", "6.3"],
     "3.6.2": ["5.6.4", "6.0.1", "6.1.1", "6.2.2", "6.3"],
     "3.6.1": ["5.6.4"],
     "3.6.0": ["5.6.4"],

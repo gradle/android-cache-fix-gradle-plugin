@@ -8,6 +8,7 @@ import com.android.builder.model.Version
 import com.google.common.collect.ImmutableList
 import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.CompilerArgsProcessor
+import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
 import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
@@ -31,7 +32,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     static {
         if (isSupportedAndroidVersion()) {
             WORKAROUNDS.addAll(
-
+                new MergeJavaResourcesWorkaround()
             )
         }
     }

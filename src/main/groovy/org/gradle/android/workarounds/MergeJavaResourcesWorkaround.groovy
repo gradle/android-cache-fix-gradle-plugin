@@ -10,12 +10,12 @@ import java.lang.reflect.Method
 
 import static org.gradle.api.tasks.PathSensitivity.*
 
-@AndroidIssue(introducedIn = "3.5.0", fixedIn = ["4.0.1"], link = "https://issuetracker.google.com/issues/140602655")
+@AndroidIssue(introducedIn = "3.5.0", fixedIn = ["4.1.0"], link = "https://issuetracker.google.com/issues/140602655")
 class MergeJavaResourcesWorkaround implements Workaround {
     @Override
     void apply(WorkaroundContext context) {
         Project project = context.project
-        project.tasksWithType(MergeJavaResourceTask).configureEach { Task task ->
+        project.tasks.withType(MergeJavaResourceTask).configureEach { Task task ->
             FileCollection originalJavaResources
             // Create a synthetic input with the original java resources and RELATIVE path sensitivity
             project.gradle.taskGraph.beforeTask {

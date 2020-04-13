@@ -104,6 +104,10 @@ class SimpleAndroidApp {
 
         file("${library}/build.gradle") << subprojectConfiguration("com.android.library") << activityDependency()
 
+        file("gradle.properties") << """
+                android.useAndroidX=true
+            """.stripIndent()
+
         configureAndroidSdkHome()
     }
 
@@ -119,6 +123,11 @@ class SimpleAndroidApp {
             }
 
             dependencies {
+                def room_version = "2.2.5"
+
+                implementation "androidx.room:room-runtime:\$room_version"
+                annotationProcessor "androidx.room:room-compiler:\$room_version" // For Kotlin use kapt instead of annotationProcessor
+
                 implementation "org.jetbrains.kotlin:kotlin-stdlib"
             }
 
@@ -129,6 +138,13 @@ class SimpleAndroidApp {
                 defaultConfig {
                     minSdkVersion 28
                     targetSdkVersion 28
+
+                    javaCompileOptions {
+                        annotationProcessorOptions {
+                            arguments = ["room.schemaLocation":
+                                 "$projectDir/schemas".toString()]
+                        }
+                    }
                 }
             }
 

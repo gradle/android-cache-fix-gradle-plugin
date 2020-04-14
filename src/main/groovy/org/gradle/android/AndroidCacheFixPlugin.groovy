@@ -6,6 +6,7 @@ import com.android.build.gradle.tasks.ExtractAnnotations
 import com.android.build.gradle.tasks.ProcessAndroidResources
 import com.android.builder.model.Version
 import com.google.common.collect.ImmutableList
+import com.gradle.scan.plugin.BuildScanExtension
 import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
@@ -56,9 +57,21 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
         def context = new WorkaroundContext(project, new CompilerArgsProcessor(project))
 
+        def appliedWorkarounds = []
         getWorkaroundsToApply(CURRENT_ANDROID_VERSION).each { Workaround workaround ->
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
             workaround.apply(context)
+            appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
+        }
+
+        // We do this rather than trigger off of the plugin application because in Gradle 6.x the plugin is
+        // applied to the Settings object which we don't have access to at this point
+        project.afterEvaluate {
+            def extension = project.rootProject.getExtensions().findByName("buildScan")
+            if (extension) {
+                BuildScanExtension buildScan = extension as BuildScanExtension
+                buildScan.value("${project.path} applied workarounds", appliedWorkarounds.join("\n"))
+            }
         }
     }
 

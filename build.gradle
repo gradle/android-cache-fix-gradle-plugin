@@ -35,11 +35,13 @@ def supportedVersions = [
 repositories {
     google()
     jcenter()
+    gradlePluginPortal()
 }
 
 dependencies {
     compileOnly 'com.android.tools.build:gradle:3.5.0'
     compile 'com.google.guava:guava:22.0'
+    compileOnly "com.gradle:gradle-enterprise-gradle-plugin:3.2.1"
     compile gradleApi()
     testCompile 'com.android.tools.build:gradle:3.5.0'
     testCompile gradleTestKit()

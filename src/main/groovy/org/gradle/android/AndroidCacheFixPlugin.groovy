@@ -31,6 +31,9 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     private static final List<Workaround> WORKAROUNDS = [] as List<Workaround>
 
+    // This avoids trying to apply these workarounds to a build with a version of Android that does not contain
+    // some of the classes the workarounds reference.  In such a case, we can throw a friendlier "not supported"
+    // error instead of a ClassDefNotFound.
     static {
         if (isSupportedAndroidVersion()) {
             WORKAROUNDS.addAll(
@@ -81,7 +84,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     /**
      * The following are kept for reference purposes.
      */
-    
+
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
 

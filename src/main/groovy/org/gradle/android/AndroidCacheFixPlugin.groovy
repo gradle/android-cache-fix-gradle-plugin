@@ -10,6 +10,7 @@ import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
 import org.gradle.android.workarounds.MergeNativeLibsWorkaround
+import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
@@ -34,7 +35,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         if (isSupportedAndroidVersion()) {
             WORKAROUNDS.addAll(
                 new MergeJavaResourcesWorkaround(),
-                new MergeNativeLibsWorkaround()
+                new MergeNativeLibsWorkaround(),
+                new RoomSchemaLocationWorkaround()
             )
         }
     }
@@ -76,6 +78,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         workarounds.build()
     }
 
+    /**
+     * The following are kept for reference purposes.
+     */
+    
     /**
      * Fix {@link org.gradle.api.tasks.compile.CompileOptions#getBootClasspath()} introducing relocatability problems for {@link AndroidJavaCompile}.
 

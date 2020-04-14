@@ -142,7 +142,7 @@ class SimpleAndroidApp {
                     javaCompileOptions {
                         annotationProcessorOptions {
                             arguments = ["room.schemaLocation":
-                                 "$projectDir/schemas".toString()]
+                                 "\${projectDir}/schemas".toString()]
                         }
                     }
                 }

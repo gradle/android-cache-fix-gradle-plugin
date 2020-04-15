@@ -6,7 +6,6 @@ import com.android.build.gradle.tasks.ExtractAnnotations
 import com.android.build.gradle.tasks.ProcessAndroidResources
 import com.android.builder.model.Version
 import com.google.common.collect.ImmutableList
-import com.gradle.scan.plugin.BuildScanExtension
 import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
@@ -20,6 +19,8 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.lang.reflect.Method
 
 import static org.gradle.android.Versions.android
 
@@ -69,8 +70,11 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         project.afterEvaluate {
             def extension = project.rootProject.getExtensions().findByName("buildScan")
             if (extension) {
-                BuildScanExtension buildScan = extension as BuildScanExtension
-                buildScan.value("${project.path} applied workarounds", appliedWorkarounds.join("\n"))
+                Method valueMethod = extension.class.getMethod("value", String.class, String.class)
+                if (valueMethod) {
+                    valueMethod.invoke(extension, "${project.path} applied workarounds".toString(), appliedWorkarounds.join("\n"))
+                    LOGGER.debug("Added build scan custom value for ${project.path} applied workarounds")
+                }
             }
         }
     }

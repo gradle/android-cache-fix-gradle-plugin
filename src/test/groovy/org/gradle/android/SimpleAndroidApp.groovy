@@ -115,6 +115,7 @@ class SimpleAndroidApp {
         """
             apply plugin: "$androidPlugin"
             apply plugin: "kotlin-android"
+            apply plugin: "kotlin-kapt"
             apply plugin: "org.gradle.android.cache-fix"
 
             repositories {
@@ -126,7 +127,8 @@ class SimpleAndroidApp {
                 def room_version = "2.2.5"
 
                 implementation "androidx.room:room-runtime:\$room_version"
-                annotationProcessor "androidx.room:room-compiler:\$room_version" // For Kotlin use kapt instead of annotationProcessor
+                annotationProcessor "androidx.room:room-compiler:\$room_version"
+                kapt "androidx.room:room-compiler:\$room_version"
 
                 implementation "org.jetbrains.kotlin:kotlin-stdlib"
             }

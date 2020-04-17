@@ -14,9 +14,8 @@ cache:
 
 android:
   components:
-    - build-tools-26.0.2
-    - build-tools-27.0.3
-    - android-26
+    - build-tools-29.0.3
+    - android-28
 
 notifications:
   slack: gradle:XMjiddSpmwzthEHD5N3Z5uZn

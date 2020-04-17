@@ -1,13 +1,12 @@
-package org.gradle.android
+package org.gradle.android.workarounds
 
-import com.android.build.gradle.tasks.factory.AndroidJavaCompile
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.gradle.android.CompilerArgsProcessor.Rule
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskInputs
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.internal.BiAction
 
 import java.util.regex.Matcher
@@ -41,17 +40,17 @@ class CompilerArgsProcessor {
         }
         applied = true
 
-        project.tasks.withType(AndroidJavaCompile) { AndroidJavaCompile task ->
+        project.tasks.withType(JavaCompile) { JavaCompile task ->
             project.gradle.taskGraph.beforeTask {
                 if (task == it) {
-                    def processedArgs = processArgs(task.options.compilerArgs, task.inputs)
+                    def processedArgs = processArgs(task.options.compilerArgs, task)
                     overrideProperty(task, processedArgs)
                 }
             }
         }
     }
 
-    List<String> processArgs(List<String> args, TaskInputs inputs) {
+    List<String> processArgs(List<String> args, JavaCompile task) {
         def processedArgs = []
         def remainingArgs = args.iterator()
         while (remainingArgs.hasNext()) {
@@ -59,7 +58,10 @@ class CompilerArgsProcessor {
             for (Rule rule : rules) {
                 def matcher = rule.pattern.matcher(arg)
                 if (matcher.matches()) {
-                    rule.process(matcher, processedArgs, remainingArgs, inputs)
+                    rule.process(matcher, processedArgs, remainingArgs, task.inputs)
+                    if (rule instanceof ConfiguresJavaCompile) {
+                        rule.configureJavaCompile(task)
+                    }
                     break
                 }
             }
@@ -68,13 +70,17 @@ class CompilerArgsProcessor {
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
-    private static void overrideProperty(AndroidJavaCompile task, List processedArgs) {
+    private static void overrideProperty(JavaCompile task, List processedArgs) {
         task.inputs.property "options.compilerArgs", ""
         task.inputs.property "options.compilerArgs.filtered", ""
         task.inputs.property "options.compilerArgs.workaround", processedArgs
     }
 
-    static class AnnotationProcessorOverride extends Rule {
+    interface ConfiguresJavaCompile {
+        void configureJavaCompile(JavaCompile task)
+    }
+
+    static class AnnotationProcessorOverride extends Rule implements ConfiguresJavaCompile {
         private final BiAction<? super Task, String> action
 
         AnnotationProcessorOverride(String property, BiAction<? super Task, String> action) {
@@ -90,7 +96,7 @@ class CompilerArgsProcessor {
             // Skip the arg
         }
 
-        void configureAndroidJavaCompile(AndroidJavaCompile task) {
+        void configureJavaCompile(JavaCompile task) {
             configureTask(task, task.options.compilerArgs)
         }
 

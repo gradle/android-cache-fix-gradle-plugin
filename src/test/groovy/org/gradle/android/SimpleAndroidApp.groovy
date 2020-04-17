@@ -50,6 +50,7 @@ class SimpleAndroidApp {
                     dependencies {
                         classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
                         classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.71"
                     }
                 }
             """.stripIndent()
@@ -65,7 +66,7 @@ class SimpleAndroidApp {
         file("${app}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
                 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
                     package="${appPackage}">
-    
+
                     <application android:label="@string/app_name" >
                         <activity
                             android:name=".${appActivity}"
@@ -79,7 +80,7 @@ class SimpleAndroidApp {
                             android:name="${libPackage}.${libraryActivity}">
                         </activity>
                     </application>
-    
+
                 </manifest>
             """.stripIndent()
         file("${app}/src/main/res/values/strings.xml") << '''<?xml version="1.0" encoding="utf-8"?>
@@ -103,12 +104,18 @@ class SimpleAndroidApp {
 
         file("${library}/build.gradle") << subprojectConfiguration("com.android.library") << activityDependency()
 
+        file("gradle.properties") << """
+                android.useAndroidX=true
+            """.stripIndent()
+
         configureAndroidSdkHome()
     }
 
     private subprojectConfiguration(String androidPlugin) {
         """
             apply plugin: "$androidPlugin"
+            apply plugin: "kotlin-android"
+            apply plugin: "kotlin-kapt"
             apply plugin: "org.gradle.android.cache-fix"
 
             repositories {
@@ -116,16 +123,69 @@ class SimpleAndroidApp {
                 jcenter()
             }
 
+            dependencies {
+                def room_version = "2.2.5"
+
+                implementation "androidx.room:room-runtime:\$room_version"
+                annotationProcessor "androidx.room:room-compiler:\$room_version"
+                kapt "androidx.room:room-compiler:\$room_version"
+
+                implementation "org.jetbrains.kotlin:kotlin-stdlib"
+            }
+
             android {
-                compileSdkVersion 26
-                buildToolsVersion "26.0.2"
+                compileSdkVersion 28
+                buildToolsVersion "29.0.3"
                 dataBinding.enabled = $dataBindingEnabled
                 defaultConfig {
-                    minSdkVersion 26
-                    targetSdkVersion 26
+                    minSdkVersion 28
+                    targetSdkVersion 28
+
+                    javaCompileOptions {
+                        annotationProcessorOptions {
+                            arguments = ["room.schemaLocation":
+                                 "\${projectDir}/schemas".toString()]
+                        }
+                    }
                 }
             }
+
+            ${renderscriptConfiguration}
         """.stripIndent()
+    }
+
+    /**
+     * The following is the result of a descent into madness when trying to reproduce
+     * https://issuetracker.google.com/issues/140602655 across all android versions.  The affected property on
+     * MergeNativeLibsTask only has a value if there are native libraries produced by this project or if the
+     * project compiles RenderScript with support mode enabled.  The property can be directly changed on some versions
+     * of android but not others.  Building native libraries as part of the project has external infrastructure
+     * requirements in that versions of cmake and ndk must be installed on the system or the test will fail. Adding
+     * RenderScript compilation to the project is the simplest way to trigger the problem, but support mode does not
+     * work reliably on all versions of android with MacOS Catalina (because of 32-bit support).  Thus, the following
+     * hack was born.  We enable support mode in order to trick AGP into setting up the affected property on
+     * MergeNativeLibsTask, then we disable it before execution (in order to avoid runtime errors related to 32-bit
+     * support) and we provide a dummy library for the downstream task to "merge".  This reliably triggers the
+     * cache relocation problem on all android versions.
+     */
+    private static String getRenderscriptConfiguration() {
+        return '''
+            android {
+                defaultConfig {
+                    renderscriptTargetApi 18
+                    renderscriptSupportModeEnabled true
+                }
+            }
+            tasks.withType(com.android.build.gradle.tasks.RenderscriptCompile).configureEach {
+                doFirst {
+                    supportMode = false
+                }
+                doLast {
+                    new File(libOutputDir.get().asFile, "test.so") << ''
+                    supportMode = true
+                }
+            }
+        '''.stripIndent()
     }
 
     private writeActivity(String basedir, String packageName, String className) {
@@ -133,21 +193,21 @@ class SimpleAndroidApp {
 
         file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/HelloActivity.java") << """
                 package ${packageName};
-    
+
                 import org.joda.time.LocalTime;
-    
+
                 import android.app.Activity;
                 import android.os.Bundle;
                 import android.widget.TextView;
-    
+
                 public class HelloActivity extends Activity {
-    
+
                     @Override
                     public void onCreate(Bundle savedInstanceState) {
                         super.onCreate(savedInstanceState);
                         setContentView(R.layout.${resourceName}_layout);
                     }
-    
+
                     @Override
                     public void onStart() {
                         super.onStart();
@@ -156,6 +216,12 @@ class SimpleAndroidApp {
                         textView.setText("The current local time is: " + currentTime);
                     }
                 }
+            """.stripIndent()
+
+        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/Utility.kt") << """
+                package ${packageName};
+
+                class Utility { }
             """.stripIndent()
 
         file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>
@@ -170,6 +236,15 @@ class SimpleAndroidApp {
                     android:layout_height="wrap_content"
                     />
                 </LinearLayout>
+            '''.stripIndent()
+
+        file("${basedir}/src/main/rs/${resourceName}.rs") << '''
+                #pragma version(1)
+                #pragma rs java_package_name(com.example.myapplication)
+
+                static void addintAccum(int *accum, int val) {
+                  *accum += val;
+                }
             '''.stripIndent()
     }
 

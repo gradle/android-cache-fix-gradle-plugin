@@ -8,6 +8,10 @@ import org.gradle.api.file.FileCollection
 import java.lang.reflect.Field
 
 /**
+ * Fixes the cacheability issue with MergeNativeLibsTask where the projectNativeLibs field is treated as an input with
+ * absolute path sensitivity.  This mostly comes up when either native libraries are built with the application
+ * or RenderScript files are compiled as part of the build.
+ *
  * In 3.5.x, projectNativeLibs is not directly backed by state in the Task object.  Instead, it is effectively a
  * method that calculates a new FileCollection from variantScope every time it is called.  So we only
  * support this workaround for 3.6.x and 4.0.x.

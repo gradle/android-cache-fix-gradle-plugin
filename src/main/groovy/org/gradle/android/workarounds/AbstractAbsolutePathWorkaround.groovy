@@ -23,7 +23,7 @@ abstract class AbstractAbsolutePathWorkaround implements Workaround {
                     task.inputs.files(originalPropertyValue)
                         .withPathSensitivity(PathSensitivity.RELATIVE)
                         .withPropertyName("${propertyName}.workaround")
-                        .skipWhenEmpty(true)
+                        .optional()
                 }
             }
             // Set the task property back to its original value

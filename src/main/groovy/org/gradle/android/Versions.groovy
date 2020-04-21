@@ -38,4 +38,17 @@ class Versions {
     static GradleVersion gradle(String version) {
         GradleVersion.version(version)
     }
+
+    static VersionNumber latestAndroidVersion() {
+        return SUPPORTED_ANDROID_VERSIONS.max()
+    }
+
+    static GradleVersion latestGradleVersion() {
+        return SUPPORTED_GRADLE_VERSIONS.max()
+    }
+
+    static VersionNumber getLatestVersionForAndroid(String version) {
+        VersionNumber versionNumber = VersionNumber.parse(version)
+        return SUPPORTED_ANDROID_VERSIONS.findAll { it.major == versionNumber.major && it.minor == versionNumber.minor }.max()
+    }
 }

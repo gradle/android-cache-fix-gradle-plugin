@@ -10,7 +10,11 @@ class PluginApplicationTest extends AbstractTest {
     @Unroll
     def "does not apply workarounds with Android #androidVersion"() {
         def projectDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(projectDir, cacheDir, androidVersion, true).writeProject()
+        SimpleAndroidApp.builder(projectDir, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .build()
+            .writeProject()
+
         expect:
         def result = withGradleVersion(Iterables.getLast(Versions.SUPPORTED_GRADLE_VERSIONS).version)
             .withProjectDir(projectDir)

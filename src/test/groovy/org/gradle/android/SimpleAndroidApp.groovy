@@ -9,16 +9,14 @@ class SimpleAndroidApp {
     private final File cacheDir
     final VersionNumber androidVersion
     private final boolean dataBindingEnabled
+    private final boolean kotlinEnabled
 
-    SimpleAndroidApp(File projectDir, File cacheDir, String androidVersion, boolean dataBindingEnabled) {
-        this(projectDir, cacheDir, android(androidVersion), dataBindingEnabled)
-    }
-
-    SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, boolean dataBindingEnabled) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, boolean dataBindingEnabled, boolean kotlinEnabled) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
+        this.kotlinEnabled = kotlinEnabled
     }
 
     def writeProject() {
@@ -114,8 +112,7 @@ class SimpleAndroidApp {
     private subprojectConfiguration(String androidPlugin) {
         """
             apply plugin: "$androidPlugin"
-            apply plugin: "kotlin-android"
-            apply plugin: "kotlin-kapt"
+            ${kotlinPluginsIfEnabled}
             apply plugin: "org.gradle.android.cache-fix"
 
             repositories {
@@ -128,9 +125,7 @@ class SimpleAndroidApp {
 
                 implementation "androidx.room:room-runtime:\$room_version"
                 annotationProcessor "androidx.room:room-compiler:\$room_version"
-                kapt "androidx.room:room-compiler:\$room_version"
-
-                implementation "org.jetbrains.kotlin:kotlin-stdlib"
+                ${kotlinDependenciesIfEnabled}
             }
 
             android {
@@ -152,6 +147,20 @@ class SimpleAndroidApp {
 
             ${renderscriptConfiguration}
         """.stripIndent()
+    }
+
+    private String getKotlinPluginsIfEnabled() {
+        return kotlinEnabled ? """
+            apply plugin: "kotlin-android"
+            apply plugin: "kotlin-kapt"
+        """ : ""
+    }
+
+    private String getKotlinDependenciesIfEnabled() {
+        return kotlinEnabled ? """
+            kapt "androidx.room:room-compiler:\$room_version"
+            implementation "org.jetbrains.kotlin:kotlin-stdlib"
+        """ : ""
     }
 
     /**
@@ -218,11 +227,13 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
-        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/Utility.kt") << """
-                package ${packageName};
+        if (kotlinEnabled) {
+            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/Utility.kt") << """
+                    package ${packageName};
 
-                class Utility { }
-            """.stripIndent()
+                    class Utility { }
+                """.stripIndent()
+        }
 
         file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -268,5 +279,55 @@ class SimpleAndroidApp {
         def file = new File(projectDir, path)
         file.parentFile.mkdirs()
         return file
+    }
+
+    static Builder builder(File projectDir, File cacheDir) {
+        return new Builder(projectDir, cacheDir)
+    }
+
+    static class Builder {
+        boolean dataBindingEnabled = true
+        boolean kotlinEnabled = true
+        VersionNumber androidVersion = Versions.latestAndroidVersion()
+        File projectDir
+        File cacheDir
+
+        Builder(File projectDir, File cacheDir) {
+            this.projectDir = projectDir
+            this.cacheDir = cacheDir
+        }
+
+        Builder withoutDataBindingEnabled() {
+            this.dataBindingEnabled = false
+            return this
+        }
+
+        Builder withoutKotlinEnabled() {
+            this.kotlinEnabled = false
+            return this
+        }
+
+        Builder withAndroidVersion(VersionNumber androidVersion) {
+            this.androidVersion = androidVersion
+            return this
+        }
+
+        Builder withAndroidVersion(String androidVersion) {
+            return withAndroidVersion(android(androidVersion))
+        }
+
+        Builder withProjectDir(File projectDir) {
+            this.projectDir = projectDir
+            return this
+        }
+
+        Builder withCacheDir(File cacheDir) {
+            this.cacheDir = cacheDir
+            return this
+        }
+
+        SimpleAndroidApp build() {
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, dataBindingEnabled, kotlinEnabled)
+        }
     }
 }

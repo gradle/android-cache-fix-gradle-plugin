@@ -24,10 +24,16 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         println "> Running with $gradleVersion"
 
         def originalDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(originalDir, cacheDir, androidVersion, true).writeProject()
+        SimpleAndroidApp.builder(originalDir, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .build()
+            .writeProject()
 
         def relocatedDir = temporaryFolder.newFolder()
-        new SimpleAndroidApp(relocatedDir, cacheDir, androidVersion, true).writeProject()
+        SimpleAndroidApp.builder(relocatedDir, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .build()
+            .writeProject()
 
         def expectedResults = expectedResults(androidVersion, gradleVersion)
 

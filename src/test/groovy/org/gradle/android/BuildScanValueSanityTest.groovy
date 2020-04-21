@@ -12,7 +12,10 @@ import spock.lang.Unroll
 class BuildScanValueSanityTest extends AbstractTest {
     @Unroll
     def "build scan value is safe with Gradle 6 and gradle enterprise plugin version #pluginVersion"() {
-        new SimpleAndroidApp(temporaryFolder.root, cacheDir, Versions.android("3.6.2"), true).writeProject()
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .build()
+            .writeProject()
 
         def originalSettings = file('settings.gradle').text
         file('settings.gradle').text = """
@@ -24,7 +27,7 @@ class BuildScanValueSanityTest extends AbstractTest {
         """
 
         when:
-        def result = GradleRunner.create().withGradleVersion("6.3")
+        def result = GradleRunner.create().withGradleVersion(latest6xGradleVersion)
             .withProjectDir(temporaryFolder.root)
             .withArguments("help", "--debug", "--stacktrace")
             .build()
@@ -39,7 +42,10 @@ class BuildScanValueSanityTest extends AbstractTest {
 
     @Unroll
     def "build scan value is safe with Gradle 5 and build scan plugin version #pluginVersion"() {
-        new SimpleAndroidApp(temporaryFolder.root, cacheDir, Versions.android("3.6.2"), true).writeProject()
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .build()
+            .writeProject()
 
         file('build.gradle') << """
             plugins {
@@ -48,7 +54,7 @@ class BuildScanValueSanityTest extends AbstractTest {
         """
 
         when:
-        def result = GradleRunner.create().withGradleVersion("5.6.4")
+        def result = GradleRunner.create().withGradleVersion(latest5xGradleVersion)
             .withProjectDir(temporaryFolder.root)
             .withArguments("help", "--debug", "--stacktrace")
             .build()
@@ -63,5 +69,13 @@ class BuildScanValueSanityTest extends AbstractTest {
 
     File file(String path) {
         return new File(temporaryFolder.root, path)
+    }
+
+    String getLatest6xGradleVersion() {
+        return Versions.SUPPORTED_GRADLE_VERSIONS.findAll { it.version.startsWith("6.") }.max().version
+    }
+
+    String getLatest5xGradleVersion() {
+        return Versions.SUPPORTED_GRADLE_VERSIONS.findAll { it.version.startsWith("5.") }.max().version
     }
 }

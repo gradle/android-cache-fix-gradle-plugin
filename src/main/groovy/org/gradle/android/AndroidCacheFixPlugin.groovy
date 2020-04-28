@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory
 
 import java.lang.reflect.Method
 
+import static org.gradle.android.Versions.SUPPORTED_ANDROID_VERSIONS
 import static org.gradle.android.Versions.android
 
 @CompileStatic
@@ -47,13 +48,22 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     }
 
     private static boolean isSupportedAndroidVersion() {
-        return Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY) || Versions.SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
+        return Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY) || SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
+    }
+
+    private static boolean isMaybeSupportedAndroidVersion() {
+        return Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY) ||
+            (CURRENT_ANDROID_VERSION < SUPPORTED_ANDROID_VERSIONS.max() && CURRENT_ANDROID_VERSION > SUPPORTED_ANDROID_VERSIONS.min())
     }
 
     @Override
     void apply(Project project) {
         if (!isSupportedAndroidVersion()) {
-            throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. Supported Android plugin versions: ${Versions.SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
+            if (isMaybeSupportedAndroidVersion()) {
+                project.logger.warn("WARNING: Android plugin ${CURRENT_ANDROID_VERSION} has not been tested with this version of the Android cache fix plugin, although it may work.  This is likely because it is newly released and we haven't had a chance to release a new version of Android cache fix that supports it.  Proceed with caution.  You can suppress this warning with with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
+            } else {
+                throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. Supported Android plugin versions: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
+            }
         }
 
         def context = new WorkaroundContext(project, new CompilerArgsProcessor(project))

@@ -50,7 +50,7 @@ class SimpleAndroidApp {
                     dependencies {
                         classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
                         classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.71"
+                        ${kotlinPluginDependencyIfEnabled}
                     }
                 }
             """.stripIndent()
@@ -111,6 +111,12 @@ class SimpleAndroidApp {
             """.stripIndent()
 
         configureAndroidSdkHome()
+    }
+
+    private String getKotlinPluginDependencyIfEnabled() {
+        return kotlinEnabled ? """
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.71"
+        """ : ""
     }
 
     private subprojectConfiguration(String androidPlugin) {

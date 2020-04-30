@@ -15,7 +15,7 @@ class Versions {
 
     static final VersionNumber PLUGIN_VERSION;
     static final Set<GradleVersion> SUPPORTED_GRADLE_VERSIONS
-    static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
+    private static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
     static final Multimap<VersionNumber, GradleVersion> SUPPORTED_VERSIONS_MATRIX
 
     static {
@@ -24,9 +24,7 @@ class Versions {
 
         def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
         versions.supportedVersions.each { String androidVersion, List<String> gradleVersions ->
-            if (!shouldOmitVersion(androidVersion)) {
-                builder.putAll(android(androidVersion), gradleVersions.collect { gradle(it) })
-            }
+            builder.putAll(android(androidVersion), gradleVersions.collect { gradle(it) })
         }
         def matrix = builder.build()
 
@@ -37,6 +35,10 @@ class Versions {
 
     private static boolean shouldOmitVersion(String androidVersion) {
         return System.getProperty(OMIT_VERSION_PROPERTY) == androidVersion
+    }
+
+    static Set<VersionNumber> supportedAndroidVersions() {
+        return ImmutableSortedSet.copyOf(SUPPORTED_ANDROID_VERSIONS.findAll { !shouldOmitVersion(it.toString()) })
     }
 
     static VersionNumber android(String version) {

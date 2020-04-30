@@ -1,5 +1,6 @@
 package org.gradle.android
 
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 import static java.util.regex.Pattern.quote
@@ -25,6 +26,8 @@ class PluginApplicationTest extends AbstractTest {
         androidVersion << ["3.4.1", "4.1.0-alpha01"]
     }
 
+    // Temporarily ignored until we come up with a better way of testing this that doesn't introduce flakiness
+    @Ignore
     def "warns when version is not supported but within range"() {
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)

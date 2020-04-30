@@ -1,6 +1,5 @@
 package org.gradle.android
 
-import org.gradle.internal.impldep.com.google.common.collect.Iterables
 import spock.lang.Unroll
 
 import static java.util.regex.Pattern.quote

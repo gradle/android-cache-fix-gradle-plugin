@@ -2,7 +2,6 @@ package org.gradle.android
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
-import org.gradle.util.VersionNumber
 import spock.lang.Issue
 import spock.lang.Unroll
 
@@ -13,7 +12,7 @@ class MergeJavaResourcesWorkaroundTest extends AbstractTest {
     def "workaround does not cause task to be skipped when inputs are empty (Android #androidVersion)"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
-            .withoutKotlinEnabled()
+            .withKotlinDisabled()
             .build()
             .writeProject()
 
@@ -34,14 +33,6 @@ class MergeJavaResourcesWorkaroundTest extends AbstractTest {
         buildResult.task(':library:mergeReleaseJavaResource').outcome == TaskOutcome.SUCCESS
 
         where:
-        androidVersion << latestAndroidVersions
-    }
-
-    List<VersionNumber> getLatestAndroidVersions() {
-        return [
-            Versions.getLatestVersionForAndroid("4.0"),
-            Versions.getLatestVersionForAndroid("3.6"),
-            Versions.getLatestVersionForAndroid("3.5")
-        ]
+        androidVersion << Versions.latestAndroidVersions
     }
 }

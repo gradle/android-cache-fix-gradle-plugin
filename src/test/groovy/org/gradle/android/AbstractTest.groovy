@@ -19,4 +19,8 @@ class AbstractTest extends Specification {
             .forwardOutput()
             .withDebug(false)
     }
+
+    File file(String path) {
+        return new File(temporaryFolder.root, path)
+    }
 }

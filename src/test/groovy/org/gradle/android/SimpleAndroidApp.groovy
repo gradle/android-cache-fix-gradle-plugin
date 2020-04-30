@@ -10,13 +10,15 @@ class SimpleAndroidApp {
     final VersionNumber androidVersion
     private final boolean dataBindingEnabled
     private final boolean kotlinEnabled
+    private final boolean kaptWorkersEnabled
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, boolean dataBindingEnabled, boolean kotlinEnabled) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
         this.kotlinEnabled = kotlinEnabled
+        this.kaptWorkersEnabled = kaptWorkersEnabled
     }
 
     def writeProject() {
@@ -104,6 +106,8 @@ class SimpleAndroidApp {
 
         file("gradle.properties") << """
                 android.useAndroidX=true
+                org.gradle.jvmargs=-Xmx2048m
+                kapt.use.worker.api=${kaptWorkersEnabled}
             """.stripIndent()
 
         configureAndroidSdkHome()
@@ -227,13 +231,94 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
-        if (kotlinEnabled) {
-            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/Utility.kt") << """
-                    package ${packageName};
+        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUser.java") << """
+                package ${packageName};
 
-                    class Utility { }
-                """.stripIndent()
-        }
+                import androidx.room.ColumnInfo;
+                import androidx.room.Entity;
+                import androidx.room.PrimaryKey;
+
+                @Entity(tableName = "user")
+                public class JavaUser {
+                    @PrimaryKey
+                    public int uid;
+
+                    @ColumnInfo(name = "first_name")
+                    public String firstName;
+
+                    @ColumnInfo(name = "last_name")
+                    public String lastName;
+                }
+            """.stripIndent()
+
+        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") << """
+            package ${packageName};
+
+            import androidx.room.Dao;
+            import androidx.room.Query;
+            import androidx.room.Insert;
+            import androidx.room.Delete;
+
+            import java.util.List;
+
+            @Dao
+            public interface JavaUserDao {
+                @Query("SELECT * FROM user")
+                List<JavaUser> getAll();
+
+                @Query("SELECT * FROM user WHERE uid IN (:userIds)")
+                List<JavaUser> loadAllByIds(int[] userIds);
+
+                @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
+                       "last_name LIKE :last LIMIT 1")
+                JavaUser findByName(String first, String last);
+
+                @Insert
+                void insertAll(JavaUser... users);
+
+                @Delete
+                void delete(JavaUser user);
+            }
+            """.stripIndent()
+
+        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/AppDatabase.java") << """
+            package ${packageName};
+
+            import androidx.room.Database;
+            import androidx.room.Room;
+            import androidx.room.RoomDatabase;
+            import androidx.room.migration.Migration;
+            import androidx.sqlite.db.SupportSQLiteDatabase;
+            import android.content.Context;
+
+            @Database(entities = {JavaUser.class}, version = 2, exportSchema = true)
+            public abstract class AppDatabase extends RoomDatabase {
+                private static AppDatabase INSTANCE;
+                private static final Object sLock = new Object();
+
+                static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+                    @Override
+                    public void migrate(SupportSQLiteDatabase database) {
+                        database.execSQL("ALTER TABLE Users "
+                                + " ADD COLUMN last_update INTEGER");
+                    }
+                };
+
+                public abstract JavaUserDao javaUserDao();
+
+                public static AppDatabase getInstance(Context context) {
+                    synchronized (sLock) {
+                        if (INSTANCE == null) {
+                            INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                                    AppDatabase.class, "Sample.db")
+                                    .addMigrations(MIGRATION_1_2)
+                                    .build();
+                        }
+                        return INSTANCE;
+                    }
+                }
+            }
+        """.stripIndent()
 
         file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -288,6 +373,7 @@ class SimpleAndroidApp {
     static class Builder {
         boolean dataBindingEnabled = true
         boolean kotlinEnabled = true
+        boolean kaptWorkersEnabled = true
         VersionNumber androidVersion = Versions.latestAndroidVersion()
         File projectDir
         File cacheDir
@@ -297,13 +383,18 @@ class SimpleAndroidApp {
             this.cacheDir = cacheDir
         }
 
-        Builder withoutDataBindingEnabled() {
+        Builder withDataBindingDisabled() {
             this.dataBindingEnabled = false
             return this
         }
 
-        Builder withoutKotlinEnabled() {
+        Builder withKotlinDisabled() {
             this.kotlinEnabled = false
+            return this
+        }
+
+        Builder withKaptWorkersDisabled() {
+            this.kaptWorkersEnabled = false
             return this
         }
 
@@ -327,7 +418,7 @@ class SimpleAndroidApp {
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, dataBindingEnabled, kotlinEnabled)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled)
         }
     }
 }

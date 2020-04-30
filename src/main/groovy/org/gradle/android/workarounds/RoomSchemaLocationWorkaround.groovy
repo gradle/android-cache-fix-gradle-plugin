@@ -1,9 +1,13 @@
 package org.gradle.android.workarounds
 
+import kotlin.InitializedLazyImpl
 import org.gradle.android.AndroidIssue
 import org.gradle.api.Task
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.process.CommandLineArgumentProvider
+import org.jetbrains.kotlin.gradle.internal.Kapt3KotlinGradleSubplugin
+import org.jetbrains.kotlin.gradle.internal.KaptTask
+import org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask
 
 /**
  * Changes annotation processor arguments to set the room.schemaLocation via a CommandLineArgsProcessor
@@ -20,6 +24,12 @@ class RoomSchemaLocationWorkaround implements Workaround {
     @Override
     void apply(WorkaroundContext context) {
         def project = context.project
+
+        if (project.hasProperty(Kapt3KotlinGradleSubplugin.USE_WORKER_API) && project.property(Kapt3KotlinGradleSubplugin.USE_WORKER_API) == "false") {
+            project.logger.lifecycle("RoomSchemaLocationWorkaround only works when ${Kapt3KotlinGradleSubplugin.USE_WORKER_API} is set to true.  Ignoring.")
+            return
+        }
+
         // Change the default room schema location to a relative path.  This avoids cacheability problems with
         // kapt tasks.  Note that kapt tasks treat all processor options as inputs, even if they are in fact
         // outputs.
@@ -58,6 +68,34 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 )
             }
         )
+
+        // Change the room schema location back to being an absolute path right before the kapt tasks execute.
+        // This allows other annotation processors that rely on the path being absolute to still function.
+        project.plugins.withId("kotlin-kapt") {
+            project.tasks.withType(KaptWithoutKotlincTask) { KaptWithoutKotlincTask task ->
+                doFirst {
+                    setKaptRoomSchemaLocationToAbsolutePath(task, "processorOptions")
+                }
+            }
+        }
+    }
+
+    private void setKaptRoomSchemaLocationToAbsolutePath(KaptTask task, String fieldName) {
+        def processorOptionsField = task.class.superclass.getDeclaredField(fieldName)
+        processorOptionsField.setAccessible(true)
+        def compilerPluginOptions = processorOptionsField.get(task)
+        def processorOptions = compilerPluginOptions.subpluginOptionsByPluginId[Kapt3KotlinGradleSubplugin.KAPT_SUBPLUGIN_ID]
+        processorOptions.each { option ->
+            if (option.key == ROOM_SCHEMA_LOCATION) {
+                def relativePath = option.value
+                def schemaBaseDir = task.project.file(relativePath)
+                def schemaDir = new File(schemaBaseDir, task.path.replaceAll(':', '/'))
+                def valueField = option.class.getDeclaredField("lazyValue")
+                valueField.setAccessible(true)
+                valueField.set(option, new InitializedLazyImpl(schemaDir.absolutePath))
+                println "Setting roomSchemaLocation to ${option.value}"
+            }
+        }
     }
 
     class RoomSchemaLocationArgsProvider implements CommandLineArgumentProvider {

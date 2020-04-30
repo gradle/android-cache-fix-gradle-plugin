@@ -59,4 +59,9 @@ class Versions {
         VersionNumber versionNumber = VersionNumber.parse(version)
         return SUPPORTED_ANDROID_VERSIONS.findAll { it.major == versionNumber.major && it.minor == versionNumber.minor }.max()
     }
+
+    static List<VersionNumber> getLatestAndroidVersions() {
+        def minorVersions = SUPPORTED_ANDROID_VERSIONS.collect { "${it.major}.${it.minor}" }.toSet()
+        return minorVersions.collect { getLatestVersionForAndroid(it) }
+    }
 }

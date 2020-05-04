@@ -5,7 +5,9 @@ import org.gradle.android.AndroidIssue
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
@@ -199,6 +201,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
      * of those tasks if only a single variant is being assembled.
      */
     static class RoomSchemaLocationMergeTask extends DefaultTask {
+        @Internal
         MergeAssociations roomSchemaMergeLocations
 
         @TaskAction
@@ -207,6 +210,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 project.delete(destination)
                 println "Merging schemas to ${destination}"
                 project.copy {
+                    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
                     into(destination)
                     from(source)
                 }

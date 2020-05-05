@@ -14,6 +14,8 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.process.CommandLineArgumentProvider
 
+import java.lang.reflect.Field
+
 /**
  * Changes Java annotation processor arguments to set the room.schemaLocation via a CommandLineArgsProcessor
  * which accurately sets it as an output of the task.  Note that it is common for people to set the value
@@ -32,19 +34,11 @@ import org.gradle.process.CommandLineArgumentProvider
 @AndroidIssue(introducedIn = "3.5.0", fixedIn = [], link = "https://issuetracker.google.com/issues/132245929")
 class RoomSchemaLocationWorkaround implements Workaround {
     private static final String ROOM_SCHEMA_LOCATION = "room.schemaLocation"
-    private static final String KAPT_USE_WORKER_API = "kapt.use.worker.api"
     private static final String KAPT_SUBPLUGIN_ID = "org.jetbrains.kotlin.kapt3"
 
     @Override
     void apply(WorkaroundContext context) {
         def project = context.project
-
-        // When kapt.use.worker.api=false, the processor options are Base64 encoded and it is sufficiently difficult
-        // to unpack, change and repack them that we just punt on this scenario for now.
-        if (project.hasProperty(KAPT_USE_WORKER_API) && project.property(KAPT_USE_WORKER_API) == "false") {
-            project.logger.lifecycle("RoomSchemaLocationWorkaround only works when ${KAPT_USE_WORKER_API} is set to true.  Ignoring.")
-            return
-        }
 
         // Create a task that will be used to merge the task-specific schema locations to the directory (or directories)
         // originally specified.  This allows us to fan out the generated output and keep good cacheability for the
@@ -104,12 +98,32 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
                 project.gradle.taskGraph.beforeTask {
                     if (it == task) {
-                        configureSchemaLocationOutputs(task)
+                        def relativePath = getConfiguredSchemaLocationForKaptWithoutKotlinc(task)
+                        if (relativePath) {
+                            configureSchemaLocationOutputs(task, relativePath)
+                        }
                     }
                 }
 
                 doFirst {
-                    setKaptRoomSchemaLocationToTaskSpecificDir(task)
+                    setRoomSchemaLocationToTaskSpecificDirForKaptWithoutKotlinc(task)
+                }
+            }
+
+            project.tasks.withType(kaptWithKotlincTaskClass) { Task task ->
+                task.finalizedBy mergeTask
+
+                project.gradle.taskGraph.beforeTask {
+                    if (it == task) {
+                        def relativePath = getConfiguredSchemaLocationOutputForKaptWithKotlinc(task)
+                        if (relativePath) {
+                            configureSchemaLocationOutputs(task, relativePath)
+                        }
+                    }
+                }
+
+                doFirst {
+                    setRoomSchemaLocationToTaskSpecificDirForKaptWithKotlinc(task)
                 }
             }
         }
@@ -127,38 +141,100 @@ class RoomSchemaLocationWorkaround implements Workaround {
         return compilerPluginOptions.subpluginOptionsByPluginId[KAPT_SUBPLUGIN_ID]
     }
 
-    private void configureSchemaLocationOutputs(Task task) {
+    static def getEncodedCompilerPluginOptions(Task task) {
+        def pluginOptionsField = task.class.superclass.getDeclaredField("pluginOptions")
+        pluginOptionsField.setAccessible(true)
+        def compilerPluginOptions = pluginOptionsField.get(task)
+        def optionsList = compilerPluginOptions.subpluginOptionsByPluginId[KAPT_SUBPLUGIN_ID]
+        return optionsList.find { it.key == "apoptions" }
+    }
+
+    private static Map<String, String> decode(String encoded) {
+        Map<String, String> map = [:]
+        def ois = new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(encoded)))
+        int size = ois.readInt()
+        size.times {
+            map.put(ois.readUTF(), ois.readUTF())
+        }
+        return map
+    }
+
+    private static String encode(Map<String, String> map) {
+        def os = new ByteArrayOutputStream()
+        def oos = new ObjectOutputStream(os)
+
+        oos.writeInt(map.size())
+        map.each { key, value ->
+            oos.writeUTF(key)
+            oos.writeUTF(value)
+        }
+
+        oos.flush()
+        return Base64.getEncoder().encodeToString(os.toByteArray())
+    }
+
+    private static String getConfiguredSchemaLocationOutputForKaptWithKotlinc(Task task) {
+        def apOptions = decode(getEncodedCompilerPluginOptions(task).value)
+        return apOptions[ROOM_SCHEMA_LOCATION]
+    }
+
+    private static String getConfiguredSchemaLocationForKaptWithoutKotlinc(Task task) {
+        def processorOptions = getCompilerPluginOptions(task)
+        def option = processorOptions.find { it.key == ROOM_SCHEMA_LOCATION }
+        return option?.value
+    }
+
+    private static void configureSchemaLocationOutputs(Task task, String relativePath) {
+        def schemaDestinationDir = task.project.file(relativePath)
+        def taskSpecificSchemaDir = getTaskSpecificSchemaDir(task)
+
+        // Add the task specific directory as an output
+        task.outputs.dir(taskSpecificSchemaDir)
+
+        // Register the generated schemas to be merged back to the original specified schema directory
+        task.project.roomSchemaMergeLocations.registerMerge(schemaDestinationDir, taskSpecificSchemaDir)
+    }
+
+    private static void setRoomSchemaLocationToTaskSpecificDirForKaptWithoutKotlinc(Task task) {
         def processorOptions = getCompilerPluginOptions(task)
         processorOptions.each { option ->
             if (option.key == ROOM_SCHEMA_LOCATION) {
-                def relativePath = option.value
-                def schemaDestinationDir = task.project.file(relativePath)
-                def taskSpecificSchemaDir = getTaskSpecificSchemaDir(task)
-
-                // Add the task specific directory as an output
-                task.outputs.dir(taskSpecificSchemaDir)
-
-                // Register the generated schemas to be merged back to the original specified schema directory
-                task.project.roomSchemaMergeLocations.registerMerge(schemaDestinationDir, taskSpecificSchemaDir)
+                setOptionValue(option, getTaskSpecificSchemaDir(task).absolutePath)
             }
         }
     }
 
-    private void setKaptRoomSchemaLocationToTaskSpecificDir(Task task) {
-        def processorOptions = getCompilerPluginOptions(task)
-        processorOptions.each { option ->
-            if (option.key == ROOM_SCHEMA_LOCATION) {
-                def taskSpecificSchemaDir = getTaskSpecificSchemaDir(task)
+    private static void setRoomSchemaLocationToTaskSpecificDirForKaptWithKotlinc(Task task) {
+        def encodedOptions = getEncodedCompilerPluginOptions(task)
+        def apOptions = decode(encodedOptions.value)
+        if (apOptions.containsKey(ROOM_SCHEMA_LOCATION)) {
+            apOptions[ROOM_SCHEMA_LOCATION] = getTaskSpecificSchemaDir(task).absolutePath
+            setOptionValue(encodedOptions, encode(apOptions))
+        }
+    }
 
-                def valueField = option.class.getDeclaredField("lazyValue")
-                valueField.setAccessible(true)
-                valueField.set(option, new InitializedLazyImpl(taskSpecificSchemaDir.absolutePath))
+    private static void setOptionValue(Object option, String value) {
+        def valueField = getField(option.class, "lazyValue")
+        valueField.setAccessible(true)
+        valueField.set(option, new InitializedLazyImpl(value))
+    }
+
+    private static Field getField(Class<?> clazz, String fieldName) {
+        for (Field field : clazz.declaredFields) {
+            if (field.name == fieldName) {
+                return field
             }
         }
+
+        return clazz.superclass.getDeclaredField(fieldName)
     }
 
     static Class<?> getKaptWithoutKotlincTaskClass() {
         return Class.forName("org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask")
+    }
+
+    static Class<?> getKaptWithKotlincTaskClass() {
+        return Class.forName("org.jetbrains.kotlin.gradle.internal.KaptWithKotlincTask")
     }
 
     class RoomSchemaLocationArgsProvider implements CommandLineArgumentProvider {

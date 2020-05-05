@@ -62,7 +62,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     }
 
     @Unroll
-    def "ignores workaround with kotlin enabled and kapt workers disabled (Android #androidVersion)"() {
+    def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers disabled (Android #androidVersion)"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKaptWorkersDisabled()
@@ -76,11 +76,43 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "--stacktrace")
+            .withArguments("assemble", "--build-cache", "--stacktrace")
             .build()
 
         then:
-        buildResult.output.contains("RoomSchemaLocationWorkaround only works when kapt.use.worker.api is set to true.  Ignoring.")
+        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+
+        and:
+        assertKaptSchemaOutputsExist()
+
+        and:
+        assertMergedSchemaOutputsExist()
+
+        when:
+        buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments("clean", "assemble", "--build-cache", "--stacktrace")
+            .build()
+
+        then:
+        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+
+        and:
+        assertKaptSchemaOutputsExist()
+
+        and:
+        assertMergedSchemaOutputsExist()
 
         where:
         androidVersion << Versions.latestAndroidVersions

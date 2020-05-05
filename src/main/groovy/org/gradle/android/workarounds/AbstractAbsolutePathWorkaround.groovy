@@ -11,6 +11,11 @@ abstract class AbstractAbsolutePathWorkaround implements Workaround {
     abstract void setPropertyValue(Task task, FileCollection fileCollection)
 
     @Override
+    boolean canBeApplied(Project project) {
+        return true
+    }
+
+    @Override
     void apply(WorkaroundContext context) {
         Project project = context.project
         project.tasks.withType(androidTaskClass).configureEach { Task task ->

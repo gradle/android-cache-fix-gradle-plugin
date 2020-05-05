@@ -7,7 +7,7 @@ class WorkaroundTest extends Specification {
 
     @Unroll
     def "applies the right workarounds for Android #androidVersion"() {
-        def workarounds = AndroidCacheFixPlugin.getWorkaroundsToApply(Versions.android(androidVersion))
+        def workarounds = AndroidCacheFixPlugin.getWorkaroundsToApply(Versions.android(androidVersion), null)
         expect:
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:

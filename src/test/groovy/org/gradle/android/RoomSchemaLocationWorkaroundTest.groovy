@@ -1,7 +1,9 @@
 package org.gradle.android
 
+import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
+import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
 class RoomSchemaLocationWorkaroundTest extends AbstractTest {
@@ -173,6 +175,42 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
         where:
         androidVersion << Versions.latestAndroidVersions
+    }
+
+    @Unroll
+    def "workaround is not applied with older Kotlin plugin version (Kotlin #kotlinVersion)"() {
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withKotlinVersion(kotlinVersion)
+            .build()
+            .writeProject()
+
+        cacheDir.deleteDir()
+        cacheDir.mkdirs()
+
+        when:
+        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments("assemble", "--build-cache", "--stacktrace", "--info")
+            .build()
+
+        then:
+        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':app:mergeRoomSchemaLocations') == null
+        buildResult.task(':library:mergeRoomSchemaLocations') == null
+
+        and:
+        assertMergedSchemaOutputsExist()
+
+        and:
+        buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.3.70 or higher (found ${kotlinVersion}).")
+
+        where:
+        kotlinVersion << [ "1.3.61", "1.3.50" ].collect { VersionNumber.parse(it) }
     }
 
     void assertKaptSchemaOutputsExist() {

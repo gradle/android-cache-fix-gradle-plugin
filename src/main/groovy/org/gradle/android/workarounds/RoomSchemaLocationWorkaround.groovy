@@ -3,6 +3,7 @@ package org.gradle.android.workarounds
 import kotlin.InitializedLazyImpl
 import org.gradle.android.AndroidIssue
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DuplicatesStrategy
@@ -13,6 +14,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.process.CommandLineArgumentProvider
+import org.gradle.util.VersionNumber
 
 import java.lang.reflect.Field
 
@@ -35,6 +37,18 @@ import java.lang.reflect.Field
 class RoomSchemaLocationWorkaround implements Workaround {
     private static final String ROOM_SCHEMA_LOCATION = "room.schemaLocation"
     private static final String KAPT_SUBPLUGIN_ID = "org.jetbrains.kotlin.kapt3"
+    private static final VersionNumber MINIMUM_KOTLIN_VERSION = VersionNumber.parse("1.3.70")
+
+    @Override
+    boolean canBeApplied(Project project) {
+        VersionNumber kotlinVersion = getKotlinVersion()
+        if (kotlinVersion != VersionNumber.UNKNOWN && kotlinVersion < MINIMUM_KOTLIN_VERSION) {
+            project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.3.70 or higher (found ${kotlinVersion.toString()}).")
+            return false
+        } else {
+            return true
+        }
+    }
 
     @Override
     void apply(WorkaroundContext context) {
@@ -235,6 +249,19 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
     static Class<?> getKaptWithKotlincTaskClass() {
         return Class.forName("org.jetbrains.kotlin.gradle.internal.KaptWithKotlincTask")
+    }
+
+    VersionNumber getKotlinVersion() {
+        def projectPropertiesStream = this.class.classLoader.getResourceAsStream("project.properties")
+        if (projectPropertiesStream != null) {
+            def projectProperties = new Properties()
+            projectProperties.load(projectPropertiesStream)
+            if (projectProperties.containsKey("project.version")) {
+                return VersionNumber.parse(projectProperties.getProperty("project.version"))
+            }
+        }
+
+        return VersionNumber.UNKNOWN
     }
 
     class RoomSchemaLocationArgsProvider implements CommandLineArgumentProvider {

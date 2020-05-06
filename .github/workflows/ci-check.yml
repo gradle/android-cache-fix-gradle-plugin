@@ -21,8 +21,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+    - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
     
     # Setup Android SDK 
     - uses: kineticengines/setup-android-actions@v0.1

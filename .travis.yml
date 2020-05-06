@@ -1,7 +1,7 @@
 language: android
 
 install: ./gradlew assemble
-script: ./gradlew check
+script: ./gradlew -I gradle/buildScanInit.gradle check 
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

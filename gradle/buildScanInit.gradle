@@ -1,0 +1,44 @@
+import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin
+import com.gradle.scan.plugin.BuildScanPlugin
+import org.gradle.util.GradleVersion
+
+initscript {
+    def pluginVersion = "3.3"
+
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("com.gradle:gradle-enterprise-gradle-plugin:${pluginVersion}")
+    }
+}
+
+def isTopLevelBuild = gradle.getParent() == null
+
+if (isTopLevelBuild) {
+    def gradleVersion = GradleVersion.current().baseVersion
+    def atLeastGradle5 = gradleVersion >= GradleVersion.version("5.0")
+    def atLeastGradle6 = gradleVersion >= GradleVersion.version("6.0")
+
+    if (atLeastGradle6) {
+        settingsEvaluated {
+            if (!it.pluginManager.hasPlugin("com.gradle.enterprise")) {
+                it.pluginManager.apply(GradleEnterprisePlugin)
+            }
+            configureExtension(it.extensions["gradleEnterprise"])
+        }
+    } else if (atLeastGradle5) {
+        rootProject {
+            pluginManager.apply(BuildScanPlugin)
+            configureExtension(extensions["gradleEnterprise"])
+        }
+    }
+}
+
+void configureExtension(extension) {
+    extension.buildScan.with {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+        publishAlways()
+    }
+}

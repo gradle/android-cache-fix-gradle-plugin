@@ -69,7 +69,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         def context = new WorkaroundContext(project, new CompilerArgsProcessor(project))
 
         def appliedWorkarounds = []
-        getWorkaroundsToApply(CURRENT_ANDROID_VERSION).each { Workaround workaround ->
+        getWorkaroundsToApply(CURRENT_ANDROID_VERSION, project).each { Workaround workaround ->
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
             workaround.apply(context)
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
@@ -89,7 +89,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         }
     }
 
-    static List<Workaround> getWorkaroundsToApply(VersionNumber androidVersion) {
+    static List<Workaround> getWorkaroundsToApply(VersionNumber androidVersion, Project project) {
         def workarounds = ImmutableList.<Workaround>builder()
         for (def workaround : WORKAROUNDS) {
             def androidIssue = workaround.class.getAnnotation(AndroidIssue)
@@ -97,12 +97,20 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             if (androidVersion < introducedIn) {
                 continue
             }
+
             if (androidIssue.fixedIn().any { String fixedInVersionString ->
                 def fixedInVersion = android(fixedInVersionString)
                 androidVersion.baseVersion == fixedInVersion.baseVersion && androidVersion >= fixedInVersion
             }) {
                 continue
             }
+
+            if (project != null) {
+                if (!workaround.canBeApplied(project)) {
+                    continue
+                }
+            }
+
             workarounds.add(workaround)
         }
         workarounds.build()

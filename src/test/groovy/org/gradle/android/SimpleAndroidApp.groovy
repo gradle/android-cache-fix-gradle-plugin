@@ -8,15 +8,17 @@ class SimpleAndroidApp {
     final File projectDir
     private final File cacheDir
     final VersionNumber androidVersion
+    final VersionNumber kotlinVersion
     private final boolean dataBindingEnabled
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
+        this.kotlinVersion = kotlinVersion
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
     }
@@ -115,7 +117,7 @@ class SimpleAndroidApp {
 
     private String getKotlinPluginDependencyIfEnabled() {
         return kotlinEnabled ? """
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.71"
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
         """ : ""
     }
 
@@ -381,6 +383,7 @@ class SimpleAndroidApp {
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
         VersionNumber androidVersion = Versions.latestAndroidVersion()
+        VersionNumber kotlinVersion = VersionNumber.parse("1.3.72")
         File projectDir
         File cacheDir
 
@@ -396,6 +399,11 @@ class SimpleAndroidApp {
 
         Builder withKotlinDisabled() {
             this.kotlinEnabled = false
+            return this
+        }
+
+        Builder withKotlinVersion(VersionNumber kotlinVersion) {
+            this.kotlinVersion = kotlinVersion
             return this
         }
 
@@ -424,7 +432,7 @@ class SimpleAndroidApp {
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled)
         }
     }
 }

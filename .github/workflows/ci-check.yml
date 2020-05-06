@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v1
     
     # Setup Android SDK 
-    - uses: kineticengines/setup-android-actions@v0.1
+    # - uses: kineticengines/setup-android-actions@v0.1
     
     # Use Java 8
     - uses: actions/setup-java@v1

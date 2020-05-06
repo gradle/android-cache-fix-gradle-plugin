@@ -30,7 +30,8 @@ import java.lang.reflect.Field
  * For kapt tasks, we cannot implement a CommandLineArgsProcessor, so we change the value to be relative
  * for the purposes of snapshotting inputs, then change it to the absolute path of a task-specific directory
  * right before the task executes.  We then merge it back to the originally specified directory using the
- * aforementioned merge task.
+ * aforementioned merge task.  Note that this workaround only works with Kotlin Gradle plugin 1.3.70 or
+ * higher.
  *
  */
 @AndroidIssue(introducedIn = "3.5.0", fixedIn = [], link = "https://issuetracker.google.com/issues/132245929")
@@ -38,12 +39,12 @@ class RoomSchemaLocationWorkaround implements Workaround {
     private static final String ROOM_SCHEMA_LOCATION = "room.schemaLocation"
     private static final String KAPT_SUBPLUGIN_ID = "org.jetbrains.kotlin.kapt3"
     private static final VersionNumber MINIMUM_KOTLIN_VERSION = VersionNumber.parse("1.3.70")
+    private static final VersionNumber KOTLIN_VERSION = getKotlinVersion()
 
     @Override
     boolean canBeApplied(Project project) {
-        VersionNumber kotlinVersion = getKotlinVersion()
-        if (kotlinVersion != VersionNumber.UNKNOWN && kotlinVersion < MINIMUM_KOTLIN_VERSION) {
-            project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.3.70 or higher (found ${kotlinVersion.toString()}).")
+        if (KOTLIN_VERSION != VersionNumber.UNKNOWN && KOTLIN_VERSION < MINIMUM_KOTLIN_VERSION) {
+            project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.3.70 or higher (found ${KOTLIN_VERSION.toString()}).")
             return false
         } else {
             return true
@@ -107,7 +108,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         // Change the room schema location back to an absolute path right before the kapt tasks execute.
         // This allows other annotation processors that rely on the path being absolute to still function.
         project.plugins.withId("kotlin-kapt") {
-            project.tasks.withType(kaptWithoutKotlincTaskClass) { Task task ->
+            project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach { Task task ->
                 task.finalizedBy mergeTask
 
                 project.gradle.taskGraph.beforeTask {
@@ -124,7 +125,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 }
             }
 
-            project.tasks.withType(kaptWithKotlincTaskClass) { Task task ->
+            project.tasks.withType(kaptWithKotlincTaskClass).configureEach { Task task ->
                 task.finalizedBy mergeTask
 
                 project.gradle.taskGraph.beforeTask {
@@ -149,15 +150,13 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     static def getCompilerPluginOptions(Task task) {
-        def processorOptionsField = task.class.superclass.getDeclaredField("processorOptions")
-        processorOptionsField.setAccessible(true)
+        def processorOptionsField = getAccessibleField(task.class, "processorOptions")
         def compilerPluginOptions = processorOptionsField.get(task)
         return compilerPluginOptions.subpluginOptionsByPluginId[KAPT_SUBPLUGIN_ID]
     }
 
     static def getEncodedCompilerPluginOptions(Task task) {
-        def pluginOptionsField = task.class.superclass.getDeclaredField("pluginOptions")
-        pluginOptionsField.setAccessible(true)
+        def pluginOptionsField = getAccessibleField(task.class, "pluginOptions")
         def compilerPluginOptions = pluginOptionsField.get(task)
         def optionsList = compilerPluginOptions.subpluginOptionsByPluginId[KAPT_SUBPLUGIN_ID]
         return optionsList.find { it.key == "apoptions" }
@@ -228,19 +227,23 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     private static void setOptionValue(Object option, String value) {
-        def valueField = getField(option.class, "lazyValue")
-        valueField.setAccessible(true)
+        def valueField = getAccessibleField(option.class, "lazyValue")
         valueField.set(option, new InitializedLazyImpl(value))
     }
 
-    private static Field getField(Class<?> clazz, String fieldName) {
+    private static Field getAccessibleField(Class<?> clazz, String fieldName) {
         for (Field field : clazz.declaredFields) {
             if (field.name == fieldName) {
+                field.setAccessible(true)
                 return field
             }
         }
 
-        return clazz.superclass.getDeclaredField(fieldName)
+        if (clazz.superclass != null) {
+            return getAccessibleField(clazz.superclass, fieldName)
+        } else {
+            throw new RuntimeException("Field '${fieldName}' not found")
+        }
     }
 
     static Class<?> getKaptWithoutKotlincTaskClass() {
@@ -251,8 +254,8 @@ class RoomSchemaLocationWorkaround implements Workaround {
         return Class.forName("org.jetbrains.kotlin.gradle.internal.KaptWithKotlincTask")
     }
 
-    VersionNumber getKotlinVersion() {
-        def projectPropertiesStream = this.class.classLoader.getResourceAsStream("project.properties")
+    static VersionNumber getKotlinVersion() {
+        def projectPropertiesStream = RoomSchemaLocationWorkaround.class.classLoader.getResourceAsStream("project.properties")
         if (projectPropertiesStream != null) {
             def projectProperties = new Properties()
             projectProperties.load(projectPropertiesStream)

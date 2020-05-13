@@ -33,6 +33,9 @@ import java.lang.reflect.Field
  * aforementioned merge task.  Note that this workaround only works with Kotlin Gradle plugin 1.3.70 or
  * higher.
  *
+ * There are multiple issues related to these problems:
+ *  - https://issuetracker.google.com/issues/132245929
+ *  - https://issuetracker.google.com/issues/139438151
  */
 @AndroidIssue(introducedIn = "3.5.0", fixedIn = [], link = "https://issuetracker.google.com/issues/132245929")
 class RoomSchemaLocationWorkaround implements Workaround {
@@ -106,7 +109,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
         )
 
         // Change the room schema location back to an absolute path right before the kapt tasks execute.
-        // This allows other annotation processors that rely on the path being absolute to still function.
+        // This allows other annotation processors that rely on the path being absolute to still function and
+        // makes it resilient when the working directory is something other than the project directory.
+        // See https://issuetracker.google.com/issues/139438151
         project.plugins.withId("kotlin-kapt") {
             project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach { Task task ->
                 task.finalizedBy mergeTask
@@ -313,7 +318,6 @@ class RoomSchemaLocationWorkaround implements Workaround {
         @TaskAction
         void mergeSourcesToDestinations() {
             roomSchemaMergeLocations.mergeAssociations.each { destination, source ->
-                project.delete(destination)
                 println "Merging schemas to ${destination}"
                 project.copy {
                     duplicatesStrategy(DuplicatesStrategy.INCLUDE)

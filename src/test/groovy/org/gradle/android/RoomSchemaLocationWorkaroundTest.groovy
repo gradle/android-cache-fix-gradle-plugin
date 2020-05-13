@@ -231,7 +231,9 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     void assertMergedSchemaOutputsExist() {
         // Merged schemas
+        assert file("app/schemas/org.gradle.android.example.app.AppDatabase/1.json").exists()
         assert file("app/schemas/org.gradle.android.example.app.AppDatabase/2.json").exists()
+        assert file("library/schemas/org.gradle.android.example.library.AppDatabase/1.json").exists()
         assert file("library/schemas/org.gradle.android.example.library.AppDatabase/2.json").exists()
     }
 }

@@ -105,6 +105,11 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
                 // Register the generated schemas to be merged back to the original specified schema directory
                 task.project.roomSchemaMergeLocations.registerMerge(schemaDestinationDir, taskSpecificSchemaDir)
+
+                // Seed the task-specific generated schema dir with the existing schemas
+                task.doFirst {
+                    copyExistingSchemasToTaskSpecificTmpDir(task, schemaDestinationDir, taskSpecificSchemaDir)
+                }
             }
         )
 
@@ -126,7 +131,12 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 }
 
                 doFirst {
-                    setRoomSchemaLocationToTaskSpecificDirForKaptWithoutKotlinc(task)
+                    // Setup a task-specific tmp dir and populate it with the existing schemas
+                    setRoomSchemaLocationToTaskSpecificTmpDirForKaptWithoutKotlinc(task)
+                }
+                doLast {
+                    // Copy the generated schemas from the tmp dir to the tracked output dir
+                    copyGeneratedSchemasToOutputDir(task, getTaskSpecificSchemaTmpDir(task), getTaskSpecificSchemaDir(task))
                 }
             }
 
@@ -143,7 +153,12 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 }
 
                 doFirst {
-                    setRoomSchemaLocationToTaskSpecificDirForKaptWithKotlinc(task)
+                    // Setup a task-specific tmp dir and populate it with the existing schemas
+                    setRoomSchemaLocationToTaskSpecificTmpDirForKaptWithKotlinc(task)
+                }
+                doLast {
+                    // Copy the generated schemas from the tmp dir to the tracked output dir
+                    copyGeneratedSchemasToOutputDir(task, getTaskSpecificSchemaTmpDir(task), getTaskSpecificSchemaDir(task))
                 }
             }
         }
@@ -151,6 +166,11 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
     static File getTaskSpecificSchemaDir(Task task) {
         def schemaBaseDir = task.project.layout.buildDirectory.dir("roomSchemas").get().asFile
+        return new File(schemaBaseDir, task.name)
+    }
+
+    static File getTaskSpecificSchemaTmpDir(Task task) {
+        def schemaBaseDir = task.project.layout.buildDirectory.dir("roomSchemas/tmp").get().asFile
         return new File(schemaBaseDir, task.name)
     }
 
@@ -213,20 +233,44 @@ class RoomSchemaLocationWorkaround implements Workaround {
         task.project.roomSchemaMergeLocations.registerMerge(schemaDestinationDir, taskSpecificSchemaDir)
     }
 
-    private static void setRoomSchemaLocationToTaskSpecificDirForKaptWithoutKotlinc(Task task) {
+    private static void copyExistingSchemasToTaskSpecificTmpDir(Task task, File existingSchemaDir, File taskSpecificTmpDir) {
+        // populate the task-specific tmp dir with any existing (non-generated) schemas
+        // this allows other annotation processors that might operate on these schemas
+        // to find them via the schema location argument
+        task.project.sync {
+            from existingSchemaDir
+            into taskSpecificTmpDir
+        }
+    }
+
+    private static void copyGeneratedSchemasToOutputDir(Task task, File taskSpecificTmpDir, File outputDir) {
+        // Copy the generated generated schemas from the task-specific tmp dir to the
+        // task-specific output dir.  This dance prevents the kapt task from clearing out
+        // the existing schemas before the annotation processors run
+        task.project.sync {
+            from taskSpecificTmpDir
+            into outputDir
+        }
+    }
+
+    private static void setRoomSchemaLocationToTaskSpecificTmpDirForKaptWithoutKotlinc(Task task) {
         def processorOptions = getCompilerPluginOptions(task)
         processorOptions.each { option ->
             if (option.key == ROOM_SCHEMA_LOCATION) {
-                setOptionValue(option, getTaskSpecificSchemaDir(task).absolutePath)
+                def taskSpecificTmpDir = getTaskSpecificSchemaTmpDir(task)
+                copyExistingSchemasToTaskSpecificTmpDir(task, task.project.file(option.value), taskSpecificTmpDir)
+                setOptionValue(option, taskSpecificTmpDir.absolutePath)
             }
         }
     }
 
-    private static void setRoomSchemaLocationToTaskSpecificDirForKaptWithKotlinc(Task task) {
+    private static void setRoomSchemaLocationToTaskSpecificTmpDirForKaptWithKotlinc(Task task) {
         def encodedOptions = getEncodedCompilerPluginOptions(task)
         def apOptions = decode(encodedOptions.value)
         if (apOptions.containsKey(ROOM_SCHEMA_LOCATION)) {
-            apOptions[ROOM_SCHEMA_LOCATION] = getTaskSpecificSchemaDir(task).absolutePath
+            def taskSpecificTmpDir = getTaskSpecificSchemaTmpDir(task)
+            copyExistingSchemasToTaskSpecificTmpDir(task, task.project.file(apOptions[ROOM_SCHEMA_LOCATION]), taskSpecificTmpDir)
+            apOptions[ROOM_SCHEMA_LOCATION] = taskSpecificTmpDir.absolutePath
             setOptionValue(encodedOptions, encode(apOptions))
         }
     }

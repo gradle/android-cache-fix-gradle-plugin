@@ -141,6 +141,7 @@ class SimpleAndroidApp {
             }
 
             android {
+                ndkVersion "20.0.5594570"
                 compileSdkVersion 28
                 buildToolsVersion "29.0.3"
                 dataBinding.enabled = $dataBindingEnabled

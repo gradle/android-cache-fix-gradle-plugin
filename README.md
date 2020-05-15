@@ -10,12 +10,12 @@ Some Android plugin versions have issues with Gradle's build cache feature. When
 ## Applying the plugin
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied.  Typically,
-this can just be injected from the root project's build.gradle (change '1.0.3' to the latest version of the cache fix plugin
+this can just be injected from the root project's build.gradle (change '1.0.4' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
 ``` groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "1.0.3" apply false
+    id "org.gradle.android.cache-fix" version "1.0.4" apply false
 }
 
 subprojects {

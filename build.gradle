@@ -107,13 +107,13 @@ task install(type: Upload) {
     configuration = configurations.runtime
 }
 
-def travis = System.getenv("TRAVIS") == "true"
+def ci = System.getenv("CI") == "true"
 
 test {
     dependsOn install
     systemProperty "local.repo", localRepo.toURI()
-    systemProperty "travis", travis
-    if (travis) {
+    systemProperty "ci", ci
+    if (ci) {
         testLogging.showStandardStreams = true
     }
 }

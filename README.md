@@ -18,7 +18,7 @@ plugins {
 }
 
 subprojects {
-    apply plugin: 'org.gradle.android-cache-fix`
+    apply plugin: 'org.gradle.android.cache-fix`
 }
 ```
 

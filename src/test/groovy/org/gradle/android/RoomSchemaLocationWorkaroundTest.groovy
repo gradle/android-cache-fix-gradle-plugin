@@ -215,23 +215,34 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     void assertKaptSchemaOutputsExist() {
         // Task specific schemas
-        assert file("app/build/roomSchemas/kaptDebugKotlin/org.gradle.android.example.app.AppDatabase/2.json").exists()
-        assert file("app/build/roomSchemas/kaptReleaseKotlin/org.gradle.android.example.app.AppDatabase/2.json").exists()
-        assert file("library/build/roomSchemas/kaptDebugKotlin/org.gradle.android.example.library.AppDatabase/2.json").exists()
-        assert file("library/build/roomSchemas/kaptReleaseKotlin/org.gradle.android.example.library.AppDatabase/2.json").exists()
+        assertKaptSchemaOutputsExistFor("debug")
+        assertKaptSchemaOutputsExistFor("release")
+    }
+
+    void assertKaptSchemaOutputsExistFor(String variant) {
+        assertSchemasExist("app", "build/roomSchemas/kapt${variant.capitalize()}Kotlin")
+        assertSchemasExist("library", "build/roomSchemas/kapt${variant.capitalize()}Kotlin")
     }
 
     void assertCompileJavaSchemaOutputsExist() {
         // Task specific schemas
-        assert file("app/build/roomSchemas/compileDebugJavaWithJavac/org.gradle.android.example.app.AppDatabase/2.json").exists()
-        assert file("app/build/roomSchemas/compileReleaseJavaWithJavac/org.gradle.android.example.app.AppDatabase/2.json").exists()
-        assert file("library/build/roomSchemas/compileDebugJavaWithJavac/org.gradle.android.example.library.AppDatabase/2.json").exists()
-        assert file("library/build/roomSchemas/compileReleaseJavaWithJavac/org.gradle.android.example.library.AppDatabase/2.json").exists()
+        assertCompileJavaSchemaOutputExistsFor("debug")
+        assertCompileJavaSchemaOutputExistsFor("release")
+    }
+
+    void assertCompileJavaSchemaOutputExistsFor(String variant) {
+        assertSchemasExist("app", "build/roomSchemas/compile${variant.capitalize()}JavaWithJavac")
+        assertSchemasExist("library", "build/roomSchemas/compile${variant.capitalize()}JavaWithJavac")
     }
 
     void assertMergedSchemaOutputsExist() {
         // Merged schemas
-        assert file("app/schemas/org.gradle.android.example.app.AppDatabase/2.json").exists()
-        assert file("library/schemas/org.gradle.android.example.library.AppDatabase/2.json").exists()
+        assertSchemasExist("app", "schemas")
+        assertSchemasExist("library", "schemas")
+    }
+
+    void assertSchemasExist(String project, String baseDirPath) {
+        assert file("${project}/${baseDirPath}/org.gradle.android.example.${project}.AppDatabase/1.json").exists()
+        assert file("${project}/${baseDirPath}/org.gradle.android.example.${project}.AppDatabase/2.json").exists()
     }
 }

@@ -257,6 +257,9 @@ class SimpleAndroidApp {
 
                     @ColumnInfo(name = "last_name")
                     public String lastName;
+
+                    @ColumnInfo(name = "last_update")
+                    public int lastUpdate;
                 }
             """.stripIndent()
 
@@ -328,6 +331,55 @@ class SimpleAndroidApp {
                 }
             }
         """.stripIndent()
+
+        file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << '''
+            {
+              "formatVersion": 1,
+              "database": {
+                "version": 1,
+                "identityHash": "ce7bbbf6ddf39482eddc7248f4f61e8a",
+                "entities": [
+                  {
+                    "tableName": "user",
+                    "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER NOT NULL, `first_name` TEXT, `last_name` TEXT, PRIMARY KEY(`uid`))",
+                    "fields": [
+                      {
+                        "fieldPath": "uid",
+                        "columnName": "uid",
+                        "affinity": "INTEGER",
+                        "notNull": true
+                      },
+                      {
+                        "fieldPath": "firstName",
+                        "columnName": "first_name",
+                        "affinity": "TEXT",
+                        "notNull": false
+                      },
+                      {
+                        "fieldPath": "lastName",
+                        "columnName": "last_name",
+                        "affinity": "TEXT",
+                        "notNull": false
+                      }
+                    ],
+                    "primaryKey": {
+                      "columnNames": [
+                        "uid"
+                      ],
+                      "autoGenerate": false
+                    },
+                    "indices": [],
+                    "foreignKeys": []
+                  }
+                ],
+                "views": [],
+                "setupQueries": [
+                  "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+                  "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ce7bbbf6ddf39482eddc7248f4f61e8a')"
+                ]
+              }
+            }
+        '''.stripIndent()
 
         file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

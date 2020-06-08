@@ -133,10 +133,13 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid35xOrHigher = androidVersion >= android("3.5.0")
         def isAndroid350to352 = androidVersion >= android("3.5.0") && androidVersion <= android("3.5.2")
         def isAndroid35x = androidVersion >= android("3.5.0") && androidVersion < android("3.6.0")
-        def isAndroid35xTo36x= androidVersion >= android("3.5.0") && androidVersion <= android("3.6.3")
+        def isAndroid35xTo36x = androidVersion >= android("3.5.0") && androidVersion <= android("3.6.3")
+        def isAndroid35xTo40x = androidVersion >= android("3.5.0") && androidVersion <= android("4.1.0-alpha01")
         def isAndroid36x = androidVersion >= android("3.6.0") && androidVersion < android("4.0.0-alpha01")
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
+        def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
+        def isAndroid41xOrHigher = androidVersion >= android("4.1.0-alpha01")
         def builder = new ExpectedOutcomeBuilder()
 
         // Applies to anything 3.5.0 or higher
@@ -174,6 +177,19 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
             android40xOrHigherExpectations(builder)
         }
 
+        if (isAndroid35xTo40x) {
+            android35xTo40xExpectations(builder)
+        }
+
+        if (isAndroid40x) {
+            android40xOnlyExpectations(builder)
+        }
+
+        // Applies to anything 4.1.0 or higher
+        if (isAndroid41xOrHigher) {
+            android41xOrHigherExpectations(builder)
+        }
+
         new ExpectedResults(
             builder.build()
         )
@@ -197,8 +213,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:compileReleaseSources', UP_TO_DATE)
         builder.expect(':app:createDebugCompatibleScreenManifests', FROM_CACHE)
         builder.expect(':app:createReleaseCompatibleScreenManifests', FROM_CACHE)
-        builder.expect(':app:dataBindingExportFeaturePackageIdsDebug', FROM_CACHE)
-        builder.expect(':app:dataBindingExportFeaturePackageIdsRelease', FROM_CACHE)
         builder.expect(':app:dataBindingGenBaseClassesDebug', FROM_CACHE)
         builder.expect(':app:dataBindingGenBaseClassesRelease', FROM_CACHE)
         builder.expect(':app:dataBindingMergeDependencyArtifactsDebug', FROM_CACHE)
@@ -207,12 +221,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:generateDebugBuildConfig', FROM_CACHE)
         builder.expect(':app:generateDebugResValues', FROM_CACHE)
         builder.expect(':app:generateDebugResources', UP_TO_DATE)
-        builder.expect(':app:generateDebugSources', SUCCESS)
         builder.expect(':app:generateReleaseAssets', UP_TO_DATE)
         builder.expect(':app:generateReleaseBuildConfig', FROM_CACHE)
         builder.expect(':app:generateReleaseResValues', FROM_CACHE)
         builder.expect(':app:generateReleaseResources', UP_TO_DATE)
-        builder.expect(':app:generateReleaseSources', SUCCESS)
         builder.expect(':app:javaPreCompileDebug', FROM_CACHE)
         builder.expect(':app:javaPreCompileRelease', FROM_CACHE)
         builder.expect(':app:kaptGenerateStubsDebugKotlin', FROM_CACHE)
@@ -240,7 +252,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:preDebugBuild', UP_TO_DATE)
         builder.expect(':app:preReleaseBuild', UP_TO_DATE)
         builder.expect(':app:prepareLintJar', SUCCESS)
-        builder.expect(':app:prepareLintJarForPublish', SUCCESS)
         builder.expect(':app:processDebugJavaRes', NO_SOURCE)
         builder.expect(':app:processDebugManifest', FROM_CACHE)
         builder.expect(':app:processReleaseJavaRes', NO_SOURCE)
@@ -274,13 +285,11 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:generateDebugRFile', FROM_CACHE)
         builder.expect(':library:generateDebugResValues', FROM_CACHE)
         builder.expect(':library:generateDebugResources', UP_TO_DATE)
-        builder.expect(':library:generateDebugSources', SUCCESS)
         builder.expect(':library:generateReleaseAssets', UP_TO_DATE)
         builder.expect(':library:generateReleaseBuildConfig', FROM_CACHE)
         builder.expect(':library:generateReleaseRFile', FROM_CACHE)
         builder.expect(':library:generateReleaseResValues', FROM_CACHE)
         builder.expect(':library:generateReleaseResources', UP_TO_DATE)
-        builder.expect(':library:generateReleaseSources', SUCCESS)
         builder.expect(':library:javaPreCompileDebug', FROM_CACHE)
         builder.expect(':library:javaPreCompileRelease', FROM_CACHE)
         builder.expect(':library:kaptGenerateStubsDebugKotlin', FROM_CACHE)
@@ -304,7 +313,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:preBuild', UP_TO_DATE)
         builder.expect(':library:preDebugBuild', UP_TO_DATE)
         builder.expect(':library:preReleaseBuild', UP_TO_DATE)
-        builder.expect(':library:prepareLintJar', SUCCESS)
         builder.expect(':library:prepareLintJarForPublish', SUCCESS)
         builder.expect(':library:processDebugJavaRes', NO_SOURCE)
         builder.expect(':library:processDebugManifest', FROM_CACHE)
@@ -346,6 +354,17 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:mergeDebugGeneratedProguardFiles', SUCCESS)
         builder.expect(':library:mergeReleaseConsumerProguardFiles', SUCCESS)
         builder.expect(':library:mergeReleaseGeneratedProguardFiles', SUCCESS)
+    }
+
+    static void android35xTo40xExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:prepareLintJarForPublish', SUCCESS)
+        builder.expect(':app:dataBindingExportFeaturePackageIdsDebug', FROM_CACHE)
+        builder.expect(':app:dataBindingExportFeaturePackageIdsRelease', FROM_CACHE)
+        builder.expect(':app:generateDebugSources', SUCCESS)
+        builder.expect(':app:generateReleaseSources', SUCCESS)
+        builder.expect(':library:generateDebugSources', SUCCESS)
+        builder.expect(':library:generateReleaseSources', SUCCESS)
+        builder.expect(':library:prepareLintJar', SUCCESS)
     }
 
     static void android35xOnlyExpectations(ExpectedOutcomeBuilder builder) {
@@ -405,8 +424,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     static void android40xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:compileDebugShaders', NO_SOURCE)
         builder.expect(':app:compileReleaseShaders', NO_SOURCE)
-        builder.expect(':app:dataBindingExportBuildInfoDebug', FROM_CACHE)
-        builder.expect(':app:dataBindingExportBuildInfoRelease', FROM_CACHE)
         builder.expect(':app:dataBindingMergeGenClassesDebug', FROM_CACHE)
         builder.expect(':app:dataBindingMergeGenClassesRelease', FROM_CACHE)
         builder.expect(':app:mergeDebugResources', SUCCESS)
@@ -417,8 +434,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:compileDebugShaders', NO_SOURCE)
         builder.expect(':library:compileReleaseLibraryResources', SUCCESS)
         builder.expect(':library:compileReleaseShaders', NO_SOURCE)
-        builder.expect(':library:dataBindingExportBuildInfoDebug', FROM_CACHE)
-        builder.expect(':library:dataBindingExportBuildInfoRelease', FROM_CACHE)
         builder.expect(':library:dataBindingMergeGenClassesDebug', FROM_CACHE)
         builder.expect(':library:dataBindingMergeGenClassesRelease', FROM_CACHE)
         builder.expect(':library:mergeDebugConsumerProguardFiles', FROM_CACHE)
@@ -433,5 +448,27 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:bundleLibRuntimeToJarRelease', FROM_CACHE)
         builder.expect(':app:collectReleaseDependencies', SUCCESS)
         builder.expect(':app:sdkReleaseDependencyData', SUCCESS)
+    }
+
+    static void android41xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':library:dataBindingTriggerDebug', FROM_CACHE)
+        builder.expect(':library:dataBindingTriggerRelease', FROM_CACHE)
+        builder.expect(':app:dataBindingTriggerDebug', FROM_CACHE)
+        builder.expect(':app:processDebugMainManifest', FROM_CACHE)
+        builder.expect(':app:processDebugManifestForPackage', FROM_CACHE)
+        builder.expect(':app:dataBindingTriggerRelease', FROM_CACHE)
+        builder.expect(':app:processReleaseMainManifest', FROM_CACHE)
+        builder.expect(':app:processReleaseManifestForPackage', FROM_CACHE)
+        builder.expect(':app:compressDebugAssets', FROM_CACHE)
+        builder.expect(':app:compressReleaseAssets', FROM_CACHE)
+        builder.expect(':app:mergeDebugNativeDebugMetadata', NO_SOURCE)
+        builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
+    }
+
+    static void android40xOnlyExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:dataBindingExportBuildInfoDebug', FROM_CACHE)
+        builder.expect(':app:dataBindingExportBuildInfoRelease', FROM_CACHE)
+        builder.expect(':library:dataBindingExportBuildInfoDebug', FROM_CACHE)
+        builder.expect(':library:dataBindingExportBuildInfoRelease', FROM_CACHE)
     }
 }

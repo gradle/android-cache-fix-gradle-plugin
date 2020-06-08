@@ -16,7 +16,7 @@ import java.lang.reflect.Field
  * method that calculates a new FileCollection from variantScope every time it is called.  So we only
  * support this workaround for 3.6.x and 4.0.x.
  */
-@AndroidIssue(introducedIn = "3.6.0", fixedIn = ["4.1.0"], link = "https://issuetracker.google.com/issues/140602655")
+@AndroidIssue(introducedIn = "3.6.0", fixedIn = ["4.1.0-alpha09"], link = "https://issuetracker.google.com/issues/140602655")
 class MergeNativeLibsWorkaround extends AbstractAbsolutePathWorkaround {
     Class<?> androidTaskClass = MergeNativeLibsTask.class
     String propertyName = "projectNativeLibs"

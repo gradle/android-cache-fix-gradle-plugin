@@ -12,7 +12,7 @@ import java.lang.reflect.Method
  * absolute path sensitivity.  This mostly comes up when the kotlin plugin has been applied, which puts the
  * kotlin_module files into this input.
  */
-@AndroidIssue(introducedIn = "3.5.0", fixedIn = ["4.1.0"], link = "https://issuetracker.google.com/issues/140602655")
+@AndroidIssue(introducedIn = "3.5.0", fixedIn = ["4.1.0-alpha09"], link = "https://issuetracker.google.com/issues/140602655")
 class MergeJavaResourcesWorkaround extends AbstractAbsolutePathWorkaround {
     Class<?> androidTaskClass = MergeJavaResourceTask.class
     String propertyName = "projectJavaRes"

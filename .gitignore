@@ -25,3 +25,6 @@ bin/
 # Logs
 # ----
 *.log
+
+# Android Studio
+local.properties

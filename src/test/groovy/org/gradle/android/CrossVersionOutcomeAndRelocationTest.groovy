@@ -251,7 +251,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:preBuild', UP_TO_DATE)
         builder.expect(':app:preDebugBuild', UP_TO_DATE)
         builder.expect(':app:preReleaseBuild', UP_TO_DATE)
-        builder.expect(':app:prepareLintJar', SUCCESS)
         builder.expect(':app:processDebugJavaRes', NO_SOURCE)
         builder.expect(':app:processDebugManifest', FROM_CACHE)
         builder.expect(':app:processReleaseJavaRes', NO_SOURCE)
@@ -365,6 +364,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:generateDebugSources', SUCCESS)
         builder.expect(':library:generateReleaseSources', SUCCESS)
         builder.expect(':library:prepareLintJar', SUCCESS)
+        builder.expect(':app:prepareLintJar', SUCCESS)
     }
 
     static void android35xOnlyExpectations(ExpectedOutcomeBuilder builder) {
@@ -463,6 +463,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:compressReleaseAssets', FROM_CACHE)
         builder.expect(':app:mergeDebugNativeDebugMetadata', NO_SOURCE)
         builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
+        builder.expect(':app:checkDebugAarMetadata', FROM_CACHE)
+        builder.expect(':app:checkReleaseAarMetadata', FROM_CACHE)
+        builder.expect(':library:writeDebugAarMetadata', FROM_CACHE)
+        builder.expect(':library:writeReleaseAarMetadata', FROM_CACHE)
     }
 
     static void android40xOnlyExpectations(ExpectedOutcomeBuilder builder) {

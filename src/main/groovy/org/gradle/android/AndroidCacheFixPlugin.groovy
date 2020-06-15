@@ -7,6 +7,7 @@ import com.android.build.gradle.tasks.ProcessAndroidResources
 import com.android.builder.model.Version
 import com.google.common.collect.ImmutableList
 import groovy.transform.CompileStatic
+import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
 import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
 import org.gradle.android.workarounds.MergeNativeLibsWorkaround
@@ -42,7 +43,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             WORKAROUNDS.addAll(
                 new MergeJavaResourcesWorkaround(),
                 new MergeNativeLibsWorkaround(),
-                new RoomSchemaLocationWorkaround()
+                new RoomSchemaLocationWorkaround(),
+                new CompileLibraryResourcesWorkaround()
             )
         }
     }

@@ -135,7 +135,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid35x = androidVersion >= android("3.5.0") && androidVersion < android("3.6.0")
         def isAndroid35xTo36x = androidVersion >= android("3.5.0") && androidVersion <= android("3.6.3")
         def isAndroid35xTo40x = androidVersion >= android("3.5.0") && androidVersion <= android("4.1.0-alpha01")
-        def isAndroid36x = androidVersion >= android("3.6.0") && androidVersion < android("4.0.0-alpha01")
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
@@ -160,11 +159,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // Applies to 3.5.x or 3.6.x
         if (isAndroid35xTo36x) {
             android35xTo36xExpectations(builder)
-        }
-
-        // Applies to 3.6.x only
-        if (isAndroid36x) {
-            android36xOnlyExpectations(builder)
         }
 
         // Applies to anything 3.6.0 or higher
@@ -414,9 +408,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:parseReleaseLocalResources', FROM_CACHE)
         builder.expect(':library:syncDebugLibJars', FROM_CACHE)
         builder.expect(':library:syncReleaseLibJars', FROM_CACHE)
-    }
-
-    static void android36xOnlyExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':library:compileDebugLibraryResources', FROM_CACHE)
         builder.expect(':library:compileReleaseLibraryResources', FROM_CACHE)
     }
@@ -430,9 +421,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:mergeReleaseResources', SUCCESS)
         builder.expect(':app:processDebugResources', SUCCESS)
         builder.expect(':app:processReleaseResources', SUCCESS)
-        builder.expect(':library:compileDebugLibraryResources', SUCCESS)
         builder.expect(':library:compileDebugShaders', NO_SOURCE)
-        builder.expect(':library:compileReleaseLibraryResources', SUCCESS)
         builder.expect(':library:compileReleaseShaders', NO_SOURCE)
         builder.expect(':library:dataBindingMergeGenClassesDebug', FROM_CACHE)
         builder.expect(':library:dataBindingMergeGenClassesRelease', FROM_CACHE)

@@ -102,7 +102,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
             if (androidIssue.fixedIn().any { String fixedInVersionString ->
                 def fixedInVersion = android(fixedInVersionString)
-                androidVersion.baseVersion == fixedInVersion.baseVersion && androidVersion >= fixedInVersion
+                androidVersion.baseVersion == fixedInVersion.baseVersion || androidVersion >= fixedInVersion
             }) {
                 continue
             }

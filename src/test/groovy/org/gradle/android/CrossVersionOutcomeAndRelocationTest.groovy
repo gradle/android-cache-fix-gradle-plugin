@@ -133,7 +133,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid35xOrHigher = androidVersion >= android("3.5.0")
         def isAndroid350to352 = androidVersion >= android("3.5.0") && androidVersion <= android("3.5.2")
         def isAndroid35x = androidVersion >= android("3.5.0") && androidVersion < android("3.6.0")
-        def isAndroid35xTo36x = androidVersion >= android("3.5.0") && androidVersion <= android("3.6.3")
+        def isAndroid35xTo36x = androidVersion >= android("3.5.0") && androidVersion <= android("3.6.4")
         def isAndroid35xTo40x = androidVersion >= android("3.5.0") && androidVersion <= android("4.1.0-alpha01")
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")

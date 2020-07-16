@@ -1,6 +1,5 @@
 package org.gradle.android
 
-import spock.lang.Ignore
 import spock.lang.Unroll
 
 import static java.util.regex.Pattern.quote

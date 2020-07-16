@@ -27,20 +27,18 @@ class PluginApplicationTest extends AbstractTest {
 
     }
 
-    // Temporarily ignored until we come up with a better way of testing this that doesn't introduce flakiness
-    @Ignore
     def "warns when version is not supported but within range"() {
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)
-            .withAndroidVersion("3.6.3")
+            .withAndroidVersion("3.6.1")
             .build()
             .writeProject()
 
         expect:
         def result = withGradleVersion(Versions.latestGradleVersion().version)
             .withProjectDir(projectDir)
-            .withArguments("tasks", "--stacktrace", "-D${Versions.OMIT_VERSION_PROPERTY}=3.6.3")
+            .withArguments("tasks", "--stacktrace")
             .build()
-        result.output =~ /WARNING: Android plugin ${quote("3.6.3")} has not been tested with this version of the Android cache fix plugin, although it may work.  This is likely because it is newly released and we haven't had a chance to release a new version of Android cache fix that supports it.  Proceed with caution.  You can suppress this warning with with -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true./
+        result.output =~ /WARNING: Android plugin ${quote("3.6.1")} has not been tested with this version of the Android cache fix plugin, although it may work.  We test against only the latest patch release versions of Android Gradle plugin: ${Versions.SUPPORTED_ANDROID_VERSIONS.join(", ")}.  If 3.6.1 is newly released, we may not have had a chance to release a version tested against it yet.  Proceed with caution.  You can suppress this warning with with -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true./
     }
 }

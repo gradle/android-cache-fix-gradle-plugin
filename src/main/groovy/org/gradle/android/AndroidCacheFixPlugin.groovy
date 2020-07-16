@@ -39,7 +39,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     // some of the classes the workarounds reference.  In such a case, we can throw a friendlier "not supported"
     // error instead of a ClassDefNotFound.
     static {
-        if (isSupportedAndroidVersion()) {
+        if (isMaybeSupportedAndroidVersion()) {
             WORKAROUNDS.addAll(
                 new MergeJavaResourcesWorkaround(),
                 new MergeNativeLibsWorkaround(),
@@ -55,7 +55,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     private static boolean isMaybeSupportedAndroidVersion() {
         return Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY) ||
-            (CURRENT_ANDROID_VERSION < SUPPORTED_ANDROID_VERSIONS.max() && CURRENT_ANDROID_VERSION > SUPPORTED_ANDROID_VERSIONS.min())
+            (CURRENT_ANDROID_VERSION <= Versions.latestAndroidVersion() && CURRENT_ANDROID_VERSION >= Versions.earliestMaybeSupportedAndroidVersion())
     }
 
     @Override

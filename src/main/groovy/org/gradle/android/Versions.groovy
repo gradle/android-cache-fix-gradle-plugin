@@ -11,8 +11,6 @@ import org.gradle.util.VersionNumber
 
 @CompileStatic(TypeCheckingMode.SKIP)
 class Versions {
-    public static final String OMIT_VERSION_PROPERTY = "org.gradle.android.cache-fix.omitVersion"
-
     static final VersionNumber PLUGIN_VERSION;
     static final Set<GradleVersion> SUPPORTED_GRADLE_VERSIONS
     static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
@@ -24,9 +22,7 @@ class Versions {
 
         def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
         versions.supportedVersions.each { String androidVersion, List<String> gradleVersions ->
-            if (!shouldOmitVersion(androidVersion)) {
-                builder.putAll(android(androidVersion), gradleVersions.collect { gradle(it) })
-            }
+            builder.putAll(android(androidVersion), gradleVersions.collect { gradle(it) })
         }
         def matrix = builder.build()
 
@@ -35,16 +31,17 @@ class Versions {
         SUPPORTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
     }
 
-    private static boolean shouldOmitVersion(String androidVersion) {
-        return System.getProperty(OMIT_VERSION_PROPERTY) == androidVersion
-    }
-
     static VersionNumber android(String version) {
         VersionNumber.parse(version)
     }
 
     static GradleVersion gradle(String version) {
         GradleVersion.version(version)
+    }
+
+    static VersionNumber earliestMaybeSupportedAndroidVersion() {
+        VersionNumber earliestSupported = SUPPORTED_ANDROID_VERSIONS.min()
+        return new VersionNumber(earliestSupported.major, earliestSupported.minor, 0, null)
     }
 
     static VersionNumber latestAndroidVersion() {

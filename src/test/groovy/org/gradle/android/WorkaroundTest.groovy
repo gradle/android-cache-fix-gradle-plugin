@@ -13,14 +13,9 @@ class WorkaroundTest extends Specification {
         where:
         androidVersion  | expectedWorkarounds
         "4.2.0-alpha04" | ['RoomSchemaLocation', 'CompileLibraryResources']
-        "4.1.0-beta04" | ['RoomSchemaLocation', 'CompileLibraryResources']
-        "4.0.0"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'CompileLibraryResources']
-        "3.6.2"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation']
-        "3.6.1"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation']
-        "3.6.0"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation']
-        "3.5.3"         | ['MergeJavaResources', 'RoomSchemaLocation']
-        "3.5.2"         | ['MergeJavaResources', 'RoomSchemaLocation']
-        "3.5.1"         | ['MergeJavaResources', 'RoomSchemaLocation']
-        "3.5.0"         | ['MergeJavaResources', 'RoomSchemaLocation']
+        "4.1.0-beta03" | ['RoomSchemaLocation', 'CompileLibraryResources']
+        "4.0.1"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'CompileLibraryResources']
+        "3.6.4"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation']
+        "3.5.4"         | ['MergeJavaResources', 'RoomSchemaLocation']
     }
 }

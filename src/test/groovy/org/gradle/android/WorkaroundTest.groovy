@@ -12,9 +12,9 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "4.2.0-alpha04" | ['RoomSchemaLocation', 'CompileLibraryResources']
-        "4.1.0-beta03" | ['RoomSchemaLocation', 'CompileLibraryResources']
-        "4.0.1"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'CompileLibraryResources']
+        "4.2.0-alpha04" | ['RoomSchemaLocation', 'CompileLibraryResources', 'MergeResources']
+        "4.1.0-beta03"  | ['RoomSchemaLocation', 'CompileLibraryResources', 'MergeResources']
+        "4.0.1"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'CompileLibraryResources', 'MergeResources']
         "3.6.4"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation']
         "3.5.4"         | ['MergeJavaResources', 'RoomSchemaLocation']
     }

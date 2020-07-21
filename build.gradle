@@ -35,9 +35,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.android.tools.build:gradle:3.5.3'
+    compileOnly 'com.android.tools.build:gradle:3.5.4'
     implementation gradleApi()
-    testImplementation 'com.android.tools.build:gradle:3.5.3'
+    testImplementation 'com.android.tools.build:gradle:3.5.4'
     testImplementation gradleTestKit()
     testImplementation "junit:junit:4.12"
     testImplementation "org.spockframework:spock-core:1.1-groovy-2.4@jar"

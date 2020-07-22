@@ -23,7 +23,7 @@ version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.tri
 // Maps supported Android plugin versions to the versions of Gradle that support it
 def supportedVersions = [
     "4.2.0-alpha04": ["6.5.1"],
-    "4.1.0-beta03": ["6.5.1"],
+    "4.1.0-beta04": ["6.5.1"],
     "4.0.1": ["6.1.1", "6.3", "6.4.1"],
     "3.6.4": ["5.6.4", "6.3", "6.4.1"],
     "3.5.4": ["5.4.1", "5.6.4", "6.3", "6.4.1"]
@@ -36,11 +36,11 @@ repositories {
 
 dependencies {
     compileOnly 'com.android.tools.build:gradle:3.5.4'
-    compile gradleApi()
-    testCompile 'com.android.tools.build:gradle:3.5.4'
-    testCompile gradleTestKit()
-    testCompile "junit:junit:4.12"
-    testCompile "org.spockframework:spock-core:1.1-groovy-2.4@jar"
+    implementation gradleApi()
+    testImplementation 'com.android.tools.build:gradle:3.5.4'
+    testImplementation gradleTestKit()
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.spockframework:spock-core:1.1-groovy-2.4@jar"
     testRuntime 'cglib:cglib-nodep:3.2.12'
     testRuntime 'org.objenesis:objenesis:3.1'
 }

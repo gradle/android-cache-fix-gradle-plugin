@@ -135,10 +135,12 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid35x = androidVersion >= android("3.5.0") && androidVersion < android("3.6.0")
         def isAndroid35xTo36x = androidVersion >= android("3.5.0") && androidVersion <= android("3.6.4")
         def isAndroid35xTo40x = androidVersion >= android("3.5.0") && androidVersion <= android("4.1.0-alpha01")
+        def isAndroid35xTo41x = androidVersion >= android("3.5.0") && androidVersion <= android("4.2.0-alpha01")
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
         def isAndroid41xOrHigher = androidVersion >= android("4.1.0-alpha01")
+        def isAndroid42xOrHigher = androidVersion >= android("4.2.0-alpha01")
         def builder = new ExpectedOutcomeBuilder()
 
         // Applies to anything 3.5.0 or higher
@@ -159,6 +161,11 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // Applies to 3.5.x or 3.6.x
         if (isAndroid35xTo36x) {
             android35xTo36xExpectations(builder)
+        }
+
+        // Applies to 3.5.x, 3.6.x, 4.0.x and 4.1.x
+        if (isAndroid35xTo41x) {
+            android35xTo41xExpectations(builder)
         }
 
         // Applies to anything 3.6.0 or higher
@@ -182,6 +189,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // Applies to anything 4.1.0 or higher
         if (isAndroid41xOrHigher) {
             android41xOrHigherExpectations(builder)
+        }
+
+        if (isAndroid42xOrHigher) {
+            android42xOrHigherExpectations(builder)
         }
 
         new ExpectedResults(
@@ -219,8 +230,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:generateReleaseBuildConfig', FROM_CACHE)
         builder.expect(':app:generateReleaseResValues', FROM_CACHE)
         builder.expect(':app:generateReleaseResources', UP_TO_DATE)
-        builder.expect(':app:javaPreCompileDebug', FROM_CACHE)
-        builder.expect(':app:javaPreCompileRelease', FROM_CACHE)
         builder.expect(':app:kaptGenerateStubsDebugKotlin', FROM_CACHE)
         builder.expect(':app:kaptDebugKotlin', FROM_CACHE)
         builder.expect(':app:kaptGenerateStubsReleaseKotlin', FROM_CACHE)
@@ -287,8 +296,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:generateReleaseRFile', FROM_CACHE)
         builder.expect(':library:generateReleaseResValues', FROM_CACHE)
         builder.expect(':library:generateReleaseResources', UP_TO_DATE)
-        builder.expect(':library:javaPreCompileDebug', FROM_CACHE)
-        builder.expect(':library:javaPreCompileRelease', FROM_CACHE)
         builder.expect(':library:kaptGenerateStubsDebugKotlin', FROM_CACHE)
         builder.expect(':library:kaptDebugKotlin', FROM_CACHE)
         builder.expect(':library:kaptGenerateStubsReleaseKotlin', FROM_CACHE)
@@ -360,6 +367,14 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:prepareLintJar', SUCCESS)
         builder.expect(':app:prepareLintJar', SUCCESS)
     }
+
+    static void android35xTo41xExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:javaPreCompileDebug', FROM_CACHE)
+        builder.expect(':app:javaPreCompileRelease', FROM_CACHE)
+        builder.expect(':library:javaPreCompileDebug', FROM_CACHE)
+        builder.expect(':library:javaPreCompileRelease', FROM_CACHE)
+    }
+
 
     static void android35xOnlyExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:checkDebugManifest', SUCCESS)
@@ -459,5 +474,11 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:dataBindingExportBuildInfoRelease', FROM_CACHE)
         builder.expect(':library:dataBindingExportBuildInfoDebug', FROM_CACHE)
         builder.expect(':library:dataBindingExportBuildInfoRelease', FROM_CACHE)
+    }
+
+    static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
+        // Should be made cacheable: https://issuetracker.google.com/160138798
+        builder.expect(':app:desugarDebugFileDependencies', SUCCESS)
+        builder.expect(':app:desugarReleaseFileDependencies', SUCCESS)
     }
 }

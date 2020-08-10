@@ -41,7 +41,8 @@ class Versions {
 
     static VersionNumber earliestMaybeSupportedAndroidVersion() {
         VersionNumber earliestSupported = SUPPORTED_ANDROID_VERSIONS.min()
-        return new VersionNumber(earliestSupported.major, earliestSupported.minor, 0, null)
+        // "alpha" is lower than null
+        return new VersionNumber(earliestSupported.major, earliestSupported.minor, 0, "alpha")
     }
 
     static VersionNumber latestAndroidVersion() {

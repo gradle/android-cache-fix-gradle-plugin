@@ -1,21 +1,11 @@
 import groovy.json.JsonBuilder
 
-buildscript {
-    repositories {
-        maven {
-            url = "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.12.0"
-    }
+plugins {
+    id "com.gradle.plugin-publish" version "0.12.0"
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'codenarc'
 }
-
-apply plugin: 'groovy'
-apply plugin: 'java-gradle-plugin'
-apply plugin: 'codenarc'
-
-apply plugin: "com.gradle.plugin-publish"
 
 group = "org.gradle.android"
 version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
@@ -31,13 +21,20 @@ def supportedVersions = [
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
+    jcenter() {
+        content {
+            //  org.jetbrains.trove4j is only available in jcenter otherwise we don't want to rely on jcenter.
+            includeGroup("org.jetbrains.trove4j")
+        }
+    }
 }
 
 dependencies {
-    compileOnly 'com.android.tools.build:gradle:3.5.4'
+    def agpVersion = "3.5.4"
+    compileOnly "com.android.tools.build:gradle:$agpVersion"
     implementation gradleApi()
-    testImplementation 'com.android.tools.build:gradle:3.5.4'
+    testImplementation "com.android.tools.build:gradle:$agpVersion"
     testImplementation gradleTestKit()
     testImplementation "junit:junit:4.12"
     testImplementation "org.spockframework:spock-core:1.1-groovy-2.4@jar"
@@ -45,12 +42,12 @@ dependencies {
     testRuntime 'org.objenesis:objenesis:3.1'
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
 
 def generatedResources = "$buildDir/generated-resources/main"
 
-task generateVersions {
+tasks.register('generateVersions') {
     def outputFile = file("$generatedResources/versions.json")
     inputs.property "version", version
     inputs.property "supportedVersions", supportedVersions
@@ -91,7 +88,7 @@ artifacts {
     runtime jar
 }
 
-task install(type: Upload) {
+tasks.register('install', Upload) {
     repositories {
         ivy {
             url = localRepo.toURI()
@@ -102,7 +99,7 @@ task install(type: Upload) {
     configuration = configurations.runtime
 }
 
-test {
+tasks.withType(Test).configureEach {
     dependsOn install
     systemProperty "local.repo", localRepo.toURI()
 }

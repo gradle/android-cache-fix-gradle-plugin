@@ -477,8 +477,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     }
 
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
-        // Should be made cacheable: https://issuetracker.google.com/160138798
-        builder.expect(':app:desugarDebugFileDependencies', SUCCESS)
-        builder.expect(':app:desugarReleaseFileDependencies', SUCCESS)
+        builder.expect(':app:desugarDebugFileDependencies', FROM_CACHE)
+        builder.expect(':app:desugarReleaseFileDependencies', FROM_CACHE)
     }
 }

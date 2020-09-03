@@ -139,6 +139,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
+        def isAndroid40xTo41x = androidVersion >= android("4.0.0") && androidVersion <= android("4.2.0-alpha01")
         def isAndroid41xOrHigher = androidVersion >= android("4.1.0-alpha01")
         def isAndroid42xOrHigher = androidVersion >= android("4.2.0-alpha01")
         def builder = new ExpectedOutcomeBuilder()
@@ -184,6 +185,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         if (isAndroid40x) {
             android40xOnlyExpectations(builder)
+        }
+
+        if (isAndroid40xTo41x) {
+            android40xTo41xExpectation(builder)
         }
 
         // Applies to anything 4.1.0 or higher
@@ -443,11 +448,14 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:bundleLibCompileToJarDebug', FROM_CACHE)
         builder.expect(':library:bundleLibResDebug', NO_SOURCE)
         builder.expect(':library:bundleLibResRelease', NO_SOURCE)
-        builder.expect(':library:bundleLibRuntimeToJarDebug', FROM_CACHE)
         builder.expect(':library:bundleLibCompileToJarRelease', FROM_CACHE)
-        builder.expect(':library:bundleLibRuntimeToJarRelease', FROM_CACHE)
         builder.expect(':app:collectReleaseDependencies', SUCCESS)
         builder.expect(':app:sdkReleaseDependencyData', SUCCESS)
+    }
+
+    static void android40xTo41xExpectation(ExpectedOutcomeBuilder builder) {
+        builder.expect(':library:bundleLibRuntimeToJarDebug', FROM_CACHE)
+        builder.expect(':library:bundleLibRuntimeToJarRelease', FROM_CACHE)
     }
 
     static void android41xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
@@ -479,5 +487,12 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:desugarDebugFileDependencies', FROM_CACHE)
         builder.expect(':app:desugarReleaseFileDependencies', FROM_CACHE)
+        // Renamed from ToJar to ToDir
+        builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE)
+        builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE)
+        builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
+        // New non-cacheable tasks in 4.2.0-alpha10:
+        builder.expect(':app:writeReleaseApplicationId', SUCCESS)
+        builder.expect(':app:analyticsRecordingRelease', SUCCESS)
     }
 }

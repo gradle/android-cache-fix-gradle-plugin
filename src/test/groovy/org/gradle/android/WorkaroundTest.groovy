@@ -12,9 +12,9 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "4.2.0-alpha07" | ['RoomSchemaLocation', 'CompileLibraryResources', 'MergeResources', 'DexFileDependencies']
-        "4.1.0-rc01"  | ['RoomSchemaLocation', 'CompileLibraryResources', 'MergeResources', 'DexFileDependencies']
-        "4.0.1"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'CompileLibraryResources', 'MergeResources', 'DexFileDependencies']
+        "4.2.0-alpha10" | ['RoomSchemaLocation', 'CompileLibraryResources_4_2', 'MergeResources', 'DexFileDependencies']
+        "4.1.0-rc02"  | ['RoomSchemaLocation', 'CompileLibraryResources_4_0', 'MergeResources', 'DexFileDependencies']
+        "4.0.1"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'CompileLibraryResources_4_0', 'MergeResources', 'DexFileDependencies']
         "3.6.4"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'DexFileDependencies']
         "3.5.4"         | ['MergeJavaResources', 'RoomSchemaLocation', 'DexFileDependencies']
     }

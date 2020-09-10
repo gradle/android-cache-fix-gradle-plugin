@@ -6,25 +6,20 @@ import spock.lang.Unroll
 
 class TaskAvoidanceTest extends AbstractTest {
     @Unroll
-    def "tasks are avoided with #gradleVersion and Android plugin #androidVersion"() {
+    def "Source Tasks are avoided with #gradleVersion and Android plugin #androidVersion"() {
         assert gradleVersion instanceof GradleVersion
         assert androidVersion instanceof VersionNumber
 
-        println "> Using Android plugin $androidVersion"
-        println "> Running with $gradleVersion"
-
+        given:
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
                 .withAndroidVersion(androidVersion)
-        .withKotlinDisabled()
+                .withKotlinDisabled()
                 .build()
                 .writeProject()
 
-        def originalSettings = file('build.gradle').text
-        file('build.gradle').text = """
-            ${originalSettings}
-
+        file('build.gradle') << """
             allprojects {
-              tasks.configureEach {
+              tasks.withType(SourceTask).configureEach {
                 println "configuring \$it"
               }
             }
@@ -33,21 +28,11 @@ class TaskAvoidanceTest extends AbstractTest {
         when:
         def result = withGradleVersion(gradleVersion.version)
                 .withProjectDir(temporaryFolder.root)
-                .withArguments("help")
+                .withArguments('help')
                 .build()
 
         then:
-        result.output.contains("configuring task ':help'")
-        !result.output.contains("configuring task ':app:compileDebugJavaWithJavac'")
-        !result.output.contains("configuring task ':app:compileDebugAndroidTestJavaWithJavac'")
-        !result.output.contains("configuring task ':app:compileDebugUnitTestJavaWithJavac'")
-        !result.output.contains("configuring task ':app:compileReleaseJavaWithJavac'")
-        !result.output.contains("configuring task ':app:compileReleaseUnitTestJavaWithJavac'")
-        !result.output.contains("configuring task ':library:compileDebugJavaWithJavac'")
-        !result.output.contains("configuring task ':library:compileDebugAndroidTestJavaWithJavac'")
-        !result.output.contains("configuring task ':library:compileDebugUnitTestJavaWithJavac'")
-        !result.output.contains("configuring task ':library:compileReleaseJavaWithJavac'")
-        !result.output.contains("configuring task ':library:compileReleaseUnitTestJavaWithJavac'")
+        !result.output.contains("configuring")
 
         where:
         [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }

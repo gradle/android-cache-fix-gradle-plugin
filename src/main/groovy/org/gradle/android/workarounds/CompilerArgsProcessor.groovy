@@ -40,7 +40,7 @@ class CompilerArgsProcessor {
         }
         applied = true
 
-        project.tasks.withType(JavaCompile) { JavaCompile task ->
+        project.tasks.withType(JavaCompile).configureEach { JavaCompile task ->
             project.gradle.taskGraph.beforeTask {
                 if (task == it) {
                     def processedArgs = processArgs(task.options.compilerArgs, task)

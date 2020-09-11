@@ -1,15 +1,10 @@
 package org.gradle.android
 
-import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
 class TaskAvoidanceTest extends AbstractTest {
     @Unroll
     def "Source Tasks are avoided with #gradleVersion and Android plugin #androidVersion"() {
-        assert gradleVersion instanceof GradleVersion
-        assert androidVersion instanceof VersionNumber
-
         given:
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
                 .withAndroidVersion(androidVersion)

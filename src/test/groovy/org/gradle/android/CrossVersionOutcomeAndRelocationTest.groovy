@@ -141,6 +141,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
         def isAndroid40xTo41x = androidVersion >= android("4.0.0") && androidVersion <= android("4.2.0-alpha01")
         def isAndroid41xOrHigher = androidVersion >= android("4.1.0-alpha01")
+        def isandroid41x = androidVersion >= android("4.1.0-alpha01") && androidVersion < android("4.2.0-alpha01")
         def isAndroid42xOrHigher = androidVersion >= android("4.2.0-alpha01")
         def builder = new ExpectedOutcomeBuilder()
 
@@ -194,6 +195,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // Applies to anything 4.1.0 or higher
         if (isAndroid41xOrHigher) {
             android41xOrHigherExpectations(builder)
+        }
+
+        if (isandroid41x) {
+            android41xOnlyExpectations(builder)
         }
 
         if (isAndroid42xOrHigher) {
@@ -470,11 +475,14 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:compressDebugAssets', FROM_CACHE)
         builder.expect(':app:compressReleaseAssets', FROM_CACHE)
         builder.expect(':app:mergeDebugNativeDebugMetadata', NO_SOURCE)
-        builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
         builder.expect(':app:checkDebugAarMetadata', FROM_CACHE)
         builder.expect(':app:checkReleaseAarMetadata', FROM_CACHE)
         builder.expect(':library:writeDebugAarMetadata', FROM_CACHE)
         builder.expect(':library:writeReleaseAarMetadata', FROM_CACHE)
+    }
+
+    static void android41xOnlyExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
     }
 
     static void android40xOnlyExpectations(ExpectedOutcomeBuilder builder) {
@@ -491,6 +499,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE)
         builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE)
         builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
+        builder.expect(':app:mergeReleaseNativeDebugMetadata', FROM_CACHE)
+        builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)
+        builder.expect(':app:extractReleaseNativeSymbolTables', FROM_CACHE)
+        builder.expect(':app:writeReleaseAppMetadata', FROM_CACHE)
         // New non-cacheable tasks in 4.2.0-alpha10:
         builder.expect(':app:writeReleaseApplicationId', SUCCESS)
         builder.expect(':app:analyticsRecordingRelease', SUCCESS)

@@ -506,5 +506,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // New non-cacheable tasks in 4.2.0-alpha10:
         builder.expect(':app:writeReleaseApplicationId', SUCCESS)
         builder.expect(':app:analyticsRecordingRelease', SUCCESS)
+        builder.expect(':app:writeDebugSigningConfigVersions', FROM_CACHE)
+        builder.expect(':app:writeReleaseSigningConfigVersions', FROM_CACHE)
     }
 }

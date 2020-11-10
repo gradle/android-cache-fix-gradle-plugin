@@ -13,7 +13,7 @@ class WorkaroundTest extends Specification {
         where:
         androidVersion  | expectedWorkarounds
         "4.2.0-alpha15" | ['RoomSchemaLocation', 'CompileLibraryResources_4_2', 'MergeResources', 'DexFileDependencies']
-        "4.1.0"  | ['RoomSchemaLocation', 'CompileLibraryResources_4_0', 'MergeResources', 'DexFileDependencies']
+        "4.1.1"  | ['RoomSchemaLocation', 'CompileLibraryResources_4_0', 'MergeResources', 'DexFileDependencies']
         "4.0.2"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'CompileLibraryResources_4_0', 'MergeResources', 'DexFileDependencies']
         "3.6.4"         | ['MergeJavaResources', 'MergeNativeLibs', 'RoomSchemaLocation', 'DexFileDependencies']
         "3.5.4"         | ['MergeJavaResources', 'RoomSchemaLocation', 'DexFileDependencies']

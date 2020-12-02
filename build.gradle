@@ -5,6 +5,7 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'codenarc'
+    id "org.gradle.test-retry" version "1.2.0"
 }
 
 group = "org.gradle.android"
@@ -102,6 +103,10 @@ tasks.register('install', Upload) {
 tasks.withType(Test).configureEach {
     dependsOn install
     systemProperty "local.repo", localRepo.toURI()
+    retry {
+        maxRetries = 3
+        maxFailures = 20
+    }
 }
 
 if (!JavaVersion.current().java8) {

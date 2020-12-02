@@ -155,6 +155,10 @@ class SimpleAndroidApp {
                                  "\${projectDir}/schemas".toString()]
                         }
                     }
+
+                    lintOptions {
+                        checkReleaseBuilds false
+                    }
                 }
             }
 

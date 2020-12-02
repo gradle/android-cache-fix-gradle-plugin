@@ -156,6 +156,9 @@ class SimpleAndroidApp {
                         }
                     }
                 }
+                lintOptions {
+                    checkReleaseBuilds = false
+                }
             }
 
             ${renderscriptConfiguration}

@@ -244,7 +244,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:kaptDebugKotlin', FROM_CACHE)
         builder.expect(':app:kaptGenerateStubsReleaseKotlin', FROM_CACHE)
         builder.expect(':app:kaptReleaseKotlin', FROM_CACHE)
-        builder.expect(':app:lintVitalRelease', SUCCESS)
         builder.expect(':app:mergeDebugResources', FROM_CACHE)
         builder.expect(':app:mergeReleaseResources', FROM_CACHE)
         builder.expect(':app:processDebugResources', FROM_CACHE)

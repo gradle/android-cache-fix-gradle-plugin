@@ -60,7 +60,9 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * @return the system property value or false if absent.
      */
     private static boolean systemPropertyBooleanCompat(String key, Project project) {
-        if (gradle(project.gradle.gradleVersion) >= GradleVersion.version("6.1")) {
+        // SystemProperty was added in 6.1, but forUseAtConfigurationTime is 6.5. Since this is
+        // for configuration caching, we just check on 6.5 anyway.
+        if (gradle(project.gradle.gradleVersion) >= GradleVersion.version("6.5")) {
             return project.providers.systemProperty(key)
                 .forUseAtConfigurationTime()
                 .map {

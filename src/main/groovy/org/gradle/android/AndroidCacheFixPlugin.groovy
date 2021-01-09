@@ -41,14 +41,14 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     private final List<Workaround> workarounds = [] as List<Workaround>
 
     private static boolean isSupportedAndroidVersion(Project project) {
-        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project)
-            || SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
+        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project) ||
+            SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
     }
 
     private static boolean isMaybeSupportedAndroidVersion(Project project) {
-        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project)
-            || (CURRENT_ANDROID_VERSION <= Versions.latestAndroidVersion()
-            && CURRENT_ANDROID_VERSION >= Versions.earliestMaybeSupportedAndroidVersion())
+        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project) ||
+            (CURRENT_ANDROID_VERSION <= Versions.latestAndroidVersion() &&
+                CURRENT_ANDROID_VERSION >= Versions.earliestMaybeSupportedAndroidVersion())
     }
 
     /**

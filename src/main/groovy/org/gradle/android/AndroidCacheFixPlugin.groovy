@@ -56,13 +56,13 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
      * on newer Gradle versions while falling back to old APIs gracefully on older APIs.
      *
      * @param key the key to look up.
-     * @param project the source gradle project.
+     * @param project the source gradle project. May be null.
      * @return the system property value or false if absent.
      */
     private static boolean systemPropertyBooleanCompat(String key, Project project) {
         // SystemProperty was added in 6.1, but forUseAtConfigurationTime is 6.5. Since this is
         // for configuration caching, we just check on 6.5 anyway.
-        if (gradle(project.gradle.gradleVersion) >= GradleVersion.version("6.5")) {
+        if (project != null && gradle(project.gradle.gradleVersion) >= GradleVersion.version("6.5")) {
             return project.providers.systemProperty(key)
                 .forUseAtConfigurationTime()
                 .map {
@@ -78,22 +78,29 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         }
     }
 
-    @Override
-    void apply(Project project) {
+    static List<Workaround> initializeWorkarounds(Project project) {
         // This avoids trying to apply these workarounds to a build with a version of Android that does not contain
-        // some of the classes the workarounds reference.  In such a case, we can throw a friendlier "not supported"
+        // some of the classes the workarounds reference. In such a case, we can throw a friendlier "not supported"
         // error instead of a ClassDefNotFound.
         if (isMaybeSupportedAndroidVersion(project)) {
-            workarounds.addAll(
+            return Arrays.<Workaround>asList(
                 new MergeJavaResourcesWorkaround(),
                 new MergeNativeLibsWorkaround(),
                 new RoomSchemaLocationWorkaround(),
                 new CompileLibraryResourcesWorkaround_4_0(),
                 new CompileLibraryResourcesWorkaround_4_2(),
                 new MergeResourcesWorkaround(),
-                new DexFileDependenciesWorkaround(),
+                new DexFileDependenciesWorkaround()
             )
+        } else {
+            return Collections.emptyList()
         }
+    }
+
+    @Override
+    void apply(Project project) {
+        workarounds.addAll(initializeWorkarounds(project))
+
 
         if (!isSupportedAndroidVersion(project)) {
             if (isMaybeSupportedAndroidVersion(project)) {

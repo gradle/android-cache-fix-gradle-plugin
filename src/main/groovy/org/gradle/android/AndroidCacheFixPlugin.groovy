@@ -20,6 +20,7 @@ import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.PathSensitivity
+import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -28,6 +29,7 @@ import java.lang.reflect.Method
 
 import static org.gradle.android.Versions.SUPPORTED_ANDROID_VERSIONS
 import static org.gradle.android.Versions.android
+import static org.gradle.android.Versions.gradle
 
 @CompileStatic
 class AndroidCacheFixPlugin implements Plugin<Project> {
@@ -55,13 +57,40 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         }
     }
 
-    private static boolean isSupportedAndroidVersion() {
-        return Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY) || SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
+    private static boolean isSupportedAndroidVersion(Project project) {
+        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project)
+            || SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
     }
 
-    private static boolean isMaybeSupportedAndroidVersion() {
-        return Boolean.getBoolean(IGNORE_VERSION_CHECK_PROPERTY) ||
-            (CURRENT_ANDROID_VERSION <= Versions.latestAndroidVersion() && CURRENT_ANDROID_VERSION >= Versions.earliestMaybeSupportedAndroidVersion())
+    private static boolean isMaybeSupportedAndroidVersion(Project project) {
+        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project)
+            || (CURRENT_ANDROID_VERSION <= Versions.latestAndroidVersion()
+            && CURRENT_ANDROID_VERSION >= Versions.earliestMaybeSupportedAndroidVersion())
+    }
+
+    /**
+     * Backward-compatible boolean system property check. This allows use of new ProviderFactory methods
+     * on newer Gradle versions while falling back to old APIs gracefully on older APIs.
+     *
+     * @param key the key to look up.
+     * @param project the source gradle project.
+     * @return the system property value or false if absent.
+     */
+    private static boolean systemPropertyBooleanCompat(String key, Project project) {
+        if (gradle(project.gradle.gradleVersion) >= GradleVersion.version("6.1")) {
+            return project.providers.systemProperty(key)
+                .forUseAtConfigurationTime()
+                .map {
+                    try {
+                        Boolean.parseBoolean(it)
+                    } catch (IllegalArgumentException | NullPointerException ignored) {
+                        false
+                    }
+                }
+                .getOrElse(false)
+        } else {
+            return Boolean.getBoolean(key)
+        }
     }
 
     @Override

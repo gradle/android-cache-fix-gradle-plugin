@@ -38,24 +38,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     private static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
     private static final VersionNumber CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
-    private static final List<Workaround> WORKAROUNDS = [] as List<Workaround>
-
-    // This avoids trying to apply these workarounds to a build with a version of Android that does not contain
-    // some of the classes the workarounds reference.  In such a case, we can throw a friendlier "not supported"
-    // error instead of a ClassDefNotFound.
-    static {
-        if (isMaybeSupportedAndroidVersion()) {
-            WORKAROUNDS.addAll(
-                new MergeJavaResourcesWorkaround(),
-                new MergeNativeLibsWorkaround(),
-                new RoomSchemaLocationWorkaround(),
-                new CompileLibraryResourcesWorkaround_4_0(),
-                new CompileLibraryResourcesWorkaround_4_2(),
-                new MergeResourcesWorkaround(),
-                new DexFileDependenciesWorkaround(),
-            )
-        }
-    }
+    private final List<Workaround> workarounds = [] as List<Workaround>
 
     private static boolean isSupportedAndroidVersion(Project project) {
         return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project)
@@ -95,8 +78,23 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (!isSupportedAndroidVersion()) {
-            if (isMaybeSupportedAndroidVersion()) {
+        // This avoids trying to apply these workarounds to a build with a version of Android that does not contain
+        // some of the classes the workarounds reference.  In such a case, we can throw a friendlier "not supported"
+        // error instead of a ClassDefNotFound.
+        if (isMaybeSupportedAndroidVersion(project)) {
+            workarounds.addAll(
+                new MergeJavaResourcesWorkaround(),
+                new MergeNativeLibsWorkaround(),
+                new RoomSchemaLocationWorkaround(),
+                new CompileLibraryResourcesWorkaround_4_0(),
+                new CompileLibraryResourcesWorkaround_4_2(),
+                new MergeResourcesWorkaround(),
+                new DexFileDependenciesWorkaround(),
+            )
+        }
+
+        if (!isSupportedAndroidVersion(project)) {
+            if (isMaybeSupportedAndroidVersion(project)) {
                 project.logger.warn("WARNING: Android plugin ${CURRENT_ANDROID_VERSION} has not been tested with this version of the Android cache fix plugin, although it may work.  We test against only the latest patch release versions of Android Gradle plugin: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}.  If ${CURRENT_ANDROID_VERSION} is newly released, we may not have had a chance to release a version tested against it yet.  Proceed with caution.  You can suppress this warning with with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             } else {
                 throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. Supported Android plugin versions: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
@@ -106,7 +104,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         def context = new WorkaroundContext(project, new CompilerArgsProcessor(project))
 
         def appliedWorkarounds = []
-        getWorkaroundsToApply(CURRENT_ANDROID_VERSION, project).each { Workaround workaround ->
+        getWorkaroundsToApply(CURRENT_ANDROID_VERSION, project, workarounds).each { Workaround workaround ->
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
             workaround.apply(context)
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
@@ -126,9 +124,13 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         }
     }
 
-    static List<Workaround> getWorkaroundsToApply(VersionNumber androidVersion, Project project) {
-        def workarounds = ImmutableList.<Workaround>builder()
-        for (def workaround : WORKAROUNDS) {
+    static List<Workaround> getWorkaroundsToApply(
+        VersionNumber androidVersion,
+        Project project,
+        List<Workaround> workarounds
+    ) {
+        def workaroundsBuilder = ImmutableList.<Workaround>builder()
+        for (def workaround : workarounds) {
             def androidIssue = workaround.class.getAnnotation(AndroidIssue)
             def introducedIn = android(androidIssue.introducedIn())
             if (androidVersion < introducedIn) {
@@ -148,9 +150,9 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 }
             }
 
-            workarounds.add(workaround)
+            workaroundsBuilder.add(workaround)
         }
-        workarounds.build()
+        workaroundsBuilder.build()
     }
 
     /**

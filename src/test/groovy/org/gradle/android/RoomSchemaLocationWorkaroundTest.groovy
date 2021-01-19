@@ -182,6 +182,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
             .withKotlinVersion(kotlinVersion)
+            .withRoomExtensionMissing()
             .build()
             .writeProject()
 
@@ -211,6 +212,27 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
         where:
         kotlinVersion << [ "1.3.61", "1.3.50" ].collect { VersionNumber.parse(it) }
+    }
+
+    def "workaround throws an exception when room extension is not configured, but annotation processor argument is"() {
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withRoomExtensionMissing()
+            .build()
+            .writeProject()
+
+        cacheDir.deleteDir()
+        cacheDir.mkdirs()
+
+        when:
+        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .buildAndFail()
+
+        then:
+        buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} cannot be used with an explicit '${RoomSchemaLocationWorkaround.ROOM_SCHEMA_LOCATION}' annotation processor argument.  Please change this to configure the schema location directory via the 'room' project extension:")
     }
 
     void assertKaptSchemaOutputsExist() {

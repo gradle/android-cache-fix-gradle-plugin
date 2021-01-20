@@ -235,6 +235,35 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} cannot be used with an explicit '${RoomSchemaLocationWorkaround.ROOM_SCHEMA_LOCATION}' annotation processor argument.  Please change this to configure the schema location directory via the 'room' project extension:")
     }
 
+    def "builds with no errors when room extension is not configured and annotation processor argument is missing"() {
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withRoomExtensionMissing()
+            .withRoomAnnotationProcessorArgumentDisabled()
+            .build()
+            .writeProject()
+
+        cacheDir.deleteDir()
+        cacheDir.mkdirs()
+
+        when:
+        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .build()
+
+        then:
+        noExceptionThrown()
+
+        and:
+        assertNotExecuted(buildResult, ':app:mergeRoomSchemaLocations')
+    }
+
+    void assertNotExecuted(buildResult, String taskPath) {
+        assert !buildResult.tasks.collect {it.path }.contains(taskPath)
+    }
+
     void assertKaptSchemaOutputsExist() {
         // Task specific schemas
         assertKaptSchemaOutputsExistFor("debug")

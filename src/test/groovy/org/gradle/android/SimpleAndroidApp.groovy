@@ -13,8 +13,9 @@ class SimpleAndroidApp {
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
     private final boolean roomExtensionConfigured
+    private final boolean roomAnnotationProcessorArgumentEnabled
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, boolean roomExtensionConfigured) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, boolean roomExtensionConfigured, boolean roomAnnotationProcessorArgumentEnabled) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -23,6 +24,7 @@ class SimpleAndroidApp {
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
         this.roomExtensionConfigured = roomExtensionConfigured
+        this.roomAnnotationProcessorArgumentEnabled = roomAnnotationProcessorArgumentEnabled
     }
 
     def writeProject() {
@@ -174,7 +176,7 @@ class SimpleAndroidApp {
     }
 
     private String getRoomAnnotationProcessorArgumentIfEnabled() {
-        return roomExtensionConfigured ? "" : """
+        return (roomExtensionConfigured || !roomAnnotationProcessorArgumentEnabled) ? "" : """
                     javaCompileOptions {
                         annotationProcessorOptions {
                             arguments = ["room.schemaLocation":
@@ -183,6 +185,7 @@ class SimpleAndroidApp {
                     }
         """
     }
+
     private String getKotlinPluginsIfEnabled() {
         return kotlinEnabled ? """
             apply plugin: "kotlin-android"
@@ -457,6 +460,7 @@ class SimpleAndroidApp {
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
         boolean roomExtensionConfigured = true
+        boolean roomAnnotationProcessorArgumentEnabled = true
         VersionNumber androidVersion = Versions.latestAndroidVersion()
         VersionNumber kotlinVersion = VersionNumber.parse("1.3.72")
         File projectDir
@@ -497,6 +501,11 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withRoomAnnotationProcessorArgumentDisabled() {
+            this.roomAnnotationProcessorArgumentEnabled = false
+            return this
+        }
+
         Builder withAndroidVersion(String androidVersion) {
             return withAndroidVersion(android(androidVersion))
         }
@@ -512,7 +521,7 @@ class SimpleAndroidApp {
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomExtensionConfigured)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomExtensionConfigured, roomAnnotationProcessorArgumentEnabled)
         }
     }
 }

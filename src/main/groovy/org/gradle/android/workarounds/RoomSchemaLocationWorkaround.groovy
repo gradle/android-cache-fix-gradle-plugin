@@ -65,12 +65,14 @@ class RoomSchemaLocationWorkaround implements Workaround {
     void apply(WorkaroundContext context) {
         def project = context.project
 
+        // Project extension to hold all of the Room configuration
+        def roomExtension = project.extensions.create("room", RoomExtension)
+
         // Create a task that will be used to merge the task-specific schema locations to the directory (or directories)
         // originally specified.  This allows us to fan out the generated output and keep good cacheability for the
         // compile/kapt tasks but still join everything later in the location the user expects.
-        project.ext.roomSchemaMergeLocations = new MergeAssociations(project.objects)
         TaskProvider<RoomSchemaLocationMergeTask> mergeTask = project.tasks.register("mergeRoomSchemaLocations", RoomSchemaLocationMergeTask) {
-            roomSchemaMergeLocations = project.roomSchemaMergeLocations
+            roomSchemaMergeLocations = roomExtension.roomSchemaMergeLocations
         }
 
         // Make sure that the annotation processor argument has not been explicitly configured in the Android
@@ -88,8 +90,6 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
         applyToAllAndroidVariants(project, configureVariant)
 
-        def extension = project.extensions.create("room", RoomExtension)
-
         project.tasks.withType(JavaCompile).configureEach { JavaCompile task ->
             def taskSpecificSchemaDir = project.objects.directoryProperty()
             taskSpecificSchemaDir.set(getTaskSpecificSchemaDir(task))
@@ -100,14 +100,14 @@ class RoomSchemaLocationWorkaround implements Workaround {
             )
 
             // Register the generated schemas to be merged back to the original specified schema directory
-            task.project.roomSchemaMergeLocations.registerMerge(extension.schemaLocationDir, taskSpecificSchemaDir)
+            roomExtension.registerOutputDirectory(taskSpecificSchemaDir)
 
             // Seed the task-specific generated schema dir with the existing schemas
             task.doFirst {
-                copyExistingSchemasToTaskSpecificTmpDir(task, extension.schemaLocationDir, taskSpecificSchemaDir)
+                copyExistingSchemasToTaskSpecificTmpDir(task, roomExtension.schemaLocationDir, taskSpecificSchemaDir)
             }
 
-            task.finalizedBy mergeTask
+            task.finalizedBy { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
         }
 
         project.plugins.withId("kotlin-kapt") {
@@ -120,7 +120,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(variantSpecificSchemaDir))
 
                 // Register the variant-specific directory with the merge task
-                project.roomSchemaMergeLocations.registerMerge(extension.schemaLocationDir, variantSpecificSchemaDir)
+                roomExtension.registerOutputDirectory(variantSpecificSchemaDir)
             }
 
             // Kapt tasks will remove the contents of any output directories, which will interfere with any additional
@@ -132,7 +132,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
             def configureKaptTask = { Task task ->
                 task.doFirst {
                     // Populate the variant-specific schemas dir with the existing schemas
-                    copyExistingSchemasToTaskSpecificTmpDirForKapt(task, extension.schemaLocationDir)
+                    copyExistingSchemasToTaskSpecificTmpDirForKapt(task, roomExtension.schemaLocationDir)
                 }
 
                 task.doLast {
@@ -140,7 +140,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                     copyGeneratedSchemasToOutputDirForKapt(task)
                 }
 
-                task.finalizedBy mergeTask
+                task.finalizedBy { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
             }
 
             project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach(configureKaptTask)
@@ -148,7 +148,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
             // Since we've added a new kapt-specific provider to the variant, go through the
             // JavaCompile tasks and remove this provider from its task-specific list so that
-            // it only has its JavaCompile-specific provider.
+            // it only has its JavaCompile-specific provider.  This is not great, but there
+            // does not seem to be a way around this with the way the kotlin android plugin
+            // maps annotation processor providers from the variant directly onto kapt tasks.
             project.afterEvaluate {
                 project.tasks.withType(JavaCompile).configureEach { JavaCompile task ->
                     def itr = task.options.compilerArgumentProviders.iterator()
@@ -196,9 +198,11 @@ class RoomSchemaLocationWorkaround implements Workaround {
         // populate the task-specific tmp dir with any existing (non-generated) schemas
         // this allows other annotation processors that might operate on these schemas
         // to find them via the schema location argument
-        task.project.sync {
-            from existingSchemaDir
-            into taskSpecificTmpDir
+        if (existingSchemaDir.isPresent()) {
+            task.project.sync {
+                from existingSchemaDir
+                into taskSpecificTmpDir
+            }
         }
     }
 
@@ -264,10 +268,16 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
     static abstract class RoomExtension {
         DirectoryProperty schemaLocationDir
+        MergeAssociations roomSchemaMergeLocations
 
         @Inject
         RoomExtension(ObjectFactory objectFactory) {
             schemaLocationDir = objectFactory.directoryProperty()
+            roomSchemaMergeLocations = objectFactory.newInstance(MergeAssociations)
+        }
+
+        void registerOutputDirectory(Provider<Directory> outputDir) {
+            roomSchemaMergeLocations.registerMerge(schemaLocationDir, outputDir)
         }
     }
 
@@ -279,9 +289,18 @@ class RoomSchemaLocationWorkaround implements Workaround {
             this.schemaLocationDir = schemaLocationDir
         }
 
+        @Internal
+        protected String getSchemaLocationPath() {
+            return schemaLocationDir.get().asFile.absolutePath
+        }
+
         @Override
         Iterable<String> asArguments() {
-            return ["-A${ROOM_SCHEMA_LOCATION}=${schemaLocationDir.get().asFile.absolutePath}" as String]
+            if (schemaLocationDir.isPresent()) {
+                return ["-A${ROOM_SCHEMA_LOCATION}=${schemaLocationPath}" as String]
+            } else {
+                return []
+            }
         }
     }
 
@@ -292,8 +311,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     static class KaptRoomSchemaLocationArgumentProvider extends RoomSchemaLocationArgumentProvider {
-        @Internal
-        Provider<Directory> temporarySchemaLocationDir
+        private Provider<Directory> temporarySchemaLocationDir
 
         KaptRoomSchemaLocationArgumentProvider(Provider<Directory> schemaLocationDir) {
             super(schemaLocationDir)
@@ -301,8 +319,8 @@ class RoomSchemaLocationWorkaround implements Workaround {
         }
 
         @Override
-        Iterable<String> asArguments() {
-            return ["-A${ROOM_SCHEMA_LOCATION}=${temporarySchemaLocationDir.get().asFile.absolutePath}" as String]
+        protected String getSchemaLocationPath() {
+            return temporarySchemaLocationDir.get().asFile.absolutePath
         }
     }
 
@@ -310,6 +328,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         ObjectFactory objectFactory
         Map<Provider<Directory>, ConfigurableFileCollection> mergeAssociations = [:]
 
+        @Inject
         MergeAssociations(ObjectFactory objectFactory) {
             this.objectFactory = objectFactory
         }

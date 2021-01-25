@@ -58,3 +58,25 @@ Please star them if you are experiencing them in your project.
 * DexFileDependenciesTask is not cacheable: https://issuetracker.google.com/160138798
 * MergeResources is not relocatable: https://issuetracker.google.com/issues/141301405
 * Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
+
+## Implementation Notes
+
+### RoomSchemaLocationWorkaround
+
+Most of the workarounds in this plugin should apply to your project without any changes.  However, one workaround
+requires some extra configuration.  The Room schema location workaround allows you to specify an output directory for
+Room schema exports without breaking caching for your Java and/or Kapt tasks where the annotation processor has been configured.
+There are various issues with how this annotation processor works (see https://issuetracker.google.com/issues/132245929
+and https://issuetracker.google.com/issues/139438151) which this workaround attempts to mitigate.  However, in order to
+do so in a manageable way, it imposes some restrictions:
+
+* The schema export directory must be configured via the "room" project extension instead of as an explicit annotation
+processor argument.  If an explicit annotation processor argument is provided, an exception will be thrown, instructing
+the user to configure it via the extension:
+```
+room {
+    schemaLocationDir = file("roomSchemas")
+}
+```
+* There can only be a single schema export directory for the project - you cannot configure variant-specific export
+directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.

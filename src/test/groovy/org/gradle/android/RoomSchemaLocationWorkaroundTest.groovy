@@ -182,7 +182,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
             .withKotlinVersion(kotlinVersion)
-            .withRoomExtensionMissing()
+            .withRoomProcessingArgumentConfigured()
             .build()
             .writeProject()
 
@@ -217,7 +217,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     def "workaround throws an exception when room extension is not configured, but annotation processor argument is"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
-            .withRoomExtensionMissing()
+            .withRoomProcessingArgumentConfigured()
             .build()
             .writeProject()
 
@@ -238,8 +238,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     def "builds with no errors when room extension is not configured and annotation processor argument is missing"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
-            .withRoomExtensionMissing()
-            .withRoomAnnotationProcessorArgumentDisabled()
+            .withNoRoomConfiguration()
             .build()
             .writeProject()
 

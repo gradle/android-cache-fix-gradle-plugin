@@ -12,10 +12,9 @@ class SimpleAndroidApp {
     private final boolean dataBindingEnabled
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
-    private final boolean roomExtensionConfigured
-    private final boolean roomAnnotationProcessorArgumentEnabled
+    private final RoomConfiguration roomConfiguration
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, boolean roomExtensionConfigured, boolean roomAnnotationProcessorArgumentEnabled) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -23,8 +22,7 @@ class SimpleAndroidApp {
         this.kotlinVersion = kotlinVersion
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
-        this.roomExtensionConfigured = roomExtensionConfigured
-        this.roomAnnotationProcessorArgumentEnabled = roomAnnotationProcessorArgumentEnabled
+        this.roomConfiguration = roomConfiguration
     }
 
     def writeProject() {
@@ -168,7 +166,7 @@ class SimpleAndroidApp {
     }
 
     private String getRoomExtensionIfEnabled() {
-        return roomExtensionConfigured ? """
+        return (roomConfiguration == RoomConfiguration.ROOM_EXTENSION) ? """
             room {
                 schemaLocationDir = file("schemas")
             }
@@ -176,14 +174,14 @@ class SimpleAndroidApp {
     }
 
     private String getRoomAnnotationProcessorArgumentIfEnabled() {
-        return (roomExtensionConfigured || !roomAnnotationProcessorArgumentEnabled) ? "" : """
+        return (roomConfiguration == RoomConfiguration.PROCESSOR_ARG) ? """
                     javaCompileOptions {
                         annotationProcessorOptions {
                             arguments = ["room.schemaLocation":
                                  "\${projectDir}/schemas".toString()]
                         }
                     }
-        """
+        """ : ""
     }
 
     private String getKotlinPluginsIfEnabled() {
@@ -455,12 +453,16 @@ class SimpleAndroidApp {
         return new Builder(projectDir, cacheDir)
     }
 
+    enum RoomConfiguration {
+        NONE, ROOM_EXTENSION, PROCESSOR_ARG
+    }
+
     static class Builder {
         boolean dataBindingEnabled = true
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
-        boolean roomExtensionConfigured = true
-        boolean roomAnnotationProcessorArgumentEnabled = true
+        RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
+
         VersionNumber androidVersion = Versions.latestAndroidVersion()
         VersionNumber kotlinVersion = VersionNumber.parse("1.3.72")
         File projectDir
@@ -496,13 +498,13 @@ class SimpleAndroidApp {
             return this
         }
 
-        Builder withRoomExtensionMissing() {
-            this.roomExtensionConfigured = false
+        Builder withRoomProcessingArgumentConfigured() {
+            this.roomConfiguration = RoomConfiguration.PROCESSOR_ARG
             return this
         }
 
-        Builder withRoomAnnotationProcessorArgumentDisabled() {
-            this.roomAnnotationProcessorArgumentEnabled = false
+        Builder withNoRoomConfiguration() {
+            this.roomConfiguration = RoomConfiguration.NONE
             return this
         }
 
@@ -521,7 +523,7 @@ class SimpleAndroidApp {
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomExtensionConfigured, roomAnnotationProcessorArgumentEnabled)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration)
         }
     }
 }

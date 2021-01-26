@@ -1,11 +1,12 @@
 # Android cache fix Gradle plugin
 
 ![CI](https://github.com/gradle/android-cache-fix-gradle-plugin/workflows/CI/badge.svg?branch=master)
+![Plugin Portal](https://img.shields.io/maven-metadata/v?metadataUrl=https://plugins.gradle.org/m2/gradle/plugin/org/gradle/android/android-cache-fix-gradle-plugin/maven-metadata.xml&label=Plugin%20Portal)
 
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions.
 
 * Supported Gradle versions: 5.4.1+
-* Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.0-rc3, 4.2.0-alpha12
+* Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.2, 4.2.0-beta03
 * Supported Kotlin versions: 1.3.70+
 
 We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 3.6.2), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.

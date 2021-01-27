@@ -21,18 +21,20 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 ## Applying the plugin
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied.  Typically,
-this can just be injected from the root project's build.gradle (change '1.0.14' to the latest version of the cache fix plugin
+this can just be injected from the root project's build.gradle (change '2.0.0' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
 ``` groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "1.0.14" apply false
+    id "org.gradle.android.cache-fix" version "2.0.0" apply false
 }
 
 subprojects {
     apply plugin: "org.gradle.android.cache-fix"
 }
 ```
+
+Note that if you are currently exporting schemas with the Room annotation processor, you will need to change how you specify the output directory according to the instructions [here](https://github.com/gradle/android-cache-fix-gradle-plugin#roomschemalocationworkaround).
 
 ## List of issues
 

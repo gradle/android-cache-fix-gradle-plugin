@@ -4,6 +4,7 @@ import org.gradle.android.AndroidIssue
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.tasks.PathSensitivity
 
 /**
@@ -21,20 +22,20 @@ class MergeResourcesWorkaround implements Workaround {
     void apply(WorkaroundContext context) {
         Project project = context.project
         project.tasks.withType(androidTaskClass).configureEach { Task task ->
-            Map<String, FileCollection> originalResources = [:]
+            MapProperty<String, FileCollection> originalResources = project.objects.mapProperty(String, FileCollection)
             // Create a synthetic input with the original value and RELATIVE path sensitivity
+            task.inputs.files(originalResources.map {it.values() })
+                .withPathSensitivity(PathSensitivity.RELATIVE)
+                .withPropertyName("rawLocalResources.workaround")
             project.gradle.taskGraph.beforeTask {
                 if (it == task) {
-                    originalResources.putAll(task.resourcesComputer.resources)
+                    task.resourcesComputer.resources.each { key, value -> originalResources.put(key, value) }
                     task.resourcesComputer.resources.clear()
-                    task.inputs.files(originalResources.values())
-                            .withPathSensitivity(PathSensitivity.RELATIVE)
-                            .withPropertyName("rawLocalResources.workaround")
                 }
             }
             // Set the source back to its original value before we execute the main task action
             task.doFirst {
-                task.resourcesComputer.resources.putAll(originalResources)
+                task.resourcesComputer.resources.putAll(originalResources.get())
             }
         }
     }

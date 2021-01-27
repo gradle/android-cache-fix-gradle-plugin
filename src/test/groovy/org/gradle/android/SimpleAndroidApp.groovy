@@ -12,8 +12,9 @@ class SimpleAndroidApp {
     private final boolean dataBindingEnabled
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
+    private final RoomConfiguration roomConfiguration
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -21,6 +22,7 @@ class SimpleAndroidApp {
         this.kotlinVersion = kotlinVersion
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
+        this.roomConfiguration = roomConfiguration
     }
 
     def writeProject() {
@@ -149,12 +151,7 @@ class SimpleAndroidApp {
                     minSdkVersion 28
                     targetSdkVersion 28
 
-                    javaCompileOptions {
-                        annotationProcessorOptions {
-                            arguments = ["room.schemaLocation":
-                                 "\${projectDir}/schemas".toString()]
-                        }
-                    }
+                    ${roomAnnotationProcessorArgumentIfEnabled}
 
                     lintOptions {
                         checkReleaseBuilds false
@@ -162,8 +159,29 @@ class SimpleAndroidApp {
                 }
             }
 
+            ${roomExtensionIfEnabled}
+
             ${renderscriptConfiguration}
         """.stripIndent()
+    }
+
+    private String getRoomExtensionIfEnabled() {
+        return (roomConfiguration == RoomConfiguration.ROOM_EXTENSION) ? """
+            room {
+                schemaLocationDir = file("schemas")
+            }
+        """ : ""
+    }
+
+    private String getRoomAnnotationProcessorArgumentIfEnabled() {
+        return (roomConfiguration == RoomConfiguration.PROCESSOR_ARG) ? """
+                    javaCompileOptions {
+                        annotationProcessorOptions {
+                            arguments = ["room.schemaLocation":
+                                 "\${projectDir}/schemas".toString()]
+                        }
+                    }
+        """ : ""
     }
 
     private String getKotlinPluginsIfEnabled() {
@@ -435,10 +453,16 @@ class SimpleAndroidApp {
         return new Builder(projectDir, cacheDir)
     }
 
+    enum RoomConfiguration {
+        NONE, ROOM_EXTENSION, PROCESSOR_ARG
+    }
+
     static class Builder {
         boolean dataBindingEnabled = true
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
+        RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
+
         VersionNumber androidVersion = Versions.latestAndroidVersion()
         VersionNumber kotlinVersion = VersionNumber.parse("1.3.72")
         File projectDir
@@ -474,6 +498,16 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withRoomProcessingArgumentConfigured() {
+            this.roomConfiguration = RoomConfiguration.PROCESSOR_ARG
+            return this
+        }
+
+        Builder withNoRoomConfiguration() {
+            this.roomConfiguration = RoomConfiguration.NONE
+            return this
+        }
+
         Builder withAndroidVersion(String androidVersion) {
             return withAndroidVersion(android(androidVersion))
         }
@@ -489,7 +523,7 @@ class SimpleAndroidApp {
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration)
         }
     }
 }

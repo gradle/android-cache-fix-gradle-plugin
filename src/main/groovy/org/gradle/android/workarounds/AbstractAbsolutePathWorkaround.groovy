@@ -19,16 +19,16 @@ abstract class AbstractAbsolutePathWorkaround implements Workaround {
     void apply(WorkaroundContext context) {
         Project project = context.project
         project.tasks.withType(androidTaskClass).configureEach { Task task ->
-            FileCollection originalPropertyValue
+            FileCollection originalPropertyValue = project.files()
             // Create a synthetic input with the original property value and RELATIVE path sensitivity
+            task.inputs.files(originalPropertyValue)
+                .withPathSensitivity(PathSensitivity.RELATIVE)
+                .withPropertyName("${propertyName}.workaround")
+                .optional()
             project.gradle.taskGraph.beforeTask {
                 if (it == task) {
-                    originalPropertyValue = task.getProperty(propertyName)
+                    originalPropertyValue.from(task.getProperty(propertyName))
                     setPropertyValue(task, project.files())
-                    task.inputs.files(originalPropertyValue)
-                        .withPathSensitivity(PathSensitivity.RELATIVE)
-                        .withPropertyName("${propertyName}.workaround")
-                        .optional()
                 }
             }
             // Set the task property back to its original value

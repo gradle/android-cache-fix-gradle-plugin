@@ -32,19 +32,19 @@ class CompileLibraryResourcesWorkaround_4_0 implements Workaround {
     void apply(WorkaroundContext context) {
         Project project = context.project
         project.tasks.withType(androidTaskClass).configureEach { Task task ->
-            DirectoryProperty originalPropertyValue
+            DirectoryProperty originalPropertyValue = project.objects.directoryProperty()
             // Create a synthetic input with the original property value and RELATIVE path sensitivity
+            task.inputs.dir(originalPropertyValue)
+                .withPathSensitivity(PathSensitivity.RELATIVE)
+                .withPropertyName("${propertyName}.workaround")
+                .optional()
             project.gradle.taskGraph.beforeTask {
                 if (it == task) {
-                    originalPropertyValue = task.getProperty(propertyName)
+                    originalPropertyValue.set(task.getProperty(propertyName))
                     def dummyProperty = project.objects.directoryProperty()
                     // Non-existent file to give the DirectoryProperty a value.
                     dummyProperty.set(project.file('/doesnt-exist'))
                     setPropertyValue(task, dummyProperty)
-                    task.inputs.dir(originalPropertyValue)
-                            .withPathSensitivity(PathSensitivity.RELATIVE)
-                            .withPropertyName("${propertyName}.workaround")
-                            .optional()
                 }
             }
             // Set the task property back to its original value

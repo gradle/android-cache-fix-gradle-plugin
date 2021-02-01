@@ -21,7 +21,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments("assemble", "testDebug", "--build-cache", "--stacktrace")
             .build()
 
         then:

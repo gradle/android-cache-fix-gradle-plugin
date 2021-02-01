@@ -165,7 +165,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         }
     }
 
-    private static def getKaptRoomSchemaLocationArgumentProvider(Task task) {
+    private static KaptRoomSchemaLocationArgumentProvider getKaptRoomSchemaLocationArgumentProvider(Task task) {
         def annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
         return annotationProcessorOptionProviders.flatten().find { it instanceof KaptRoomSchemaLocationArgumentProvider }
     }
@@ -209,6 +209,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
     private static void copyExistingSchemasToTaskSpecificTmpDirForKapt(Task task, Provider<Directory> existingSchemaDir) {
         // Derive the variant directory from the command line provider it is configured with
         def provider = getKaptRoomSchemaLocationArgumentProvider(task)
+        if (provider == null) {
+            return
+        }
         def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
 
         // Populate the variant-specific temporary schema dir with the existing schemas
@@ -221,6 +224,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
         // the existing schemas before the annotation processors run
         // Derive the variant directory from the command line provider it is configured with
         def provider = getKaptRoomSchemaLocationArgumentProvider(task)
+        if (provider == null) {
+            return
+        }
         def variantSpecificSchemaDir = provider.schemaLocationDir
         def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
 

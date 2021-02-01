@@ -7,6 +7,8 @@ import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
 class RoomSchemaLocationWorkaroundTest extends AbstractTest {
+    private static final String[] CLEAN_BUILD = ["clean", "testDebug", "testRelease", "--build-cache", "--stacktrace"]
+
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion)"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
@@ -21,7 +23,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "testDebug", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .build()
 
         then:
@@ -42,7 +44,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("clean", "assemble", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .build()
 
         then:
@@ -78,7 +80,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .build()
 
         then:
@@ -99,7 +101,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("clean", "assemble", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .build()
 
         then:
@@ -135,7 +137,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .build()
 
         then:
@@ -156,7 +158,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("clean", "assemble", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .build()
 
         then:
@@ -193,7 +195,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "--build-cache", "--stacktrace", "--info")
+            .withArguments(CLEAN_BUILD + ['--info'] as String[])
             .build()
 
         then:
@@ -228,7 +230,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .buildAndFail()
 
         then:
@@ -249,7 +251,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments(CLEAN_BUILD)
             .build()
 
         then:

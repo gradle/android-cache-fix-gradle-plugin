@@ -498,7 +498,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE)
         builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE)
         builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
-        builder.expect(':app:mergeReleaseNativeDebugMetadata', FROM_CACHE)
+        builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
         builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)
         builder.expect(':app:extractReleaseNativeSymbolTables', FROM_CACHE)
         builder.expect(':app:writeReleaseAppMetadata', FROM_CACHE)

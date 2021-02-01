@@ -6,8 +6,13 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
+import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
+
 class RoomSchemaLocationWorkaroundTest extends AbstractTest {
-    private static final String[] CLEAN_BUILD = ["clean", "testDebug", "testRelease", "--build-cache", "--stacktrace"]
+    private static final String[] CLEAN_BUILD = ["clean", "testDebug", "testRelease", "assembleAndroidTest", "--build-cache", "--stacktrace"]
+    private static final List<String> ALL_PROJECTS = ["app", "library"]
+    private static final List<String> ALL_VARIANTS = ["debug", "release"]
 
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion)"() {
@@ -27,12 +32,14 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .build()
 
         then:
-        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        assertCompileTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == SUCCESS
 
         and:
         assertKaptSchemaOutputsExist()
@@ -48,12 +55,14 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .build()
 
         then:
-        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        assertCompileTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertKaptTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertKaptAndroidTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertKaptUnitTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == SUCCESS
 
         and:
         assertKaptSchemaOutputsExist()
@@ -84,12 +93,14 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .build()
 
         then:
-        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        assertCompileTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == SUCCESS
 
         and:
         assertKaptSchemaOutputsExist()
@@ -105,12 +116,14 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .build()
 
         then:
-        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        assertCompileTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertKaptTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertKaptAndroidTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertKaptUnitTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == SUCCESS
 
         and:
         assertKaptSchemaOutputsExist()
@@ -141,12 +154,11 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .build()
 
         then:
-        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        assertCompileTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == SUCCESS
 
         and:
         assertCompileJavaSchemaOutputsExist()
@@ -162,12 +174,11 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .build()
 
         then:
-        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:mergeRoomSchemaLocations').outcome == TaskOutcome.SUCCESS
+        assertCompileTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, FROM_CACHE)
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == SUCCESS
 
         and:
         assertCompileJavaSchemaOutputsExist()
@@ -199,10 +210,12 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .build()
 
         then:
-        buildResult.task(':app:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:kaptDebugKotlin').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:kaptReleaseKotlin').outcome == TaskOutcome.SUCCESS
+        assertCompileTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptUnitTestTasksHaveOutcome(buildResult, SUCCESS)
         buildResult.task(':app:mergeRoomSchemaLocations') == null
         buildResult.task(':library:mergeRoomSchemaLocations') == null
 
@@ -263,6 +276,42 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     void assertNotExecuted(buildResult, String taskPath) {
         assert !buildResult.tasks.collect {it.path }.contains(taskPath)
+    }
+
+    void assertCompileTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
+        assertAllVariantTasksHaveOutcome(buildResult, outcome) { project, variant -> ":${project}:compile${variant.capitalize()}JavaWithJavac" }
+    }
+
+    void assertCompileAndroidTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
+        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, ["debug"]) { project, variant -> ":${project}:compile${variant.capitalize()}AndroidTestJavaWithJavac" }
+    }
+
+    void assertCompileUnitTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
+        assertAllVariantTasksHaveOutcome(buildResult, outcome) { project, variant -> ":${project}:compile${variant.capitalize()}UnitTestJavaWithJavac" }
+    }
+
+    void assertKaptTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
+        assertAllVariantTasksHaveOutcome(buildResult, outcome) { project, variant -> ":${project}:kapt${variant.capitalize()}Kotlin" }
+    }
+
+    void assertKaptAndroidTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
+        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, ["debug"]) { project, variant -> ":${project}:kapt${variant.capitalize()}AndroidTestKotlin" }
+    }
+
+    void assertKaptUnitTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
+        assertAllVariantTasksHaveOutcome(buildResult, outcome) { project, variant -> ":${project}:kapt${variant.capitalize()}UnitTestKotlin" }
+    }
+
+    void assertAllVariantTasksHaveOutcome(BuildResult buildResult, TaskOutcome taskOutcome, Closure<String> taskPathTransform) {
+        assertAllVariantTasksHaveOutcome(buildResult, taskOutcome, ALL_PROJECTS, ALL_VARIANTS, taskPathTransform)
+    }
+
+    void assertAllVariantTasksHaveOutcome(BuildResult buildResult, TaskOutcome taskOutcome, List<String> projects, List<String> variants, Closure<String> taskPathTransform) {
+        projects.each { project ->
+            variants.each { variant ->
+                assert buildResult.task(taskPathTransform.call(project, variant)).outcome == taskOutcome
+            }
+        }
     }
 
     void assertKaptSchemaOutputsExist() {

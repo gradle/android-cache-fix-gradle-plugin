@@ -285,6 +285,13 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
+        file("${basedir}/src/test/java/${packageName.replaceAll('\\.', '/')}/JavaUserTest.java") << """
+                package ${packageName};
+
+                public class JavaUserTest {
+                }
+            """.stripIndent()
+
         file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") << """
             package ${packageName};
 

@@ -27,14 +27,15 @@ class PluginApplicationTest extends AbstractTest {
     }
 
     def "warns when version is not supported but within range"() {
+        def notLatestPatchAndroidVersion = "3.6.1"
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)
-            .withAndroidVersion("3.6.1")
+            .withAndroidVersion(notLatestPatchAndroidVersion)
             .build()
             .writeProject()
 
         expect:
-        def result = withGradleVersion(Versions.latestGradleVersion().version)
+        def result = withGradleVersion(Versions.latestSupportedGradleVersionFor(notLatestPatchAndroidVersion).version)
             .withProjectDir(projectDir)
             .withArguments("tasks", "--stacktrace")
             .build()

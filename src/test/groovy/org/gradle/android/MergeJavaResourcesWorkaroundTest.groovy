@@ -20,7 +20,7 @@ class MergeJavaResourcesWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments("assemble", "--stacktrace")

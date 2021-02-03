@@ -36,7 +36,7 @@ class SimpleAndroidApp {
 
         file("settings.gradle") << """
                 buildCache {
-                    local(DirectoryBuildCache) {
+                    local {
                         directory = "${cacheDir.absolutePath.replace(File.separatorChar, '/' as char)}"
                     }
                 }

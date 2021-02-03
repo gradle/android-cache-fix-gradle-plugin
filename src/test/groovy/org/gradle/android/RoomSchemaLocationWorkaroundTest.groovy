@@ -25,7 +25,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)
@@ -48,7 +48,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         when:
-        buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)
@@ -86,7 +86,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)
@@ -109,7 +109,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         when:
-        buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)
@@ -147,7 +147,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)
@@ -167,7 +167,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         when:
-        buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)
@@ -192,8 +192,9 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     @Unroll
     def "workaround is not applied with older Kotlin plugin version (Kotlin #kotlinVersion)"() {
+        def androidVersion = Versions.getLatestVersionForAndroid("3.6")
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
-            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withAndroidVersion(androidVersion)
             .withKotlinVersion(kotlinVersion)
             .withRoomProcessingArgumentConfigured()
             .build()
@@ -203,7 +204,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD + ['--info'] as String[])
@@ -230,8 +231,9 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     }
 
     def "workaround throws an exception when room extension is not configured, but annotation processor argument is"() {
+        def androidVersion = Versions.getLatestVersionForAndroid("3.6")
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
-            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withAndroidVersion(androidVersion)
             .withRoomProcessingArgumentConfigured()
             .build()
             .writeProject()
@@ -240,7 +242,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)
@@ -251,8 +253,9 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     }
 
     def "builds with no errors when room extension is not configured and annotation processor argument is missing"() {
+        def androidVersion = Versions.getLatestVersionForAndroid("3.6")
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
-            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withAndroidVersion(androidVersion)
             .withNoRoomConfiguration()
             .build()
             .writeProject()
@@ -261,7 +264,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestGradleVersion().version)
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments(CLEAN_BUILD)

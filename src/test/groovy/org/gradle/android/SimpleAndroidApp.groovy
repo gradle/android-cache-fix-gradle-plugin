@@ -5,6 +5,7 @@ import org.gradle.util.VersionNumber
 import static org.gradle.android.Versions.android
 
 class SimpleAndroidApp {
+    public static final ROOM_LIBRARY_VERSION = "2.2.5"
     final File projectDir
     private final File cacheDir
     final VersionNumber androidVersion
@@ -60,6 +61,7 @@ class SimpleAndroidApp {
             """.stripIndent()
 
         writeActivity(library, libPackage, libraryActivity)
+        writeRoomSourcesIfEnabled(library, libPackage)
         file("${library}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
                 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
                     package="${libPackage}">
@@ -67,6 +69,7 @@ class SimpleAndroidApp {
             """.stripIndent()
 
         writeActivity(app, appPackage, appActivity)
+        writeRoomSourcesIfEnabled(app, appPackage)
         file("${app}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
                 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
                     package="${appPackage}">
@@ -135,10 +138,7 @@ class SimpleAndroidApp {
             }
 
             dependencies {
-                def room_version = "2.2.5"
-
-                implementation "androidx.room:room-runtime:\$room_version"
-                annotationProcessor "androidx.room:room-compiler:\$room_version"
+                ${roomLibraryIfEnabled}
                 ${kotlinDependenciesIfEnabled}
             }
 
@@ -163,6 +163,13 @@ class SimpleAndroidApp {
 
             ${renderscriptConfiguration}
         """.stripIndent()
+    }
+
+    private String getRoomLibraryIfEnabled() {
+        return (roomConfiguration != RoomConfiguration.NO_LIBRARY) ? """
+                implementation "androidx.room:room-runtime:${ROOM_LIBRARY_VERSION}"
+                annotationProcessor "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
+        """ : ""
     }
 
     private String getRoomExtensionIfEnabled() {
@@ -193,8 +200,14 @@ class SimpleAndroidApp {
 
     private String getKotlinDependenciesIfEnabled() {
         return kotlinEnabled ? """
-            kapt "androidx.room:room-compiler:\$room_version"
+            ${kaptRoomDependencyIfEnabled}
             implementation "org.jetbrains.kotlin:kotlin-stdlib"
+        """ : ""
+    }
+
+    private String getKaptRoomDependencyIfEnabled() {
+        return (roomConfiguration != RoomConfiguration.NO_LIBRARY) ? """
+            kapt "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
         """ : ""
     }
 
@@ -262,153 +275,12 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
-        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUser.java") << """
-                package ${packageName};
-
-                import androidx.room.ColumnInfo;
-                import androidx.room.Entity;
-                import androidx.room.PrimaryKey;
-
-                @Entity(tableName = "user")
-                public class JavaUser {
-                    @PrimaryKey
-                    public int uid;
-
-                    @ColumnInfo(name = "first_name")
-                    public String firstName;
-
-                    @ColumnInfo(name = "last_name")
-                    public String lastName;
-
-                    @ColumnInfo(name = "last_update")
-                    public int lastUpdate;
-                }
-            """.stripIndent()
-
         file("${basedir}/src/test/java/${packageName.replaceAll('\\.', '/')}/JavaUserTest.java") << """
                 package ${packageName};
 
                 public class JavaUserTest {
                 }
             """.stripIndent()
-
-        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") << """
-            package ${packageName};
-
-            import androidx.room.Dao;
-            import androidx.room.Query;
-            import androidx.room.Insert;
-            import androidx.room.Delete;
-
-            import java.util.List;
-
-            @Dao
-            public interface JavaUserDao {
-                @Query("SELECT * FROM user")
-                List<JavaUser> getAll();
-
-                @Query("SELECT * FROM user WHERE uid IN (:userIds)")
-                List<JavaUser> loadAllByIds(int[] userIds);
-
-                @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
-                       "last_name LIKE :last LIMIT 1")
-                JavaUser findByName(String first, String last);
-
-                @Insert
-                void insertAll(JavaUser... users);
-
-                @Delete
-                void delete(JavaUser user);
-            }
-            """.stripIndent()
-
-        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/AppDatabase.java") << """
-            package ${packageName};
-
-            import androidx.room.Database;
-            import androidx.room.Room;
-            import androidx.room.RoomDatabase;
-            import androidx.room.migration.Migration;
-            import androidx.sqlite.db.SupportSQLiteDatabase;
-            import android.content.Context;
-
-            @Database(entities = {JavaUser.class}, version = 2, exportSchema = true)
-            public abstract class AppDatabase extends RoomDatabase {
-                private static AppDatabase INSTANCE;
-                private static final Object sLock = new Object();
-
-                static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-                    @Override
-                    public void migrate(SupportSQLiteDatabase database) {
-                        database.execSQL("ALTER TABLE Users "
-                                + " ADD COLUMN last_update INTEGER");
-                    }
-                };
-
-                public abstract JavaUserDao javaUserDao();
-
-                public static AppDatabase getInstance(Context context) {
-                    synchronized (sLock) {
-                        if (INSTANCE == null) {
-                            INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "Sample.db")
-                                    .addMigrations(MIGRATION_1_2)
-                                    .build();
-                        }
-                        return INSTANCE;
-                    }
-                }
-            }
-        """.stripIndent()
-
-        file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << '''
-            {
-              "formatVersion": 1,
-              "database": {
-                "version": 1,
-                "identityHash": "ce7bbbf6ddf39482eddc7248f4f61e8a",
-                "entities": [
-                  {
-                    "tableName": "user",
-                    "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER NOT NULL, `first_name` TEXT, `last_name` TEXT, PRIMARY KEY(`uid`))",
-                    "fields": [
-                      {
-                        "fieldPath": "uid",
-                        "columnName": "uid",
-                        "affinity": "INTEGER",
-                        "notNull": true
-                      },
-                      {
-                        "fieldPath": "firstName",
-                        "columnName": "first_name",
-                        "affinity": "TEXT",
-                        "notNull": false
-                      },
-                      {
-                        "fieldPath": "lastName",
-                        "columnName": "last_name",
-                        "affinity": "TEXT",
-                        "notNull": false
-                      }
-                    ],
-                    "primaryKey": {
-                      "columnNames": [
-                        "uid"
-                      ],
-                      "autoGenerate": false
-                    },
-                    "indices": [],
-                    "foreignKeys": []
-                  }
-                ],
-                "views": [],
-                "setupQueries": [
-                  "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-                  "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ce7bbbf6ddf39482eddc7248f4f61e8a')"
-                ]
-              }
-            }
-        '''.stripIndent()
 
         file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -432,6 +304,151 @@ class SimpleAndroidApp {
                   *accum += val;
                 }
             '''.stripIndent()
+    }
+
+    private void writeRoomSourcesIfEnabled(String basedir, String packageName) {
+        if (roomConfiguration != RoomConfiguration.NO_LIBRARY) {
+            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUser.java") << """
+                package ${packageName};
+
+                import androidx.room.ColumnInfo;
+                import androidx.room.Entity;
+                import androidx.room.PrimaryKey;
+
+                @Entity(tableName = "user")
+                public class JavaUser {
+                    @PrimaryKey
+                    public int uid;
+
+                    @ColumnInfo(name = "first_name")
+                    public String firstName;
+
+                    @ColumnInfo(name = "last_name")
+                    public String lastName;
+
+                    @ColumnInfo(name = "last_update")
+                    public int lastUpdate;
+                }
+            """.stripIndent()
+
+            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") << """
+                package ${packageName};
+
+                import androidx.room.Dao;
+                import androidx.room.Query;
+                import androidx.room.Insert;
+                import androidx.room.Delete;
+
+                import java.util.List;
+
+                @Dao
+                public interface JavaUserDao {
+                    @Query("SELECT * FROM user")
+                    List<JavaUser> getAll();
+
+                    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
+                    List<JavaUser> loadAllByIds(int[] userIds);
+
+                    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
+                           "last_name LIKE :last LIMIT 1")
+                    JavaUser findByName(String first, String last);
+
+                    @Insert
+                    void insertAll(JavaUser... users);
+
+                    @Delete
+                    void delete(JavaUser user);
+                }
+            """.stripIndent()
+
+            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/AppDatabase.java") << """
+                package ${packageName};
+
+                import androidx.room.Database;
+                import androidx.room.Room;
+                import androidx.room.RoomDatabase;
+                import androidx.room.migration.Migration;
+                import androidx.sqlite.db.SupportSQLiteDatabase;
+                import android.content.Context;
+
+                @Database(entities = {JavaUser.class}, version = 2, exportSchema = true)
+                public abstract class AppDatabase extends RoomDatabase {
+                    private static AppDatabase INSTANCE;
+                    private static final Object sLock = new Object();
+
+                    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+                        @Override
+                        public void migrate(SupportSQLiteDatabase database) {
+                            database.execSQL("ALTER TABLE Users "
+                                    + " ADD COLUMN last_update INTEGER");
+                        }
+                    };
+
+                    public abstract JavaUserDao javaUserDao();
+
+                    public static AppDatabase getInstance(Context context) {
+                        synchronized (sLock) {
+                            if (INSTANCE == null) {
+                                INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                                        AppDatabase.class, "Sample.db")
+                                        .addMigrations(MIGRATION_1_2)
+                                        .build();
+                            }
+                            return INSTANCE;
+                        }
+                    }
+                }
+            """.stripIndent()
+
+            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << '''
+                {
+                  "formatVersion": 1,
+                  "database": {
+                    "version": 1,
+                    "identityHash": "ce7bbbf6ddf39482eddc7248f4f61e8a",
+                    "entities": [
+                      {
+                        "tableName": "user",
+                        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER NOT NULL, `first_name` TEXT, `last_name` TEXT, PRIMARY KEY(`uid`))",
+                        "fields": [
+                          {
+                            "fieldPath": "uid",
+                            "columnName": "uid",
+                            "affinity": "INTEGER",
+                            "notNull": true
+                          },
+                          {
+                            "fieldPath": "firstName",
+                            "columnName": "first_name",
+                            "affinity": "TEXT",
+                            "notNull": false
+                          },
+                          {
+                            "fieldPath": "lastName",
+                            "columnName": "last_name",
+                            "affinity": "TEXT",
+                            "notNull": false
+                          }
+                        ],
+                        "primaryKey": {
+                          "columnNames": [
+                            "uid"
+                          ],
+                          "autoGenerate": false
+                        },
+                        "indices": [],
+                        "foreignKeys": []
+                      }
+                    ],
+                    "views": [],
+                    "setupQueries": [
+                      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+                      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ce7bbbf6ddf39482eddc7248f4f61e8a')"
+                    ]
+                  }
+                }
+            '''.stripIndent()
+        }
     }
 
     private static String activityDependency() {
@@ -461,7 +478,7 @@ class SimpleAndroidApp {
     }
 
     enum RoomConfiguration {
-        NONE, ROOM_EXTENSION, PROCESSOR_ARG
+        NONE, ROOM_EXTENSION, PROCESSOR_ARG, NO_LIBRARY
     }
 
     static class Builder {
@@ -512,6 +529,11 @@ class SimpleAndroidApp {
 
         Builder withNoRoomConfiguration() {
             this.roomConfiguration = RoomConfiguration.NONE
+            return this
+        }
+
+        Builder withNoRoomLibrary() {
+            this.roomConfiguration = RoomConfiguration.NO_LIBRARY
             return this
         }
 

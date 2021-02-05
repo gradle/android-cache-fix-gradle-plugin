@@ -277,6 +277,34 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertNotExecuted(buildResult, ':app:mergeRoomSchemaLocations')
     }
 
+    def "builds with no errors when room library is not on the classpath"() {
+        def androidVersion = Versions.getLatestVersionForAndroid("4.1")
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withNoRoomLibrary()
+            .build()
+            .writeProject()
+
+        cacheDir.deleteDir()
+        cacheDir.mkdirs()
+
+        when:
+        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(CLEAN_BUILD)
+            .build()
+
+        then:
+        noExceptionThrown()
+
+        and:
+        assertNotExecuted(buildResult, ':app:mergeRoomSchemaLocations')
+
+        and:
+        !buildResult.output.contains('warning: The following options were not recognized by any processor: \'[room.schemaLocation')
+    }
+
     void assertNotExecuted(buildResult, String taskPath) {
         assert !buildResult.tasks.collect {it.path }.contains(taskPath)
     }

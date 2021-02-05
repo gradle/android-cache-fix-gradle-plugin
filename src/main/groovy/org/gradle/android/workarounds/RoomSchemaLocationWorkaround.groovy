@@ -94,7 +94,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
                 // Add a command line argument provider to the task-specific list of providers
                 task.options.compilerArgumentProviders.add(
-                    new JavaCompilerRoomSchemaLocationArgumentProvider(taskSpecificSchemaDir)
+                    new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, taskSpecificSchemaDir)
                 )
 
                 // Register the generated schemas to be merged back to the original specified schema directory
@@ -118,7 +118,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
             applyToAllAndroidVariants(project) { variant ->
                 def variantSpecificSchemaDir = project.objects.directoryProperty()
                 variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
-                variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(variantSpecificSchemaDir))
+                variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
 
                 // Register the variant-specific directory with the merge task
                 roomExtension.registerOutputDirectory(variantSpecificSchemaDir)
@@ -290,10 +290,14 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     static abstract class RoomSchemaLocationArgumentProvider implements CommandLineArgumentProvider {
-        @OutputDirectory
-        Provider<Directory> schemaLocationDir
+        @Internal
+        final Provider<Directory> configuredSchemaLocationDir
 
-        RoomSchemaLocationArgumentProvider(Provider<Directory> schemaLocationDir) {
+        @OutputDirectory
+        final Provider<Directory> schemaLocationDir
+
+        RoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
+            this.configuredSchemaLocationDir = configuredSchemaLocationDir
             this.schemaLocationDir = schemaLocationDir
         }
 
@@ -304,7 +308,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
         @Override
         Iterable<String> asArguments() {
-            if (schemaLocationDir.isPresent()) {
+            if (configuredSchemaLocationDir.isPresent()) {
                 return ["-A${ROOM_SCHEMA_LOCATION}=${schemaLocationPath}" as String]
             } else {
                 return []
@@ -313,16 +317,16 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     static class JavaCompilerRoomSchemaLocationArgumentProvider extends RoomSchemaLocationArgumentProvider {
-        JavaCompilerRoomSchemaLocationArgumentProvider(Provider<Directory> schemaLocationDir) {
-            super(schemaLocationDir)
+        JavaCompilerRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
+            super(configuredSchemaLocationDir, schemaLocationDir)
         }
     }
 
     static class KaptRoomSchemaLocationArgumentProvider extends RoomSchemaLocationArgumentProvider {
         private Provider<Directory> temporarySchemaLocationDir
 
-        KaptRoomSchemaLocationArgumentProvider(Provider<Directory> schemaLocationDir) {
-            super(schemaLocationDir)
+        KaptRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
+            super(configuredSchemaLocationDir, schemaLocationDir)
             this.temporarySchemaLocationDir = schemaLocationDir.map {it.dir("../${it.asFile.name}Temp") }
         }
 
@@ -333,8 +337,8 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     static class MergeAssociations {
-        ObjectFactory objectFactory
-        Map<Provider<Directory>, ConfigurableFileCollection> mergeAssociations = [:]
+        final ObjectFactory objectFactory
+        final Map<Provider<Directory>, ConfigurableFileCollection> mergeAssociations = [:]
 
         @Inject
         MergeAssociations(ObjectFactory objectFactory) {

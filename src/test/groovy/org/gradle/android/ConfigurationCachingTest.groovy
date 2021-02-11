@@ -12,10 +12,10 @@ class ConfigurationCachingTest extends AbstractTest {
         when:
         def result = withGradleVersion(Versions.latestGradleVersion().version)
                 .withProjectDir(temporaryFolder.root)
-                .withArguments('--configuration-cache', '--configuration-cache-problems=warn', 'assembleDebug')
+                .withArguments('--configuration-cache', 'assembleDebug')
                 .build()
 
         then:
-        result.output.contains("4 problems were found storing the configuration cache")
+        !result.output.contains("problems were found storing the configuration cache")
     }
 }

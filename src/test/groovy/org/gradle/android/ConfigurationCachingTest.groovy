@@ -16,6 +16,6 @@ class ConfigurationCachingTest extends AbstractTest {
                 .build()
 
         then:
-        result.output.contains("14 problems were found storing the configuration cache")
+        result.output.contains("7 problems were found storing the configuration cache")
     }
 }

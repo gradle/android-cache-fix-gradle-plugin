@@ -44,8 +44,11 @@ dependencies {
     testRuntime 'org.objenesis:objenesis:3.1'
 }
 
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
 
 def generatedResources = "$buildDir/generated-resources/main"
 
@@ -103,8 +106,4 @@ tasks.withType(Test).configureEach {
         maxRetries = 3
         maxFailures = 20
     }
-}
-
-if (!JavaVersion.current().java8) {
-    throw new RuntimeException("Java 8 is required to execute the build")
 }

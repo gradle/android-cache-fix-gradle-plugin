@@ -9,7 +9,6 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.DuplicatesStrategy
-import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
@@ -369,7 +368,8 @@ class RoomSchemaLocationWorkaround implements Workaround {
      */
     static abstract class RoomSchemaLocationMergeTask extends DefaultTask {
 
-        @Inject abstract FileSystemOperations getFileSystem()
+        // Using older internal API to maintain compatibility with Gradle 5.x
+        @Inject abstract FileOperations getFileOperations()
 
         @Internal
         MergeAssociations roomSchemaMergeLocations
@@ -378,10 +378,10 @@ class RoomSchemaLocationWorkaround implements Workaround {
         void mergeSourcesToDestinations() {
             roomSchemaMergeLocations.mergeAssociations.each { destination, source ->
                 println "Merging schemas to ${destination.get().asFile}"
-                fileSystem.copy {
-                    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-                    into(destination)
-                    from(source)
+                fileOperations.copy {
+                    it.duplicatesStrategy = DuplicatesStrategy.INCLUDE
+                    it.into(destination)
+                    it.from(source)
                 }
             }
         }

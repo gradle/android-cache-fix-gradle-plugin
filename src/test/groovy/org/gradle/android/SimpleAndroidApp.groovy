@@ -48,7 +48,7 @@ class SimpleAndroidApp {
                     repositories {
                         google()
                         jcenter()
-                        ivy {
+                        maven {
                             url = "${System.getProperty("local.repo")}"
                         }
                     }

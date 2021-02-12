@@ -1,10 +1,11 @@
 import groovy.json.JsonBuilder
 
 plugins {
-    id "com.gradle.plugin-publish" version "0.12.0"
     id 'groovy'
     id 'java-gradle-plugin'
+    id 'maven-publish'
     id 'codenarc'
+    id "com.gradle.plugin-publish" version "0.12.0"
     id "org.gradle.test-retry" version "1.2.0"
 }
 
@@ -43,8 +44,11 @@ dependencies {
     testRuntime 'org.objenesis:objenesis:3.1'
 }
 
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
 
 def generatedResources = "$buildDir/generated-resources/main"
 
@@ -67,48 +71,39 @@ sourceSets {
     }
 }
 
-pluginBundle {
-    website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
-    vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
-
-    description = 'Gradle plugin to fix Android caching problems'
-
+gradlePlugin {
     plugins {
         androidCacheFixPlugin {
             id = 'org.gradle.android.cache-fix'
             displayName = 'Gradle Android cache fix plugin'
-            tags = ['android', 'cache', 'fix']
-            version = project.version
+            description = 'Gradle plugin to fix Android caching problems'
+            implementationClass = 'org.gradle.android.AndroidCacheFixPlugin'
         }
     }
+}
+
+pluginBundle {
+    website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+    vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+
+    tags = ['android', 'cache', 'fix']
 }
 
 def localRepo = file("$buildDir/local-repo")
 
-artifacts {
-    runtime jar
-}
-
-tasks.register('install', Upload) {
+publishing {
     repositories {
-        ivy {
+        maven {
             url = localRepo.toURI()
         }
     }
-    descriptorDestination = file("$buildDir/ivy/ivy.xml")
-    uploadDescriptor = true
-    configuration = configurations.runtime
 }
 
 tasks.withType(Test).configureEach {
-    dependsOn install
+    dependsOn publish
     systemProperty "local.repo", localRepo.toURI()
     retry {
         maxRetries = 3
         maxFailures = 20
     }
-}
-
-if (!JavaVersion.current().java8) {
-    throw new RuntimeException("Java 8 is required to execute the build")
 }

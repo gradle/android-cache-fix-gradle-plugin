@@ -22,10 +22,10 @@ class CompileLibraryResourcesWorkaround_4_2 implements Workaround {
         return Class.forName('com.android.build.gradle.tasks.CompileLibraryResourcesTask')
     }
 
-    String propertyName = "inputDirectories"
+    static final String PROPERTY_NAME = "inputDirectories"
 
-    public void setPropertyValue(Task task, ConfigurableFileCollection directoryProperty) {
-        Field field = task.class.getDeclaredFields().find { it.name == "__${propertyName}__" }
+    public static void setPropertyValue(Task task, ConfigurableFileCollection directoryProperty) {
+        Field field = task.class.getDeclaredFields().find { it.name == "__${PROPERTY_NAME}__" }
         field.setAccessible(true)
         field.set(task, directoryProperty)
     }
@@ -38,20 +38,20 @@ class CompileLibraryResourcesWorkaround_4_2 implements Workaround {
             // Create a synthetic input with the original property value and RELATIVE path sensitivity
             task.inputs.files(originalPropertyValue)
                 .withPathSensitivity(PathSensitivity.RELATIVE)
-                .withPropertyName("${propertyName}.workaround")
+                .withPropertyName("${PROPERTY_NAME}.workaround")
                 .optional()
-            project.gradle.taskGraph.beforeTask {
-                if (it == task) {
-                    originalPropertyValue.from(task.getProperty(propertyName))
-                    def dummyProperty = project.objects.fileCollection()
-                    // Non-existent file to give the ConfigurableFileCollection a value.
-                    dummyProperty.setFrom(project.file('/doesnt-exist'))
-                    setPropertyValue(task, dummyProperty)
+            project.gradle.taskGraph.whenReady {
+                originalPropertyValue.from(task.getProperty(PROPERTY_NAME))
+                def dummyProperty = project.objects.fileCollection()
+                // Non-existent file to give the ConfigurableFileCollection a value.
+                dummyProperty.setFrom(project.file('/doesnt-exist'))
+                setPropertyValue(task, dummyProperty)
+
+                // Set the task property back to its original value
+                task.doFirst {
+                    setPropertyValue(it, originalPropertyValue)
                 }
-            }
-            // Set the task property back to its original value
-            task.doFirst {
-                setPropertyValue(task, originalPropertyValue)
+
             }
         }
     }

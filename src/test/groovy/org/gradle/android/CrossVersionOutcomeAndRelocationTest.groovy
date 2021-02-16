@@ -418,16 +418,16 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:dexBuilderRelease', FROM_CACHE)
         builder.expect(':app:extractDeepLinksDebug', FROM_CACHE)
         builder.expect(':app:extractDeepLinksRelease', FROM_CACHE)
-        builder.expect(':app:mergeDebugNativeLibs', FROM_CACHE)
-        builder.expect(':app:mergeReleaseNativeLibs', FROM_CACHE)
+        builder.expect(':app:mergeDebugNativeLibs', SUCCESS)
+        builder.expect(':app:mergeReleaseNativeLibs', SUCCESS)
         builder.expect(':library:copyDebugJniLibsProjectAndLocalJars', FROM_CACHE)
         builder.expect(':library:copyDebugJniLibsProjectOnly', FROM_CACHE)
         builder.expect(':library:copyReleaseJniLibsProjectAndLocalJars', FROM_CACHE)
         builder.expect(':library:copyReleaseJniLibsProjectOnly', FROM_CACHE)
         builder.expect(':library:extractDeepLinksDebug', FROM_CACHE)
         builder.expect(':library:extractDeepLinksRelease', FROM_CACHE)
-        builder.expect(':library:mergeDebugNativeLibs', FROM_CACHE)
-        builder.expect(':library:mergeReleaseNativeLibs', FROM_CACHE)
+        builder.expect(':library:mergeDebugNativeLibs', SUCCESS)
+        builder.expect(':library:mergeReleaseNativeLibs', SUCCESS)
         builder.expect(':library:parseDebugLocalResources', FROM_CACHE)
         builder.expect(':library:parseReleaseLocalResources', FROM_CACHE)
         builder.expect(':library:syncDebugLibJars', FROM_CACHE)
@@ -492,8 +492,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     }
 
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:desugarDebugFileDependencies', FROM_CACHE)
-        builder.expect(':app:desugarReleaseFileDependencies', FROM_CACHE)
+        builder.expect(':app:desugarDebugFileDependencies', SUCCESS)
+        builder.expect(':app:desugarReleaseFileDependencies', SUCCESS)
         // Renamed from ToJar to ToDir
         builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE)
         builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE)

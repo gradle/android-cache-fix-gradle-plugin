@@ -87,6 +87,10 @@ pluginBundle {
     vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
 
     tags = ['android', 'cache', 'fix']
+
+    mavenCoordinates {
+        groupId = "gradle.plugin.org.gradle.android"
+    }
 }
 
 def localRepo = file("$buildDir/local-repo")

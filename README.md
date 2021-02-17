@@ -21,12 +21,12 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 ## Applying the plugin
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied.  Typically,
-this can just be injected from the root project's build.gradle (change '2.0.2' to the latest version of the cache fix plugin
+this can just be injected from the root project's build.gradle (change '2.1.0' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
 ``` groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "2.0.2" apply false
+    id "org.gradle.android.cache-fix" version "2.1.0" apply false
 }
 
 subprojects {
@@ -82,3 +82,7 @@ room {
 ```
 * There can only be a single schema export directory for the project - you cannot configure variant-specific export
 directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.
+
+### MergeNativeLibsWorkaround
+
+It has been observed that caching the `MergeNativeLibsTask` task rarely provides any significant positive avoidance savings.  In fact, it frequently provides negative savings, especially when fetched from a remote cache node.  As such, this workaround actually disables caching for this task.

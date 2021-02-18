@@ -69,6 +69,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
         // Project extension to hold all of the Room configuration
         def roomExtension = project.extensions.create("room", RoomExtension)
 
+        // Grab fileOperations so we can do copy/sync operations
+        def fileOperations = project.fileOperations
+
         // Create a task that will be used to merge the task-specific schema locations to the directory (or directories)
         // originally specified.  This allows us to fan out the generated output and keep good cacheability for the
         // compile/kapt tasks but still join everything later in the location the user expects.
@@ -92,8 +95,6 @@ class RoomSchemaLocationWorkaround implements Workaround {
             javaCompileProvider.configure { JavaCompile task ->
                 def taskSpecificSchemaDir = project.objects.directoryProperty()
                 taskSpecificSchemaDir.set(getTaskSpecificSchemaDir(task))
-
-                def fileOperations = project.fileOperations
 
                 // Add a command line argument provider to the task-specific list of providers
                 task.options.compilerArgumentProviders.add(
@@ -134,14 +135,16 @@ class RoomSchemaLocationWorkaround implements Workaround {
             // pre-seeding the directory with existing schemas should be a capability of the room annotation processor
             // somehow?
             def configureKaptTask = { Task task ->
+                task.ext.annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
+
                 task.doFirst onlyIfAnnotationProcessorConfiguredForKapt(task) { KaptRoomSchemaLocationArgumentProvider provider ->
                     // Populate the variant-specific schemas dir with the existing schemas
-                    copyExistingSchemasToTaskSpecificTmpDirForKapt(project.fileOperations, roomExtension.schemaLocationDir, provider)
+                    copyExistingSchemasToTaskSpecificTmpDirForKapt(fileOperations, roomExtension.schemaLocationDir, provider)
                 }
 
                 task.doLast onlyIfAnnotationProcessorConfiguredForKapt(task) { KaptRoomSchemaLocationArgumentProvider provider ->
                     // Copy the generated schemas into the registered output directory
-                    copyGeneratedSchemasToOutputDirForKapt(task, provider)
+                    copyGeneratedSchemasToOutputDirForKapt(fileOperations, provider)
                 }
 
                 task.finalizedBy onlyIfAnnotationProcessorConfiguredForKapt(task) { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
@@ -170,8 +173,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     private static KaptRoomSchemaLocationArgumentProvider getKaptRoomSchemaLocationArgumentProvider(Task task) {
-        def annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
-        return annotationProcessorOptionProviders.flatten().find { it instanceof KaptRoomSchemaLocationArgumentProvider }
+        return task.extensions.ext.annotationProcessorOptionProviders.flatten().find { it instanceof KaptRoomSchemaLocationArgumentProvider }
     }
 
     private static Closure onlyIfAnnotationProcessorConfiguredForKapt(Task task, Closure<?> action) {
@@ -228,7 +230,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         copyExistingSchemasToTaskSpecificTmpDir(fileOperations, existingSchemaDir, temporaryVariantSpecificSchemaDir)
     }
 
-    private static void copyGeneratedSchemasToOutputDirForKapt(Task task, KaptRoomSchemaLocationArgumentProvider provider) {
+    private static void copyGeneratedSchemasToOutputDirForKapt(FileOperations fileOperations, KaptRoomSchemaLocationArgumentProvider provider) {
         // Copy the generated generated schemas from the task-specific tmp dir to the
         // task-specific output dir.  This dance prevents the kapt task from clearing out
         // the existing schemas before the annotation processors run
@@ -236,9 +238,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
         def variantSpecificSchemaDir = provider.schemaLocationDir
         def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
 
-        task.project.sync {
-            from temporaryVariantSpecificSchemaDir
-            into variantSpecificSchemaDir
+        fileOperations.sync {
+            it.from temporaryVariantSpecificSchemaDir
+            it.into variantSpecificSchemaDir
         }
     }
 

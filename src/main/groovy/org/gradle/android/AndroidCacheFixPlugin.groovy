@@ -20,6 +20,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import java.lang.reflect.Method
+import java.util.concurrent.atomic.AtomicBoolean
 
 import static org.gradle.android.Versions.SUPPORTED_ANDROID_VERSIONS
 import static org.gradle.android.Versions.android
@@ -29,8 +30,8 @@ import static org.gradle.android.Versions.gradle
 class AndroidCacheFixPlugin implements Plugin<Project> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AndroidCacheFixPlugin)
 
-    private static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
-    private static final VersionNumber CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
+    static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
+    static final VersionNumber CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
     private final List<Workaround> workarounds = [] as List<Workaround>
 
@@ -94,10 +95,9 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     void apply(Project project) {
         workarounds.addAll(initializeWorkarounds(project))
 
-
         if (!isSupportedAndroidVersion(project)) {
             if (isMaybeSupportedAndroidVersion(project)) {
-                project.logger.warn("WARNING: Android plugin ${CURRENT_ANDROID_VERSION} has not been tested with this version of the Android cache fix plugin, although it may work.  We test against only the latest patch release versions of Android Gradle plugin: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}.  If ${CURRENT_ANDROID_VERSION} is newly released, we may not have had a chance to release a version tested against it yet.  Proceed with caution.  You can suppress this warning with with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
+                Warnings.MAYBE_SUPPORTED_ANDROID_VERSION.warnOnce(project.logger)
             } else {
                 throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. Supported Android plugin versions: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}. Override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
             }
@@ -155,5 +155,22 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             workaroundsBuilder.add(workaround)
         }
         workaroundsBuilder.build()
+    }
+
+    private enum Warnings {
+        MAYBE_SUPPORTED_ANDROID_VERSION("WARNING: Android plugin ${CURRENT_ANDROID_VERSION} has not been tested with this version of the Android cache fix plugin, although it may work.  We test against only the latest patch release versions of Android Gradle plugin: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}.  If ${CURRENT_ANDROID_VERSION} is newly released, we may not have had a chance to release a version tested against it yet.  Proceed with caution.  You can suppress this warning with with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
+
+        private final String warning
+        private final AtomicBoolean warned = new AtomicBoolean()
+
+        Warnings(String warning) {
+            this.warning = warning
+        }
+
+        void warnOnce(org.gradle.api.logging.Logger logger) {
+            if (!warned.getAndSet(true)) {
+                logger.warn(warning)
+            }
+        }
     }
 }

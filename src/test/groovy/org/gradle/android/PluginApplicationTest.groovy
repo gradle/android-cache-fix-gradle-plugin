@@ -15,7 +15,7 @@ class PluginApplicationTest extends AbstractTest {
             .writeProject()
 
         expect:
-        def result = withGradleVersion(Versions.latestGradleVersion().version)
+        def result = withGradleVersion(TestVersions.latestGradleVersion().version)
             .withProjectDir(projectDir)
             .withArguments("tasks", "--stacktrace")
             .buildAndFail()
@@ -35,7 +35,7 @@ class PluginApplicationTest extends AbstractTest {
             .writeProject()
 
         expect:
-        def result = withGradleVersion(Versions.latestSupportedGradleVersionFor(notLatestPatchAndroidVersion).version)
+        def result = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(notLatestPatchAndroidVersion).version)
             .withProjectDir(projectDir)
             .withArguments("tasks", "--stacktrace")
             .build()

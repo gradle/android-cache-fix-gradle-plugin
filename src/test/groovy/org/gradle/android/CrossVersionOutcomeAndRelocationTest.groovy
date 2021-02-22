@@ -5,6 +5,7 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
+import org.junit.experimental.categories.Category
 import spock.lang.Unroll
 
 import static org.gradle.android.Versions.android
@@ -13,6 +14,7 @@ import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 
+@Category(MultiVersionTest)
 class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
     @Unroll
@@ -62,7 +64,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
+        [androidVersion, gradleVersion] << TestVersions.allSupportedVersionsForCurrentJDK.entries().collect { [it.key, it.value] }
     }
 
     static class ExpectedResults {
@@ -141,8 +143,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
         def isAndroid40xTo41x = androidVersion >= android("4.0.0") && androidVersion <= android("4.2.0-alpha01")
         def isAndroid41xOrHigher = androidVersion >= android("4.1.0-alpha01")
-        def isandroid41x = androidVersion >= android("4.1.0-alpha01") && androidVersion < android("4.2.0-alpha01")
+        def isAndroid41x = androidVersion >= android("4.1.0-alpha01") && androidVersion < android("4.2.0-alpha01")
+        def isAndroid42x = androidVersion >= android("4.2.0-alpha01") && androidVersion < android("7.0.0-alpha01")
         def isAndroid42xOrHigher = androidVersion >= android("4.2.0-alpha01")
+        def isAndroid70xOrHigher = androidVersion >= android("7.0.0-alpha01")
         def builder = new ExpectedOutcomeBuilder()
 
         // Applies to anything 3.5.0 or higher
@@ -197,12 +201,20 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
             android41xOrHigherExpectations(builder)
         }
 
-        if (isandroid41x) {
+        if (isAndroid41x) {
             android41xOnlyExpectations(builder)
+        }
+
+        if (isAndroid42x) {
+            android42xOnlyExpectations(builder)
         }
 
         if (isAndroid42xOrHigher) {
             android42xOrHigherExpectations(builder)
+        }
+
+        if (isAndroid70xOrHigher) {
+            android70xOrHIgherExpectations(builder)
         }
 
         new ExpectedResults(
@@ -491,9 +503,15 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:dataBindingExportBuildInfoRelease', FROM_CACHE)
     }
 
-    static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
+    static void android42xOnlyExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:desugarDebugFileDependencies', SUCCESS)
         builder.expect(':app:desugarReleaseFileDependencies', SUCCESS)
+        // New non-cacheable tasks in 4.2.0-alpha10:
+        builder.expect(':app:writeReleaseApplicationId', SUCCESS)
+        builder.expect(':app:analyticsRecordingRelease', SUCCESS)
+    }
+
+    static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         // Renamed from ToJar to ToDir
         builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE)
         builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE)
@@ -502,10 +520,12 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)
         builder.expect(':app:extractReleaseNativeSymbolTables', FROM_CACHE)
         builder.expect(':app:writeReleaseAppMetadata', FROM_CACHE)
-        // New non-cacheable tasks in 4.2.0-alpha10:
-        builder.expect(':app:writeReleaseApplicationId', SUCCESS)
-        builder.expect(':app:analyticsRecordingRelease', SUCCESS)
         builder.expect(':app:writeDebugSigningConfigVersions', FROM_CACHE)
         builder.expect(':app:writeReleaseSigningConfigVersions', FROM_CACHE)
+    }
+
+    static void android70xOrHIgherExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:desugarDebugFileDependencies', FROM_CACHE)
+        builder.expect(':app:desugarReleaseFileDependencies', FROM_CACHE)
     }
 }

@@ -13,14 +13,14 @@ class BuildScanValueSanityTest extends AbstractTest {
     @Unroll
     def "build scan value is safe with Gradle 6 and gradle enterprise plugin version #pluginVersion"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
-            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withAndroidVersion(TestVersions.getLatestVersionForAndroid("3.6"))
             .build()
             .writeProject()
 
         def originalSettings = file('settings.gradle').text
         file('settings.gradle').text = """
             plugins {
-                id 'com.gradle.enterprise' version '${pluginVersion}'
+                id 'com.gradle.enterprise' version '${enterprisePluginVersion}'
             }
 
             ${originalSettings}
@@ -37,13 +37,13 @@ class BuildScanValueSanityTest extends AbstractTest {
         result.output.contains("Added build scan custom value for :library applied workarounds")
 
         where:
-        pluginVersion << ['3.2.1', '3.2', '3.1.1', '3.1', '3.0']
+        enterprisePluginVersion << ['3.2.1', '3.2', '3.1.1', '3.1', '3.0']
     }
 
     @Unroll
     def "build scan value is safe with Gradle 5 and build scan plugin version #pluginVersion"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
-            .withAndroidVersion(Versions.getLatestVersionForAndroid("3.6"))
+            .withAndroidVersion(TestVersions.getLatestVersionForAndroid("3.6"))
             .build()
             .writeProject()
 

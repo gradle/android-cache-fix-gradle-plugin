@@ -11,7 +11,7 @@ import spock.lang.Unroll
  */
 class BuildScanValueSanityTest extends AbstractTest {
     @Unroll
-    def "build scan value is safe with Gradle 6 and gradle enterprise plugin version #pluginVersion"() {
+    def "build scan value is safe with Gradle 6 and gradle enterprise plugin version #enterprisePluginVersion"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(TestVersions.getLatestVersionForAndroid("3.6"))
             .build()

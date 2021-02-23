@@ -16,7 +16,7 @@ version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.tri
 def sevenDotZeroNightly = "7.0-20210222153642+0000"
 def supportedVersions = [
     "7.0.0-alpha06": ["6.8.2", sevenDotZeroNightly],
-    "4.2.0-beta04": ["6.8.2", sevenDotZeroNightly],
+    "4.2.0-beta05": ["6.8.2", sevenDotZeroNightly],
     "4.1.2": ["6.5.1", "6.8.2"],
     "4.0.2": ["6.1.1", "6.8.2"],
     "3.6.4": ["5.6.4", "6.8.2"],

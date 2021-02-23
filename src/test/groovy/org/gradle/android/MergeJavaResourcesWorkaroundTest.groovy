@@ -2,10 +2,11 @@ package org.gradle.android
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
+import org.junit.experimental.categories.Category
 import spock.lang.Issue
 import spock.lang.Unroll
 
-
+@Category(MultiVersionTest)
 class MergeJavaResourcesWorkaroundTest extends AbstractTest {
     @Unroll
     @Issue('https://github.com/gradle/android-cache-fix-gradle-plugin/issues/78')
@@ -20,7 +21,7 @@ class MergeJavaResourcesWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
-        BuildResult buildResult = withGradleVersion(Versions.latestSupportedGradleVersionFor(androidVersion).version)
+        BuildResult buildResult = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)
             .withArguments("assemble", "--stacktrace")
@@ -33,6 +34,6 @@ class MergeJavaResourcesWorkaroundTest extends AbstractTest {
         buildResult.task(':library:mergeReleaseJavaResource').outcome == TaskOutcome.SUCCESS
 
         where:
-        androidVersion << Versions.latestAndroidVersions
+        androidVersion << TestVersions.latestAndroidVersions
     }
 }

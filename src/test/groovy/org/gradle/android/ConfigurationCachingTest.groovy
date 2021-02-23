@@ -2,20 +2,22 @@ package org.gradle.android
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.util.VersionNumber
+import org.junit.experimental.categories.Category
 
+@Category(MultiVersionTest)
 class ConfigurationCachingTest extends AbstractTest {
     private static final VersionNumber SUPPORTED_KOTLIN_VERSION = VersionNumber.parse("1.4.30")
 
     def "plugin is compatible with configuration cache"() {
         given:
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
-                .withAndroidVersion(Versions.latestAndroidVersion())
+                .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())
                 .withKotlinVersion(SUPPORTED_KOTLIN_VERSION)
                 .build()
                 .writeProject()
 
         when:
-        def result = withGradleVersion(Versions.latestGradleVersion().version)
+        def result = withGradleVersion(TestVersions.latestGradleVersion().version)
                 .withProjectDir(temporaryFolder.root)
                 .withArguments('--configuration-cache', 'assembleDebug')
                 .build()
@@ -24,7 +26,7 @@ class ConfigurationCachingTest extends AbstractTest {
         !result.output.contains("problems were found storing the configuration cache")
 
         when:
-        result = withGradleVersion(Versions.latestGradleVersion().version)
+        result = withGradleVersion(TestVersions.latestGradleVersion().version)
             .withProjectDir(temporaryFolder.root)
             .withArguments('--configuration-cache', 'assembleDebug')
             .build()

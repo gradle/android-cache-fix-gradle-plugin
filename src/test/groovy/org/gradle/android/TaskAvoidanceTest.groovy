@@ -1,7 +1,9 @@
 package org.gradle.android
 
+import org.gradle.internal.impldep.org.junit.experimental.categories.Category
 import spock.lang.Unroll
 
+@Category(MultiVersionTest)
 class TaskAvoidanceTest extends AbstractTest {
     @Unroll
     def "Source Tasks are avoided with #gradleVersion and Android plugin #androidVersion"() {
@@ -30,6 +32,6 @@ class TaskAvoidanceTest extends AbstractTest {
         !result.output.contains("configuring")
 
         where:
-        [androidVersion, gradleVersion] << Versions.SUPPORTED_VERSIONS_MATRIX.entries().collect { [it.key, it.value] }
+        [androidVersion, gradleVersion] << TestVersions.allSupportedVersionsForCurrentJDK.entries().collect { [it.key, it.value] }
     }
 }

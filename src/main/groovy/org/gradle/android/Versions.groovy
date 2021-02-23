@@ -48,26 +48,4 @@ class Versions {
     static VersionNumber latestAndroidVersion() {
         return SUPPORTED_ANDROID_VERSIONS.max()
     }
-
-    static GradleVersion latestGradleVersion() {
-        return SUPPORTED_GRADLE_VERSIONS.max()
-    }
-
-    static GradleVersion latestSupportedGradleVersionFor(String androidVersion) {
-        return latestSupportedGradleVersionFor(VersionNumber.parse(androidVersion))
-    }
-
-    static GradleVersion latestSupportedGradleVersionFor(VersionNumber androidVersion) {
-        return SUPPORTED_VERSIONS_MATRIX.asMap().find {it.key.major == androidVersion.major && it.key.minor == androidVersion.minor }.value.max()
-    }
-
-    static VersionNumber getLatestVersionForAndroid(String version) {
-        VersionNumber versionNumber = VersionNumber.parse(version)
-        return SUPPORTED_ANDROID_VERSIONS.findAll { it.major == versionNumber.major && it.minor == versionNumber.minor }.max()
-    }
-
-    static List<VersionNumber> getLatestAndroidVersions() {
-        def minorVersions = SUPPORTED_ANDROID_VERSIONS.collect { "${it.major}.${it.minor}" }.toSet()
-        return minorVersions.collect { getLatestVersionForAndroid(it) }
-    }
 }

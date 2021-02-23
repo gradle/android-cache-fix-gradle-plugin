@@ -135,19 +135,19 @@ class RoomSchemaLocationWorkaround implements Workaround {
             // pre-seeding the directory with existing schemas should be a capability of the room annotation processor
             // somehow?
             def configureKaptTask = { Task task ->
-                task.ext.annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
+                def annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
 
-                task.doFirst onlyIfAnnotationProcessorConfiguredForKapt(task) { KaptRoomSchemaLocationArgumentProvider provider ->
+                task.doFirst onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
                     // Populate the variant-specific schemas dir with the existing schemas
                     copyExistingSchemasToTaskSpecificTmpDirForKapt(fileOperations, roomExtension.schemaLocationDir, provider)
                 }
 
-                task.doLast onlyIfAnnotationProcessorConfiguredForKapt(task) { KaptRoomSchemaLocationArgumentProvider provider ->
+                task.doLast onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
                     // Copy the generated schemas into the registered output directory
                     copyGeneratedSchemasToOutputDirForKapt(fileOperations, provider)
                 }
 
-                task.finalizedBy onlyIfAnnotationProcessorConfiguredForKapt(task) { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
+                task.finalizedBy onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
             }
 
             project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach(configureKaptTask)
@@ -172,13 +172,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
         }
     }
 
-    private static KaptRoomSchemaLocationArgumentProvider getKaptRoomSchemaLocationArgumentProvider(Task task) {
-        return task.extensions.ext.annotationProcessorOptionProviders.flatten().find { it instanceof KaptRoomSchemaLocationArgumentProvider }
-    }
-
-    private static Closure onlyIfAnnotationProcessorConfiguredForKapt(Task task, Closure<?> action) {
+    private static Closure onlyIfAnnotationProcessorConfiguredForKapt(def annotationProcessorOptionProviders, Closure<?> action) {
         return {
-            def provider = getKaptRoomSchemaLocationArgumentProvider(task)
+            def provider = annotationProcessorOptionProviders.flatten().find { it instanceof KaptRoomSchemaLocationArgumentProvider }
             if (provider != null) {
                 action.call(provider)
             }

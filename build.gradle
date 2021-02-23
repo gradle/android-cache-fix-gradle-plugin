@@ -13,8 +13,10 @@ group = "org.gradle.android"
 version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
 
 // Maps supported Android plugin versions to the versions of Gradle that support it
+def sevenDotZeroNightly = "7.0-20210222153642+0000"
 def supportedVersions = [
-    "4.2.0-beta04": ["6.8.2", "7.0-20210202230337+0000"],
+    "7.0.0-alpha06": ["6.8.2", sevenDotZeroNightly],
+    "4.2.0-beta04": ["6.8.2", sevenDotZeroNightly],
     "4.1.2": ["6.5.1", "6.8.2"],
     "4.0.2": ["6.1.1", "6.8.2"],
     "3.6.4": ["5.6.4", "6.8.2"],
@@ -111,3 +113,20 @@ tasks.withType(Test).configureEach {
         maxFailures = 20
     }
 }
+
+tasks.named("test").configure {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+def jdk11Test = tasks.register("testWithJDK11", Test) {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+    useJUnit {
+        includeCategories 'org.gradle.android.MultiVersionTest'
+    }
+}
+
+check.dependsOn jdk11Test

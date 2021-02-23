@@ -20,7 +20,7 @@ jobs:
     strategy:
         max-parallel: 2
         matrix:
-            excludedTasks: [ "test", "testWithJDK11" ]
+            excludedTasks: [ "--exclude-task test", "--exclude-task testWithJDK11" ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -39,5 +39,5 @@ jobs:
     # Gradle build
     - uses: eskatos/gradle-command-action@v1
       with:
-        arguments: check -x ${{ matrix.excludedTasks }} -I gradle/buildScanInit.gradle
+        arguments: check ${{ matrix.excludedTasks }} -I gradle/buildScanInit.gradle
 

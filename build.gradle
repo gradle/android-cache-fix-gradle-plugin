@@ -112,6 +112,9 @@ tasks.withType(Test).configureEach {
         maxRetries = 3
         maxFailures = 20
     }
+}
+
+tasks.named("test").configure {
     javaLauncher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(8)
     }

@@ -64,7 +64,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, gradleVersion] << TestVersions.allSupportedVersionsForCurrentJDK.entries().collect { [it.key, it.value] }
+        [androidVersion, gradleVersion] << TestVersions.allCandidateTestVersions.entries().collect { [it.key, it.value] }
     }
 
     static class ExpectedResults {

@@ -32,6 +32,6 @@ class TaskAvoidanceTest extends AbstractTest {
         !result.output.contains("configuring")
 
         where:
-        [androidVersion, gradleVersion] << TestVersions.allSupportedVersionsForCurrentJDK.entries().collect { [it.key, it.value] }
+        [androidVersion, gradleVersion] << TestVersions.allCandidateTestVersions.entries().collect { [it.key, it.value] }
     }
 }

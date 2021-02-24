@@ -106,6 +106,20 @@ publishing {
     }
 }
 
+// This is used by github actions to split out jobs by Android version test task
+def generatedBuildResources = "$buildDir/build-resources"
+tasks.register('generateTestTasksJson') {
+    def outputFile = file("${generatedBuildResources}/androidTestTasks.json")
+    inputs.property "supportedVersions", supportedVersions
+    outputs.dir generatedBuildResources
+    doLast {
+        outputFile.text = new JsonBuilder(
+            ['test'] + (supportedVersions.keySet().collect {androidVersion -> androidTestTaskName(androidVersion) })
+        ).toString()
+    }
+}
+
+
 tasks.withType(Test).configureEach {
     dependsOn publish
     systemProperty "local.repo", localRepo.toURI()
@@ -117,12 +131,17 @@ tasks.withType(Test).configureEach {
 
 tasks.named("test") {
     useJUnit {
+        // The main test task runs everything not annotated with the MultiVersionTest category
         excludeCategories 'org.gradle.android.MultiVersionTest'
     }
 }
 
+// Generate a test task for each Android version and run the tests annotated with the MultiVersionTest category
 supportedVersions.keySet().each { androidVersion ->
-    def versionSpecificTest = tasks.register("testAndroid${normalizeVersion(androidVersion)}", Test) {
+    def versionSpecificTest = tasks.register(androidTestTaskName(androidVersion), Test) {
+        description = "Runs the multi-version tests for AGP ${androidVersion}"
+        group = "verification"
+        
         javaLauncher = javaToolchains.launcherFor {
             languageVersion = jdkVersionFor(androidVersion)
         }
@@ -135,16 +154,8 @@ supportedVersions.keySet().each { androidVersion ->
     check.dependsOn versionSpecificTest
 }
 
-def generatedBuildResources = "$buildDir/build-resources"
-tasks.register('generateTestTasksJson') {
-    def outputFile = file("${generatedBuildResources}/androidTestTasks.json")
-    inputs.property "supportedVersions", supportedVersions
-    outputs.dir generatedBuildResources
-    doLast {
-        outputFile.text = new JsonBuilder(
-            ['test'] + (supportedVersions.keySet().collect { "testAndroid${normalizeVersion(it)}"})
-        ).toString()
-    }
+static def androidTestTaskName(String androidVersion) {
+    return "testAndroid${normalizeVersion(androidVersion)}"
 }
 
 static def normalizeVersion(String version) {

@@ -1,4 +1,5 @@
 import groovy.json.JsonBuilder
+import org.gradle.util.VersionNumber
 
 plugins {
     id 'groovy'
@@ -114,19 +115,46 @@ tasks.withType(Test).configureEach {
     }
 }
 
-tasks.named("test").configure {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-}
-
-def jdk11Test = tasks.register("testWithJDK11", Test) {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
+tasks.named("test") {
     useJUnit {
-        includeCategories 'org.gradle.android.MultiVersionTest'
+        excludeCategories 'org.gradle.android.MultiVersionTest'
     }
 }
 
-check.dependsOn jdk11Test
+supportedVersions.keySet().each { androidVersion ->
+    def versionSpecificTest = tasks.register("testAndroid${normalizeVersion(androidVersion)}", Test) {
+        javaLauncher = javaToolchains.launcherFor {
+            languageVersion = jdkVersionFor(androidVersion)
+        }
+        useJUnit {
+            includeCategories 'org.gradle.android.MultiVersionTest'
+        }
+        systemProperty 'org.gradle.android.testVersion', androidVersion
+    }
+
+    check.dependsOn versionSpecificTest
+}
+
+def generatedBuildResources = "$buildDir/build-resources"
+tasks.register('generateTestTasksJson') {
+    def outputFile = file("${generatedBuildResources}/androidTestTasks.json")
+    inputs.property "supportedVersions", supportedVersions
+    outputs.dir generatedBuildResources
+    doLast {
+        outputFile.text = new JsonBuilder(
+            ['test'] + (supportedVersions.keySet().collect { "testAndroid${normalizeVersion(it)}"})
+        ).toString()
+    }
+}
+
+static def normalizeVersion(String version) {
+    return version.replaceAll('[.\\-]', '_')
+}
+
+static def jdkVersionFor(String version) {
+    return JavaLanguageVersion.of(VersionNumber.parse(version) > VersionNumber.parse("7.0.0-alpha01") ? 11 : 8)
+}
+
+tasks.register("sanityCheck") {
+    dependsOn tasks.withType(CodeNarc)
+}

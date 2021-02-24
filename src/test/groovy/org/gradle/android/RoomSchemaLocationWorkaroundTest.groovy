@@ -1,7 +1,6 @@
 package org.gradle.android
 
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
-import org.gradle.api.JavaVersion
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.VersionNumber
@@ -196,7 +195,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     @Unroll
     def "workaround is not applied with older Kotlin plugin version (Kotlin #kotlinVersion)"() {
-        Assume.assumeTrue(JavaVersion.current().isJava8())
+        Assume.assumeTrue(TestVersions.getLatestVersionForAndroid("3.6") != null)
 
         def androidVersion = TestVersions.getLatestVersionForAndroid("3.6")
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)

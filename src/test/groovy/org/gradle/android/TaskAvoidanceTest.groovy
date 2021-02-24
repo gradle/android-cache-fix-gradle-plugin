@@ -1,6 +1,6 @@
 package org.gradle.android
 
-import org.gradle.internal.impldep.org.junit.experimental.categories.Category
+import org.junit.experimental.categories.Category
 import spock.lang.Unroll
 
 @Category(MultiVersionTest)

@@ -6,10 +6,12 @@
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions.
 
 * Supported Gradle versions: 5.4.1+
-* Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.2, 4.2.0-beta04
+* Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.2, 4.2.0-beta05, 7.0.0-alpha06
 * Supported Kotlin versions: 1.3.70+
 
 We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 3.6.2), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.
+
+The Android cache fix plugin is compatible with the [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html#header) when used in conjunction with Android Gradle Plugin 4.2.0 and above.  Using the configuration cache with earlier versions of the Android Gradle Plugin is not supported.
 
 ## Should I use this?
 Take a look at the [list of issues](#list-of-issues) especially [unresolved issues](#unresolved-issues). If any of these apply to your project, you can use this plugin to solve them.
@@ -21,12 +23,12 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 ## Applying the plugin
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied.  Typically,
-this can just be injected from the root project's build.gradle (change '2.1.0' to the latest version of the cache fix plugin
+this can just be injected from the root project's build.gradle (change '2.1.2' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
 ``` groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "2.1.0" apply false
+    id "org.gradle.android.cache-fix" version "2.1.2" apply false
 }
 
 subprojects {

@@ -26,15 +26,38 @@ This plugin should be applied anywhere the `com.android.application` or `com.and
 this can just be injected from the root project's build.gradle (change '2.1.2' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
-``` groovy
+<details open>
+<summary>Groovy</summary>
+<br>
+
+```groovy
 plugins {
     id "org.gradle.android.cache-fix" version "2.1.2" apply false
 }
 
 subprojects {
-    apply plugin: "org.gradle.android.cache-fix"
+    plugins.withType(com.android.build.gradle.BasePlugin) {
+        project.apply plugin: "org.gradle.android.cache-fix"
+    }
 }
 ```
+</details>
+<details>
+<summary>Kotlin</summary>
+<br>
+
+```kotlin
+plugins {
+    id("org.gradle.android.cache-fix") version "2.1.2" apply false
+}
+
+subprojects {
+    plugins.withType<com.android.build.gradle.BasePlugin>() {
+        apply(plugin = "org.gradle.android.cache-fix")
+    }
+}
+```
+</details>
 
 Note that if you are currently exporting schemas with the Room annotation processor, you will need to change how you specify the output directory according to the instructions [here](https://github.com/gradle/android-cache-fix-gradle-plugin#roomschemalocationworkaround).
 
@@ -77,11 +100,27 @@ do so in a manageable way, it imposes some restrictions:
 * The schema export directory must be configured via the "room" project extension instead of as an explicit annotation
 processor argument.  If an explicit annotation processor argument is provided, an exception will be thrown, instructing
 the user to configure it via the extension:
-```
+  
+<details open>
+<summary>Groovy</summary>
+<br>
+
+```groovy
 room {
     schemaLocationDir = file("roomSchemas")
 }
 ```
+</details>
+<details>
+<summary>Kotlin</summary>
+<br>
+
+```kotlin
+room {
+    schemaLocationDir.set(file("roomSchemas"))
+}
+```
+</details>
 * There can only be a single schema export directory for the project - you cannot configure variant-specific export
 directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.
 

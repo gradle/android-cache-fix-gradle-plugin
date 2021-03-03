@@ -13,6 +13,8 @@ plugins {
 group = "org.gradle.android"
 version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
 
+def isCI = (System.getenv('CI') ?: 'false').toBoolean()
+
 // Maps supported Android plugin versions to the versions of Gradle that support it
 def sevenDotZeroNightly = "7.0-20210222153642+0000"
 def supportedVersions = [
@@ -119,12 +121,11 @@ tasks.register('generateTestTasksJson') {
     }
 }
 
-
 tasks.withType(Test).configureEach {
     dependsOn publish
     systemProperty "local.repo", localRepo.toURI()
     retry {
-        maxRetries = 3
+        maxRetries = isCI ? 1 : 0
         maxFailures = 20
     }
 }

@@ -9,12 +9,13 @@ import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
 import org.gradle.android.workarounds.MergeNativeLibsWorkaround
 import org.gradle.android.workarounds.MergeResourcesWorkaround
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_4_2
+import org.gradle.android.workarounds.StripDebugSymbolsWorkaround
+import org.gradle.android.workarounds.SystemPropertiesCompat
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,7 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import static org.gradle.android.Versions.SUPPORTED_ANDROID_VERSIONS
 import static org.gradle.android.Versions.android
-import static org.gradle.android.Versions.gradle
 
 @CompileStatic
 class AndroidCacheFixPlugin implements Plugin<Project> {
@@ -36,41 +36,14 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     private final List<Workaround> workarounds = [] as List<Workaround>
 
     private static boolean isSupportedAndroidVersion(Project project) {
-        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project) ||
+        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
             SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
     }
 
     private static boolean isMaybeSupportedAndroidVersion(Project project) {
-        return systemPropertyBooleanCompat(IGNORE_VERSION_CHECK_PROPERTY, project) ||
+        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
             (CURRENT_ANDROID_VERSION <= Versions.latestAndroidVersion() &&
                 CURRENT_ANDROID_VERSION >= Versions.earliestMaybeSupportedAndroidVersion())
-    }
-
-    /**
-     * Backward-compatible boolean system property check. This allows use of new ProviderFactory methods
-     * on newer Gradle versions while falling back to old APIs gracefully on older APIs.
-     *
-     * @param key the key to look up.
-     * @param project the source gradle project. May be null.
-     * @return the system property value or false if absent.
-     */
-    private static boolean systemPropertyBooleanCompat(String key, Project project) {
-        // SystemProperty was added in 6.1, but forUseAtConfigurationTime is 6.5. Since this is
-        // for configuration caching, we just check on 6.5 anyway.
-        if (project != null && gradle(project.gradle.gradleVersion) >= GradleVersion.version("6.5")) {
-            return project.providers.systemProperty(key)
-                .forUseAtConfigurationTime()
-                .map {
-                    try {
-                        Boolean.parseBoolean(it)
-                    } catch (IllegalArgumentException | NullPointerException ignored) {
-                        false
-                    }
-                }
-                .getOrElse(false)
-        } else {
-            return Boolean.getBoolean(key)
-        }
     }
 
     static List<Workaround> initializeWorkarounds(Project project) {
@@ -84,7 +57,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 new RoomSchemaLocationWorkaround(),
                 new CompileLibraryResourcesWorkaround_4_0(),
                 new CompileLibraryResourcesWorkaround_4_2(),
-                new MergeResourcesWorkaround()
+                new MergeResourcesWorkaround(),
+                new StripDebugSymbolsWorkaround()
             )
         } else {
             return Collections.emptyList()

@@ -70,7 +70,7 @@ tasks.register('generateVersions') {
 
 sourceSets {
     main {
-        output.dir(generatedResources, builtBy: generateVersions)
+        output.dir(generatedResources, builtBy: tasks.named('generateVersions'))
     }
 }
 
@@ -129,7 +129,7 @@ tasks.withType(Test).configureEach {
     }
 }
 
-tasks.named("test") {
+tasks.named("test").configure {
     useJUnit {
         // The main test task runs everything not annotated with the MultiVersionTest category
         excludeCategories 'org.gradle.android.MultiVersionTest'
@@ -151,7 +151,9 @@ supportedVersions.keySet().each { androidVersion ->
         systemProperty 'org.gradle.android.testVersion', androidVersion
     }
 
-    check.dependsOn versionSpecificTest
+    tasks.named('check').configure {
+        dependsOn versionSpecificTest
+    }
 }
 
 static def androidTestTaskName(String androidVersion) {
@@ -167,5 +169,10 @@ static def jdkVersionFor(String version) {
 }
 
 tasks.register("sanityCheck") {
-    dependsOn tasks.withType(CodeNarc)
+    dependsOn tasks.withType(CodeNarc), validatePlugins
+}
+
+tasks.withType(ValidatePlugins).configureEach {
+    failOnWarning = true
+    enableStricterValidation = true
 }

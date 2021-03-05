@@ -20,7 +20,6 @@ import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import java.lang.reflect.Method
 import java.util.concurrent.atomic.AtomicBoolean
 
 import static org.gradle.android.Versions.SUPPORTED_ANDROID_VERSIONS
@@ -84,19 +83,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
             workaround.apply(context)
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
-        }
-
-        // We do this rather than trigger off of the plugin application because in Gradle 6.x the plugin is
-        // applied to the Settings object which we don't have access to at this point
-        project.afterEvaluate {
-            def extension = project.rootProject.getExtensions().findByName("buildScan")
-            if (extension) {
-                Method valueMethod = extension.class.getMethod("value", String.class, String.class)
-                if (valueMethod) {
-                    valueMethod.invoke(extension, "${project.path} applied workarounds".toString(), appliedWorkarounds.join("\n"))
-                    LOGGER.debug("Added build scan custom value for ${project.path} applied workarounds")
-                }
-            }
         }
     }
 

@@ -121,6 +121,7 @@ room {
 }
 ```
 </details>
+
 * There can only be a single schema export directory for the project - you cannot configure variant-specific export
 directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.
 

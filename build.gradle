@@ -16,7 +16,7 @@ version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.tri
 def isCI = (System.getenv('CI') ?: 'false').toBoolean()
 
 // Maps supported Android plugin versions to the versions of Gradle that support it
-def sevenDotZeroNightly = "7.0-rc-1"
+def sevenDotZeroNightly = "7.0-rc-2"
 def supportedVersions = [
     "7.0.0-alpha08": ["6.8.3", sevenDotZeroNightly],
     "4.2.0-beta05": ["6.8.3", sevenDotZeroNightly],

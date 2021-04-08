@@ -138,7 +138,9 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid35xTo36x = androidVersion >= android("3.5.0") && androidVersion <= android("3.6.4")
         def isAndroid35xTo40x = androidVersion >= android("3.5.0") && androidVersion <= android("4.1.0-alpha01")
         def isAndroid35xTo41x = androidVersion >= android("3.5.0") && androidVersion <= android("4.2.0-alpha01")
+        def isAndroid35xTo42x = androidVersion >= android("3.5.0") && androidVersion <= android("7.0.0-alpha01")
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
+        def isAndroid36xTo42x = androidVersion >= android("3.6.0") && androidVersion <= android("7.0.0-alpha01")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
         def isAndroid40xTo41x = androidVersion >= android("4.0.0") && androidVersion <= android("4.2.0-alpha01")
@@ -147,6 +149,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid42x = androidVersion >= android("4.2.0-alpha01") && androidVersion < android("7.0.0-alpha01")
         def isAndroid42xOrHigher = androidVersion >= android("4.2.0-alpha01")
         def isAndroid70xOrHigher = androidVersion >= android("7.0.0-alpha01")
+
         def builder = new ExpectedOutcomeBuilder()
 
         // Applies to anything 3.5.0 or higher
@@ -172,6 +175,16 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // Applies to 3.5.x, 3.6.x, 4.0.x and 4.1.x
         if (isAndroid35xTo41x) {
             android35xTo41xExpectations(builder)
+        }
+
+        // Applies to 3.5.x, 3.6.x, 4.0.x, 4.1.x and 4.2.x
+        if (isAndroid35xTo42x) {
+            android35xTo42xExpectations(builder)
+        }
+
+        // Applies to 3.6.x, 4.0.x, 4.1.x, and 4.2.x
+        if (isAndroid36xTo42x) {
+            android36xTo42xOnlyExpectations(builder)
         }
 
         // Applies to anything 3.6.0 or higher
@@ -214,7 +227,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         }
 
         if (isAndroid70xOrHigher) {
-            android70xOrHIgherExpectations(builder)
+            android70xOrHigherExpectations(builder)
         }
 
         new ExpectedResults(
@@ -256,10 +269,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:kaptDebugKotlin', FROM_CACHE)
         builder.expect(':app:kaptGenerateStubsReleaseKotlin', FROM_CACHE)
         builder.expect(':app:kaptReleaseKotlin', FROM_CACHE)
-        builder.expect(':app:mergeDebugResources', FROM_CACHE)
-        builder.expect(':app:mergeReleaseResources', FROM_CACHE)
-        builder.expect(':app:processDebugResources', FROM_CACHE)
-        builder.expect(':app:processReleaseResources', FROM_CACHE)
         builder.expect(':app:mergeDebugAssets', FROM_CACHE)
         builder.expect(':app:mergeDebugJavaResource', SUCCESS)
         builder.expect(':app:mergeDebugJniLibFolders', FROM_CACHE)
@@ -283,8 +292,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:processDebugManifest', FROM_CACHE)
         builder.expect(':app:processReleaseJavaRes', NO_SOURCE)
         builder.expect(':app:processReleaseManifest', FROM_CACHE)
-        builder.expect(':app:stripDebugDebugSymbols', SUCCESS)
-        builder.expect(':app:stripReleaseDebugSymbols', SUCCESS)
         builder.expect(':app:validateSigningDebug', FROM_CACHE)
         builder.expect(':library:assemble', SUCCESS)
         builder.expect(':library:assembleDebug', SUCCESS)
@@ -343,8 +350,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:processDebugManifest', FROM_CACHE)
         builder.expect(':library:processReleaseJavaRes', NO_SOURCE)
         builder.expect(':library:processReleaseManifest', FROM_CACHE)
-        builder.expect(':library:stripDebugDebugSymbols', SUCCESS)
-        builder.expect(':library:stripReleaseDebugSymbols', SUCCESS)
 
         // the outcome of this task is not consistent with the kotlin plugin applied
         builder.expectChangingValue(':library:verifyReleaseResources')
@@ -396,6 +401,16 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:javaPreCompileRelease', FROM_CACHE)
     }
 
+    static void android35xTo42xExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:stripDebugDebugSymbols', SUCCESS)
+        builder.expect(':app:stripReleaseDebugSymbols', SUCCESS)
+        builder.expect(':library:stripDebugDebugSymbols', SUCCESS)
+        builder.expect(':library:stripReleaseDebugSymbols', SUCCESS)
+        builder.expect(':app:mergeDebugResources', FROM_CACHE)
+        builder.expect(':app:mergeReleaseResources', FROM_CACHE)
+        builder.expect(':app:processDebugResources', FROM_CACHE)
+        builder.expect(':app:processReleaseResources', FROM_CACHE)
+    }
 
     static void android35xOnlyExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:checkDebugManifest', SUCCESS)
@@ -430,22 +445,25 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:dexBuilderRelease', FROM_CACHE)
         builder.expect(':app:extractDeepLinksDebug', FROM_CACHE)
         builder.expect(':app:extractDeepLinksRelease', FROM_CACHE)
-        builder.expect(':app:mergeDebugNativeLibs', SUCCESS)
-        builder.expect(':app:mergeReleaseNativeLibs', SUCCESS)
         builder.expect(':library:copyDebugJniLibsProjectAndLocalJars', FROM_CACHE)
         builder.expect(':library:copyDebugJniLibsProjectOnly', FROM_CACHE)
         builder.expect(':library:copyReleaseJniLibsProjectAndLocalJars', FROM_CACHE)
         builder.expect(':library:copyReleaseJniLibsProjectOnly', FROM_CACHE)
         builder.expect(':library:extractDeepLinksDebug', FROM_CACHE)
         builder.expect(':library:extractDeepLinksRelease', FROM_CACHE)
-        builder.expect(':library:mergeDebugNativeLibs', SUCCESS)
-        builder.expect(':library:mergeReleaseNativeLibs', SUCCESS)
         builder.expect(':library:parseDebugLocalResources', FROM_CACHE)
         builder.expect(':library:parseReleaseLocalResources', FROM_CACHE)
         builder.expect(':library:syncDebugLibJars', FROM_CACHE)
         builder.expect(':library:syncReleaseLibJars', FROM_CACHE)
         builder.expect(':library:compileDebugLibraryResources', FROM_CACHE)
         builder.expect(':library:compileReleaseLibraryResources', FROM_CACHE)
+    }
+
+    static void android36xTo42xOnlyExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:mergeDebugNativeLibs', SUCCESS)
+        builder.expect(':app:mergeReleaseNativeLibs', SUCCESS)
+        builder.expect(':library:mergeDebugNativeLibs', SUCCESS)
+        builder.expect(':library:mergeReleaseNativeLibs', SUCCESS)
     }
 
     static void android40xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
@@ -509,6 +527,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // New non-cacheable tasks in 4.2.0-alpha10:
         builder.expect(':app:writeReleaseApplicationId', SUCCESS)
         builder.expect(':app:analyticsRecordingRelease', SUCCESS)
+        builder.expect(':app:extractReleaseNativeSymbolTables', FROM_CACHE)
     }
 
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
@@ -518,14 +537,26 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
         builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
         builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)
-        builder.expect(':app:extractReleaseNativeSymbolTables', FROM_CACHE)
         builder.expect(':app:writeReleaseAppMetadata', FROM_CACHE)
         builder.expect(':app:writeDebugSigningConfigVersions', FROM_CACHE)
         builder.expect(':app:writeReleaseSigningConfigVersions', FROM_CACHE)
     }
 
-    static void android70xOrHIgherExpectations(ExpectedOutcomeBuilder builder) {
+    static void android70xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:desugarDebugFileDependencies', FROM_CACHE)
         builder.expect(':app:desugarReleaseFileDependencies', FROM_CACHE)
+        builder.expect(':app:extractReleaseNativeSymbolTables', NO_SOURCE)
+        builder.expect(':app:mergeDebugNativeLibs', NO_SOURCE)
+        builder.expect(':app:mergeReleaseNativeLibs', NO_SOURCE)
+        builder.expect(':library:mergeDebugNativeLibs', NO_SOURCE)
+        builder.expect(':library:mergeReleaseNativeLibs', NO_SOURCE)
+        builder.expect(':app:stripDebugDebugSymbols', NO_SOURCE)
+        builder.expect(':app:stripReleaseDebugSymbols', NO_SOURCE)
+        builder.expect(':library:stripDebugDebugSymbols', NO_SOURCE)
+        builder.expect(':library:stripReleaseDebugSymbols', NO_SOURCE)
+        builder.expect(':app:mergeDebugResources', SUCCESS)
+        builder.expect(':app:mergeReleaseResources', SUCCESS)
+        builder.expect(':app:processDebugResources', SUCCESS)
+        builder.expect(':app:processReleaseResources', SUCCESS)
     }
 }

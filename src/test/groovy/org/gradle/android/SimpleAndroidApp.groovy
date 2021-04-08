@@ -225,8 +225,8 @@ class SimpleAndroidApp {
      * support) and we provide a dummy library for the downstream task to "merge".  This reliably triggers the
      * cache relocation problem on all android versions.
      */
-    private static String getRenderscriptConfiguration() {
-        return '''
+    private String getRenderscriptConfiguration() {
+        return androidVersion >= VersionNumber.parse('7.0.0-alpha12') ? '' : '''
             android {
                 defaultConfig {
                     renderscriptTargetApi 18

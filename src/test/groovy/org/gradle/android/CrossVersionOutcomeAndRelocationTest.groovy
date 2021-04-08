@@ -292,6 +292,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:processDebugManifest', FROM_CACHE)
         builder.expect(':app:processReleaseJavaRes', NO_SOURCE)
         builder.expect(':app:processReleaseManifest', FROM_CACHE)
+        builder.expect(':app:stripDebugDebugSymbols', NO_SOURCE)
+        builder.expect(':app:stripReleaseDebugSymbols', NO_SOURCE)
         builder.expect(':app:validateSigningDebug', FROM_CACHE)
         builder.expect(':library:assemble', SUCCESS)
         builder.expect(':library:assembleDebug', SUCCESS)
@@ -350,6 +352,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:processDebugManifest', FROM_CACHE)
         builder.expect(':library:processReleaseJavaRes', NO_SOURCE)
         builder.expect(':library:processReleaseManifest', FROM_CACHE)
+        builder.expect(':library:stripDebugDebugSymbols', NO_SOURCE)
+        builder.expect(':library:stripReleaseDebugSymbols', NO_SOURCE)
 
         // the outcome of this task is not consistent with the kotlin plugin applied
         builder.expectChangingValue(':library:verifyReleaseResources')
@@ -402,10 +406,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     }
 
     static void android35xTo42xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:stripDebugDebugSymbols', SUCCESS)
-        builder.expect(':app:stripReleaseDebugSymbols', SUCCESS)
-        builder.expect(':library:stripDebugDebugSymbols', SUCCESS)
-        builder.expect(':library:stripReleaseDebugSymbols', SUCCESS)
         builder.expect(':app:mergeDebugResources', FROM_CACHE)
         builder.expect(':app:mergeReleaseResources', FROM_CACHE)
         builder.expect(':app:processDebugResources', FROM_CACHE)
@@ -451,6 +451,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:copyReleaseJniLibsProjectOnly', FROM_CACHE)
         builder.expect(':library:extractDeepLinksDebug', FROM_CACHE)
         builder.expect(':library:extractDeepLinksRelease', FROM_CACHE)
+        builder.expect(':library:mergeDebugNativeLibs', NO_SOURCE)
+        builder.expect(':library:mergeReleaseNativeLibs', NO_SOURCE)
         builder.expect(':library:parseDebugLocalResources', FROM_CACHE)
         builder.expect(':library:parseReleaseLocalResources', FROM_CACHE)
         builder.expect(':library:syncDebugLibJars', FROM_CACHE)
@@ -462,8 +464,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     static void android36xTo42xOnlyExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:mergeDebugNativeLibs', SUCCESS)
         builder.expect(':app:mergeReleaseNativeLibs', SUCCESS)
-        builder.expect(':library:mergeDebugNativeLibs', SUCCESS)
-        builder.expect(':library:mergeReleaseNativeLibs', SUCCESS)
     }
 
     static void android40xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
@@ -527,7 +527,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // New non-cacheable tasks in 4.2.0-alpha10:
         builder.expect(':app:writeReleaseApplicationId', SUCCESS)
         builder.expect(':app:analyticsRecordingRelease', SUCCESS)
-        builder.expect(':app:extractReleaseNativeSymbolTables', FROM_CACHE)
+        builder.expect(':app:extractReleaseNativeSymbolTables', NO_SOURCE)
     }
 
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
@@ -548,12 +548,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:extractReleaseNativeSymbolTables', NO_SOURCE)
         builder.expect(':app:mergeDebugNativeLibs', NO_SOURCE)
         builder.expect(':app:mergeReleaseNativeLibs', NO_SOURCE)
-        builder.expect(':library:mergeDebugNativeLibs', NO_SOURCE)
-        builder.expect(':library:mergeReleaseNativeLibs', NO_SOURCE)
-        builder.expect(':app:stripDebugDebugSymbols', NO_SOURCE)
-        builder.expect(':app:stripReleaseDebugSymbols', NO_SOURCE)
-        builder.expect(':library:stripDebugDebugSymbols', NO_SOURCE)
-        builder.expect(':library:stripReleaseDebugSymbols', NO_SOURCE)
         builder.expect(':app:mergeDebugResources', SUCCESS)
         builder.expect(':app:mergeReleaseResources', SUCCESS)
         builder.expect(':app:processDebugResources', SUCCESS)

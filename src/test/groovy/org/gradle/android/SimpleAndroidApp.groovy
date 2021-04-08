@@ -160,8 +160,6 @@ class SimpleAndroidApp {
             }
 
             ${roomExtensionIfEnabled}
-
-            ${renderscriptConfiguration}
         """.stripIndent()
     }
 
@@ -209,40 +207,6 @@ class SimpleAndroidApp {
         return (roomConfiguration != RoomConfiguration.NO_LIBRARY) ? """
             kapt "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
         """ : ""
-    }
-
-    /**
-     * The following is the result of a descent into madness when trying to reproduce
-     * https://issuetracker.google.com/issues/140602655 across all android versions.  The affected property on
-     * MergeNativeLibsTask only has a value if there are native libraries produced by this project or if the
-     * project compiles RenderScript with support mode enabled.  The property can be directly changed on some versions
-     * of android but not others.  Building native libraries as part of the project has external infrastructure
-     * requirements in that versions of cmake and ndk must be installed on the system or the test will fail. Adding
-     * RenderScript compilation to the project is the simplest way to trigger the problem, but support mode does not
-     * work reliably on all versions of android with MacOS Catalina (because of 32-bit support).  Thus, the following
-     * hack was born.  We enable support mode in order to trick AGP into setting up the affected property on
-     * MergeNativeLibsTask, then we disable it before execution (in order to avoid runtime errors related to 32-bit
-     * support) and we provide a dummy library for the downstream task to "merge".  This reliably triggers the
-     * cache relocation problem on all android versions.
-     */
-    private String getRenderscriptConfiguration() {
-        return androidVersion >= VersionNumber.parse('7.0.0-alpha12') ? '' : '''
-            android {
-                defaultConfig {
-                    renderscriptTargetApi 18
-                    renderscriptSupportModeEnabled true
-                }
-            }
-            tasks.withType(com.android.build.gradle.tasks.RenderscriptCompile).configureEach {
-                doFirst {
-                    supportMode = false
-                }
-                doLast {
-                    new File(libOutputDir.get().asFile, "test.so") << ''
-                    supportMode = true
-                }
-            }
-        '''.stripIndent()
     }
 
     private writeActivity(String basedir, String packageName, String className) {

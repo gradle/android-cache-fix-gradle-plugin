@@ -63,6 +63,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         androidTestTask: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
 

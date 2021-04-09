@@ -11,8 +11,11 @@ import org.gradle.api.tasks.PathSensitivity
 /**
  * Fixes the cacheability issue with MergeResources Task where the rawLocalResources field is treated as an input with
  * absolute path sensitivity.
+ *
+ * This is marked as "fixedIn" AGP 7.0.0-alpha09, but the issue has not been fixed.  That version introduced changes
+ * that prevent us from working around the issue anymore, so we can no longer apply it.
  */
-@AndroidIssue(introducedIn = "4.0.0", fixedIn = [], link = "https://issuetracker.google.com/issues/141301405")
+@AndroidIssue(introducedIn = "4.0.0", fixedIn = ['7.0.0-alpha09'], link = "https://issuetracker.google.com/issues/141301405")
 class MergeResourcesWorkaround implements Workaround {
     // This task is new in AGP 4.0.0 so use Class.forName to allow for backward compatibility with older AGP versions.
     static Class<?> getAndroidTaskClass() {

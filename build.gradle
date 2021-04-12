@@ -29,12 +29,6 @@ def supportedVersions = [
 repositories {
     google()
     mavenCentral()
-    jcenter() {
-        content {
-            //  org.jetbrains.trove4j is only available in jcenter otherwise we don't want to rely on jcenter.
-            includeGroup("org.jetbrains.trove4j")
-        }
-    }
 }
 
 dependencies {

@@ -14,7 +14,7 @@ class WorkaroundTest extends Specification {
         androidVersion  | expectedWorkarounds
         "7.0.0-alpha12" | ['MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_7_0']
         "4.2.0-rc01"    | ['MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_2', 'MergeResources']
-        "4.1.2"         | ['MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
+        "4.1.3"         | ['MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
         "4.0.2"         | ['MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
         "3.6.4"         | ['MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs']
         "3.5.4"         | ['MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs']

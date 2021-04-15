@@ -5,13 +5,12 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.VersionNumber
 import org.junit.Assume
-import org.junit.experimental.categories.Category
 import spock.lang.Unroll
 
 import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
-@Category(MultiVersionTest)
+@MultiVersionTest
 class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     private static final String[] CLEAN_BUILD = ["clean", "testDebug", "testRelease", "assembleAndroidTest", "--build-cache", "--stacktrace"]
     private static final List<String> ALL_PROJECTS = ["app", "library"]

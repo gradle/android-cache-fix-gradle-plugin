@@ -30,17 +30,29 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    groovyClasspath
+}
+
 dependencies {
-    def agpVersion = "3.5.4"
-    compileOnly "com.android.tools.build:gradle:$agpVersion"
+    def versions = [
+        'agp': '3.5.4',
+        'spock': '2.0-M5-groovy-3.0'
+    ]
+
+    // Used for compiling the main classes
+    groovyClasspath 'org.codehaus.groovy:groovy-all:2.5.12'
+
+    compileOnly "com.android.tools.build:gradle:${versions.agp}"
+
     implementation gradleApi()
-    testImplementation "com.android.tools.build:gradle:$agpVersion"
+
     testImplementation gradleTestKit()
-    testImplementation "junit:junit:4.13.2"
-    testImplementation "org.spockframework:spock-core:2.0-M5-groovy-3.0@jar"
-    testImplementation "org.opentest4j:opentest4j:1.2.0"
-    testRuntimeOnly 'cglib:cglib-nodep:3.3.0'
-    testRuntimeOnly 'org.objenesis:objenesis:3.2'
+    testImplementation "com.android.tools.build:gradle:${versions.agp}"
+    testImplementation platform("org.spockframework:spock-bom:${versions.spock}")
+    testImplementation("org.spockframework:spock-core") { exclude group: 'org.codehaus.groovy' }
+    testImplementation("org.spockframework:spock-junit4") { exclude group: 'org.codehaus.groovy' }
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
 }
 
 java {
@@ -49,8 +61,15 @@ java {
     }
 }
 
-def generatedResources = "$buildDir/generated-resources/main"
+// We do this only for the the main source set as the test source set needs to use
+// Groovy 3 for Spock 2.0 compatibility.  The main classes need to be compiled with
+// Groovy 2 so that they will work with older versions of Gradle.
+tasks.named('compileGroovy').configure {
+    groovyClasspath = configurations.groovyClasspath
+}
 
+// Generate a json file that contains the matrix of Gradle and AGP versions to test against.
+def generatedResources = "$buildDir/generated-resources/main"
 tasks.register('generateVersions') {
     def outputFile = file("$generatedResources/versions.json")
     inputs.property "version", version
@@ -70,6 +89,7 @@ sourceSets {
     }
 }
 
+// Main plugin publishing metadata
 gradlePlugin {
     plugins {
         androidCacheFixPlugin {
@@ -92,8 +112,9 @@ pluginBundle {
     }
 }
 
+// A local repo we publish our library to for testing in order to workaround limitations
+// in the TestKit plugin classpath.
 def localRepo = file("$buildDir/local-repo")
-
 publishing {
     repositories {
         maven {
@@ -115,19 +136,14 @@ tasks.register('generateTestTasksJson') {
     }
 }
 
+// Configuration common to all test tasks
 tasks.withType(Test).configureEach {
     dependsOn publish
     systemProperty "local.repo", localRepo.toURI()
+    useJUnitPlatform()
     retry {
         maxRetries = isCI ? 1 : 0
         maxFailures = 20
-    }
-}
-
-tasks.named("test").configure {
-    useJUnit {
-        // The main test task runs everything not annotated with the MultiVersionTest category
-        excludeCategories 'org.gradle.android.MultiVersionTest'
     }
 }
 
@@ -140,9 +156,7 @@ supportedVersions.keySet().each { androidVersion ->
         javaLauncher = javaToolchains.launcherFor {
             languageVersion = jdkVersionFor(androidVersion)
         }
-        useJUnit {
-            includeCategories 'org.gradle.android.MultiVersionTest'
-        }
+
         systemProperty 'org.gradle.android.testVersion', androidVersion
     }
 
@@ -163,6 +177,7 @@ static def jdkVersionFor(String version) {
     return JavaLanguageVersion.of(VersionNumber.parse(version) > VersionNumber.parse("7.0.0-alpha01") ? 11 : 8)
 }
 
+// A basic sanity check to run before running all test tasks
 tasks.register("sanityCheck") {
     dependsOn tasks.withType(CodeNarc), validatePlugins
 }

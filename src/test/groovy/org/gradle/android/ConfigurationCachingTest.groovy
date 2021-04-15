@@ -3,9 +3,8 @@ package org.gradle.android
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.util.VersionNumber
 import org.junit.Assume
-import org.junit.experimental.categories.Category
 
-@Category(MultiVersionTest)
+@MultiVersionTest
 class ConfigurationCachingTest extends AbstractTest {
     private static final VersionNumber SUPPORTED_KOTLIN_VERSION = VersionNumber.parse("1.4.30")
 

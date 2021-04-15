@@ -2,11 +2,10 @@ package org.gradle.android
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.experimental.categories.Category
 import spock.lang.Issue
 import spock.lang.Unroll
 
-@Category(MultiVersionTest)
+@MultiVersionTest
 class MergeJavaResourcesWorkaroundTest extends AbstractTest {
     @Unroll
     @Issue('https://github.com/gradle/android-cache-fix-gradle-plugin/issues/78')

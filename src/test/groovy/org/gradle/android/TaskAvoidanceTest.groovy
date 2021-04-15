@@ -1,9 +1,8 @@
 package org.gradle.android
 
-import org.junit.experimental.categories.Category
 import spock.lang.Unroll
 
-@Category(MultiVersionTest)
+@MultiVersionTest
 class TaskAvoidanceTest extends AbstractTest {
     @Unroll
     def "Source Tasks are avoided with #gradleVersion and Android plugin #androidVersion"() {

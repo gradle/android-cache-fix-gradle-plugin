@@ -5,7 +5,6 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
-import org.junit.experimental.categories.Category
 import spock.lang.Unroll
 
 import static org.gradle.android.Versions.android
@@ -14,7 +13,7 @@ import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 
-@Category(MultiVersionTest)
+@MultiVersionTest
 class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
     @Unroll

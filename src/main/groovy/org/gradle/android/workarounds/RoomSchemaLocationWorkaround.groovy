@@ -36,7 +36,7 @@ import java.lang.reflect.Field
  *
  * <pre>
  *     room {
- *         schemaLocationDir = file("roomSchemas")
+ *         schemaLocationDir.set(file("roomSchemas"))
  *     }
  * </pre>
  *
@@ -86,7 +86,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
             if (arguments.containsKey(ROOM_SCHEMA_LOCATION)) {
                 throw new IllegalStateException("""${this.class.name} cannot be used with an explicit '${ROOM_SCHEMA_LOCATION}' annotation processor argument.  Please change this to configure the schema location directory via the 'room' project extension:
     room {
-        schemaLocationDir = file("roomSchemas")
+        schemaLocationDir.set(file("roomSchemas"))
     }
 """)
             }

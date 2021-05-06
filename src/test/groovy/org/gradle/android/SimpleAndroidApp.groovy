@@ -452,7 +452,7 @@ class SimpleAndroidApp {
         RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
 
         VersionNumber androidVersion = Versions.latestAndroidVersion()
-        VersionNumber kotlinVersion = VersionNumber.parse("1.3.72")
+        VersionNumber kotlinVersion = TestVersions.latestSupportedKotlinVersion()
         File projectDir
         File cacheDir
 

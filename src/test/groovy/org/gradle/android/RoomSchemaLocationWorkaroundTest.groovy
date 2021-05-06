@@ -17,9 +17,10 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     private static final List<String> ALL_VARIANTS = ["debug", "release"]
 
     @Unroll
-    def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion)"() {
+    def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
+            .withKotlinVersion(VersionNumber.parse(kotlinVersion))
             .build()
             .writeProject()
 
@@ -73,13 +74,15 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         where:
-        androidVersion << TestVersions.latestAndroidVersions
+        //noinspection GroovyAssignabilityCheck
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions].combinations()
     }
 
     @Unroll
-    def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers disabled (Android #androidVersion)"() {
+    def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers disabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
+            .withKotlinVersion(VersionNumber.parse(kotlinVersion))
             .withKaptWorkersDisabled()
             .build()
             .writeProject()
@@ -134,7 +137,8 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         where:
-        androidVersion << TestVersions.latestAndroidVersions
+        //noinspection GroovyAssignabilityCheck
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions].combinations()
     }
 
     @Unroll

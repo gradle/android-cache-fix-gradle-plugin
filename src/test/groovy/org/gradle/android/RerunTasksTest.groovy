@@ -2,11 +2,14 @@ package org.gradle.android
 
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.VersionNumber
+import org.junit.Assume
 
 @MultiVersionTest
 class RerunTasksTest extends AbstractTest {
 
-    def "test with --rerun-tasks works"() {
+    def "test with configuration cache and --rerun-tasks works"() {
+        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() >= VersionNumber.parse("4.2.0-alpha01"))
+
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)
                 .withKotlinVersion(VersionNumber.parse("1.5.0"))

@@ -17,12 +17,6 @@ abstract class AbstractCompileLibraryResourcesWorkaround_4_2_orHigher implements
         return Class.forName('com.android.build.gradle.tasks.CompileLibraryResourcesTask')
     }
 
-    protected void setPropertyValue(Task task, ConfigurableFileCollection directoryProperty) {
-        Field field = task.class.getDeclaredFields().find { it.name == "__${propertyName}__" }
-        field.setAccessible(true)
-        field.set(task, directoryProperty)
-    }
-
     @Override
     void apply(WorkaroundContext context) {
         Project project = context.project
@@ -34,17 +28,23 @@ abstract class AbstractCompileLibraryResourcesWorkaround_4_2_orHigher implements
                 .withPropertyName("${propertyName}.workaround")
                 .optional()
             project.gradle.taskGraph.whenReady {
+                def propName = propertyName
+                def setPropertyValue = { ConfigurableFileCollection directoryProperty ->
+                    Field field = task.class.getDeclaredFields().find { it.name == "__${propName}__" }
+                    field.setAccessible(true)
+                    field.set(task, directoryProperty)
+                }
+
                 originalPropertyValue.from(task.getProperty(propertyName))
                 def dummyProperty = project.objects.fileCollection()
                 // Non-existent file to give the ConfigurableFileCollection a value.
                 dummyProperty.setFrom(project.file('/doesnt-exist'))
-                setPropertyValue(task, dummyProperty)
+                setPropertyValue(dummyProperty)
 
                 // Set the task property back to its original value
                 task.doFirst {
-                    setPropertyValue(it, originalPropertyValue)
+                    setPropertyValue(originalPropertyValue)
                 }
-
             }
         }
     }

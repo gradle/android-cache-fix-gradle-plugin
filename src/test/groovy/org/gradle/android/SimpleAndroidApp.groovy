@@ -451,7 +451,7 @@ class SimpleAndroidApp {
         boolean kaptWorkersEnabled = true
         RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
 
-        VersionNumber androidVersion = Versions.latestAndroidVersion()
+        VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         VersionNumber kotlinVersion = VersionNumber.parse("1.3.72")
         File projectDir
         File cacheDir

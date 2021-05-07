@@ -7,6 +7,7 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
+import static org.gradle.android.TestVersions.latestKotlinVersionForGradleVersion
 import static org.gradle.android.Versions.android
 import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE
@@ -27,12 +28,14 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def originalDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(originalDir, cacheDir)
             .withAndroidVersion(androidVersion)
+            .withKotlinVersion(latestKotlinVersionForGradleVersion(gradleVersion))
             .build()
             .writeProject()
 
         def relocatedDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(relocatedDir, cacheDir)
             .withAndroidVersion(androidVersion)
+            .withKotlinVersion(latestKotlinVersionForGradleVersion(gradleVersion))
             .build()
             .writeProject()
 

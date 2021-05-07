@@ -41,4 +41,21 @@ class TestVersions {
         def minorVersions = allCandidateTestVersions.keySet().collect { "${it.major}.${it.minor}" }
         return minorVersions.collect { getLatestVersionForAndroid(it) }
     }
+
+    static List<String> supportedKotlinVersions = ["1.3.72", "1.5.0"]
+
+    static VersionNumber oldestSupportedKotlinVersion() {
+        return VersionNumber.parse(supportedKotlinVersions.first())
+    }
+
+    static VersionNumber latestSupportedKotlinVersion() {
+        return VersionNumber.parse(supportedKotlinVersions.last())
+    }
+
+    static VersionNumber latestKotlinVersionForGradleVersion(GradleVersion gradleVersion) {
+        if (gradleVersion < GradleVersion.version("6.1")) {
+            return oldestSupportedKotlinVersion()
+        }
+        return latestSupportedKotlinVersion()
+    }
 }

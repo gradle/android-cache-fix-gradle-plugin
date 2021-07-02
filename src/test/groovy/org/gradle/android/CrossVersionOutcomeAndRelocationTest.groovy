@@ -547,5 +547,9 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:mergeReleaseResources', SUCCESS)
         builder.expect(':app:processDebugResources', SUCCESS)
         builder.expect(':app:processReleaseResources', SUCCESS)
+        builder.expect(':library:javaPreCompileDebug', FROM_CACHE)
+        builder.expect(':library:javaPreCompileRelease', FROM_CACHE)
+        builder.expect(':app:javaPreCompileDebug', FROM_CACHE)
+        builder.expect(':app:javaPreCompileRelease', FROM_CACHE)
     }
 }

@@ -16,13 +16,13 @@ class RerunTasksTest extends AbstractTest {
                 .build()
                 .writeProject()
 
-        withGradleVersion("7.0")
+        withGradleVersion(TestVersions.latestGradleVersion().version)
                 .withProjectDir(projectDir)
                 .withArguments("assembleDebug", "--stacktrace", "--rerun-tasks", "--configuration-cache")
                 .build()
 
         when:
-        def result = withGradleVersion("7.0")
+        def result = withGradleVersion(TestVersions.latestGradleVersion().version)
                 .withProjectDir(projectDir)
                 .withArguments("assembleDebug", "--stacktrace", "--rerun-tasks", "--configuration-cache")
                 .build()

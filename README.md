@@ -32,7 +32,7 @@ this can just be injected from the root project's build.gradle (change '2.3.0' t
 
 ```groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "2.3.2" apply false
+    id "org.gradle.android.cache-fix" version "2.3.3" apply false
 }
 
 subprojects {

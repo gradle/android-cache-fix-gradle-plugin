@@ -115,6 +115,8 @@ class SimpleAndroidApp {
                 android.useAndroidX=true
                 org.gradle.jvmargs=-Xmx2048m
                 kapt.use.worker.api=${kaptWorkersEnabled}
+                android.experimental.enableSourceSetPathsMap=true
+                android.experimental.cacheCompileLibResources=true
             """.stripIndent()
 
         configureAndroidSdkHome()

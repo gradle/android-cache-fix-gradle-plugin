@@ -1,17 +1,30 @@
 package org.gradle.android.workarounds
 
 import org.gradle.android.AndroidIssue
+import org.gradle.android.Warnings
+import org.gradle.api.Project
 
 /**
- * Fixes the cacheability issue with CompileLibraryResourcesWorkaround where the inputDirectories field is
- * treated as an input with absolute path sensitivity.
- * This is the same as the {@link CompileLibraryResourcesWorkaround_4_0} but the field was renamed with a new type
- * in 4.2.0-alpha09.
+ * Warns if the user is not using experimental support for relative path sensitivity that was added
+ * with 7.0.0-alpha09.
  */
 @AndroidIssue(introducedIn = "7.0.0-alpha09", fixedIn = [], link = "https://issuetracker.google.com/issues/155218379")
-class CompileLibraryResourcesWorkaround_7_0 extends AbstractCompileLibraryResourcesWorkaround_4_2_orHigher {
+class CompileLibraryResourcesWorkaround_7_0 implements Workaround {
+    public static final String ENABLE_SOURCE_SET_PATHS_MAP = "android.experimental.enableSourceSetPathsMap"
+    public static final String CACHE_COMPILE_LIB_RESOURCES = "android.experimental.cacheCompileLibResources"
+
     @Override
-    String getPropertyName() {
-        return "inputDirectoriesAsAbsolute"
+    void apply(WorkaroundContext context) {
+        boolean enableSourceSetPathsMap = Boolean.valueOf(context.project.findProperty(ENABLE_SOURCE_SET_PATHS_MAP) as String)
+        boolean cacheCompileLibResources = Boolean.valueOf(context.project.findProperty(CACHE_COMPILE_LIB_RESOURCES) as String)
+
+        if (!(enableSourceSetPathsMap && cacheCompileLibResources)) {
+            Warnings.USE_COMPILE_LIBRARY_RESOURCES_EXPERIMENTAL.warnOnce(context.project.logger)
+        }
+    }
+
+    @Override
+    boolean canBeApplied(Project project) {
+        return true
     }
 }

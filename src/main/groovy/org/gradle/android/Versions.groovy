@@ -1,5 +1,6 @@
 package org.gradle.android
 
+import com.android.builder.model.Version
 import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.ImmutableSortedSet
 import com.google.common.collect.Multimap
@@ -15,6 +16,8 @@ class Versions {
     static final Set<GradleVersion> SUPPORTED_GRADLE_VERSIONS
     static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
     static final Multimap<VersionNumber, GradleVersion> SUPPORTED_VERSIONS_MATRIX
+    static final VersionNumber CURRENT_ANDROID_VERSION
+    static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
 
     static {
         def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
@@ -29,6 +32,8 @@ class Versions {
         SUPPORTED_VERSIONS_MATRIX = matrix
         SUPPORTED_ANDROID_VERSIONS = ImmutableSortedSet.copyOf(matrix.keySet())
         SUPPORTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
+
+        CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
     }
 
     static VersionNumber android(String version) {

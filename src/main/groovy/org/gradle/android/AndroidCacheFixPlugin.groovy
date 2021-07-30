@@ -1,6 +1,5 @@
 package org.gradle.android
 
-import com.android.builder.model.Version
 import com.google.common.collect.ImmutableList
 import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_4_0
@@ -17,21 +16,16 @@ import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import java.util.concurrent.atomic.AtomicBoolean
-
-import static org.gradle.android.Versions.SUPPORTED_ANDROID_VERSIONS
-import static org.gradle.android.Versions.android
+import static org.gradle.android.Versions.*
 
 @CompileStatic
 class AndroidCacheFixPlugin implements Plugin<Project> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AndroidCacheFixPlugin)
-
-    static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
-    public static final VersionNumber CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
     private final List<Workaround> workarounds = [] as List<Workaround>
 
@@ -42,8 +36,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     private static boolean isMaybeSupportedAndroidVersion(Project project) {
         return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
-            (CURRENT_ANDROID_VERSION <= Versions.latestAndroidVersion() &&
-                CURRENT_ANDROID_VERSION >= Versions.earliestMaybeSupportedAndroidVersion())
+            (CURRENT_ANDROID_VERSION <= latestAndroidVersion() &&
+                CURRENT_ANDROID_VERSION >= earliestMaybeSupportedAndroidVersion())
     }
 
     static List<Workaround> initializeWorkarounds(Project project) {
@@ -86,6 +80,14 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             workaround.apply(context)
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
         }
+
+        if (GradleVersion.current() >= GradleVersion.version('6.1')) {
+            project.gradle.sharedServices.registerIfAbsent("warnings", WarningsService.class) {}.get()
+        } else {
+            project.gradle.buildFinished {
+                Warnings.resetAll()
+            }
+        }
     }
 
     static List<Workaround> getWorkaroundsToApply(
@@ -117,22 +119,5 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             workaroundsBuilder.add(workaround)
         }
         workaroundsBuilder.build()
-    }
-
-    private enum Warnings {
-        MAYBE_SUPPORTED_ANDROID_VERSION("WARNING: Android plugin ${CURRENT_ANDROID_VERSION} has not been tested with this version of the Android cache fix plugin, although it may work.  We test against only the latest patch release versions of Android Gradle plugin: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}.  If ${CURRENT_ANDROID_VERSION} is newly released, we may not have had a chance to release a version tested against it yet.  Proceed with caution.  You can suppress this warning with with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
-
-        private final String warning
-        private final AtomicBoolean warned = new AtomicBoolean()
-
-        Warnings(String warning) {
-            this.warning = warning
-        }
-
-        void warnOnce(org.gradle.api.logging.Logger logger) {
-            if (!warned.getAndSet(true)) {
-                logger.warn(warning)
-            }
-        }
     }
 }

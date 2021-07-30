@@ -16,8 +16,7 @@ import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.services.BuildService
-import org.gradle.api.services.BuildServiceParameters
+import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -82,7 +81,13 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
         }
 
-        project.gradle.sharedServices.registerIfAbsent("warnings", WarningsService.class) { }.get()
+        if (GradleVersion.current() >= GradleVersion.version('6.1')) {
+            project.gradle.sharedServices.registerIfAbsent("warnings", WarningsService.class) {}.get()
+        } else {
+            project.gradle.buildFinished {
+                Warnings.resetAll()
+            }
+        }
     }
 
     static List<Workaround> getWorkaroundsToApply(
@@ -114,12 +119,5 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             workaroundsBuilder.add(workaround)
         }
         workaroundsBuilder.build()
-    }
-
-    abstract static class WarningsService implements BuildService<BuildServiceParameters.None>, AutoCloseable {
-        @Override
-        void close() throws Exception {
-            Warnings.values().each {it.reset() }
-        }
     }
 }

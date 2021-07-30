@@ -20,4 +20,8 @@ enum Warnings {
             logger.warn(warning)
         }
     }
+
+    void reset() {
+        warned.set(false)
+    }
 }

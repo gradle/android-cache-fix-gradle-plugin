@@ -26,6 +26,19 @@ class CompileLibraryResourcesWorkaround_7_0Test extends AbstractTest {
 
         then:
         result.output.count(warningForAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK().toString())) == 1
+
+        when:
+        result = withGradleVersion(TestVersions.latestGradleVersion().version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "-P${CompileLibraryResourcesWorkaround_7_0.ENABLE_SOURCE_SET_PATHS_MAP}=false",
+                "-P${CompileLibraryResourcesWorkaround_7_0.CACHE_COMPILE_LIB_RESOURCES}=false",
+                'assembleDebug'
+            )
+            .build()
+
+        then:
+        result.output.count(warningForAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK().toString())) == 1
     }
 
     def "does not warn when experimental flags are provided"() {

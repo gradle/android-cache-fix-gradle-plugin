@@ -79,6 +79,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             workaround.apply(context)
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
         }
+
+        project.gradle.buildFinished {
+            Warnings.values().each {it.reset() }
+        }
     }
 
     static List<Workaround> getWorkaroundsToApply(

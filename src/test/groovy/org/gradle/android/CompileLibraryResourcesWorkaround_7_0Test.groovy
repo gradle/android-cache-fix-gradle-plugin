@@ -28,6 +28,29 @@ class CompileLibraryResourcesWorkaround_7_0Test extends AbstractTest {
         result.output.count(warningForAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK().toString())) == 1
     }
 
+    def "does not warn when experimental flags are provided"() {
+        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() >= Versions.android("7.0.0-alpha09"))
+
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())
+            .withKotlinDisabled()
+            .build()
+            .writeProject()
+
+        when:
+        def result = withGradleVersion(TestVersions.latestGradleVersion().version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "-P${CompileLibraryResourcesWorkaround_7_0.ENABLE_SOURCE_SET_PATHS_MAP}=true",
+                "-P${CompileLibraryResourcesWorkaround_7_0.CACHE_COMPILE_LIB_RESOURCES}=true",
+                'assembleDebug'
+            )
+            .build()
+
+        then:
+        result.output.count(warningForAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK().toString())) == 0
+    }
+
     def "does not warn for versions that do not support experimental flag"() {
         Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() < Versions.android("7.0.0-alpha09"))
 

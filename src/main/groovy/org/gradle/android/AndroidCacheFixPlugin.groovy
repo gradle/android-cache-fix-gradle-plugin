@@ -16,6 +16,8 @@ import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.services.BuildService
+import org.gradle.api.services.BuildServiceParameters
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -80,9 +82,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
         }
 
-        project.gradle.buildFinished {
-            Warnings.values().each {it.reset() }
-        }
+        project.gradle.sharedServices.registerIfAbsent("warnings", WarningsService.class) { }.get()
     }
 
     static List<Workaround> getWorkaroundsToApply(
@@ -114,5 +114,12 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             workaroundsBuilder.add(workaround)
         }
         workaroundsBuilder.build()
+    }
+
+    abstract static class WarningsService implements BuildService<BuildServiceParameters.None>, AutoCloseable {
+        @Override
+        void close() throws Exception {
+            Warnings.values().each {it.reset() }
+        }
     }
 }

@@ -193,9 +193,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         and:
         assertMergedSchemaOutputsExist()
 
-        and:
-
-
         where:
         androidVersion << TestVersions.latestAndroidVersions
     }
@@ -276,6 +273,12 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         and:
         assertMergedSchemaOutputsExist()
 
+        and:
+        assertKaptSchemaContainsColumnFor('last_update', 'debug')
+
+        and:
+        assertMergedRoomSchemaContainsColumn("last_update")
+
         when:
         modifyRoomColumnName("last_update", "foo")
         buildResult = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(androidVersion).version)
@@ -297,7 +300,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         and:
-        assertKaptSchemaContainsColumnFor('debug', 'foo')
+        assertKaptSchemaContainsColumnFor('foo', 'debug')
 
         and:
         assertMergedRoomSchemaContainsColumn("foo")
@@ -306,7 +309,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         //noinspection GroovyAssignabilityCheck
         androidVersion << TestVersions.latestAndroidVersions
     }
-
 
     def "workaround throws an exception when room extension is not configured, but annotation processor argument is"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
@@ -476,8 +478,12 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     }
 
     void modifyRoomColumnName(String project, String oldColumnName, String newColumnName) {
-        def schemaSourceFile = file("${project}/src/main/java/org/gradle/android/example/${project}/AppDatabase.java")
-        schemaSourceFile.text = schemaSourceFile.text.replaceAll("ADD COLUMN ${oldColumnName}", "ADD COLUMN ${newColumnName}")
-        assert schemaSourceFile.text.contains("ADD COLUMN ${newColumnName}")
+        def migrationSourceFile = file("${project}/src/main/java/org/gradle/android/example/${project}/AppDatabase.java")
+        migrationSourceFile.text = migrationSourceFile.text.replaceAll("ADD COLUMN ${oldColumnName}", "ADD COLUMN ${newColumnName}")
+        assert migrationSourceFile.text.contains("ADD COLUMN ${newColumnName}")
+
+        def schemaSourceFile = file("${project}/src/main/java/org/gradle/android/example/${project}/JavaUser.java")
+        schemaSourceFile.text = schemaSourceFile.text.replaceAll("ColumnInfo\\(name = .${oldColumnName}.\\)", "ColumnInfo(name = \"${newColumnName}\")")
+        assert schemaSourceFile.text.contains("@ColumnInfo(name = \"${newColumnName}\")")
     }
 }

@@ -74,6 +74,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
         // Grab fileOperations so we can do copy/sync operations
         def fileOperations = project.fileOperations
 
+        // An undefined directory property for use when providers are disabled
+        def nullDirectory = project.objects.directoryProperty()
+
         // Create a task that will be used to merge the task-specific schema locations to the directory (or directories)
         // originally specified.  This allows us to fan out the generated output and keep good cacheability for the
         // compile/kapt tasks but still join everything later in the location the user expects.
@@ -102,7 +105,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
                 // Add a command line argument provider to the task-specific list of providers
                 task.options.compilerArgumentProviders.add(
-                    new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, taskSpecificSchemaDir, { javaCompileSchemaGenerationEnabled } as Supplier)
+                    new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, taskSpecificSchemaDir, nullDirectory, { javaCompileSchemaGenerationEnabled } as Supplier)
                 )
 
                 // Register the generated schemas to be merged back to the original specified schema directory
@@ -132,7 +135,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
             applyToAllAndroidVariants(project) { variant ->
                 def variantSpecificSchemaDir = project.objects.directoryProperty()
                 variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
-                variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+                variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir, nullDirectory))
             }
 
             // Kapt tasks will remove the contents of any output directories, which will interfere with any additional
@@ -299,17 +302,20 @@ class RoomSchemaLocationWorkaround implements Workaround {
         @Internal
         final Provider<Directory> configuredSchemaLocationDir
 
-        @OutputDirectory
-        @Optional
+        @Internal
         final Provider<Directory> schemaLocationDir
 
         @Internal
-        final Supplier<Boolean> enabled;
+        final Supplier<Boolean> enabled
 
-        RoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir, Supplier<Boolean> enabled) {
+        @Internal
+        final Provider<Directory> nullDirectory
+
+        RoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir, Provider<Directory> nullDirectory, Supplier<Boolean> enabled) {
             this.configuredSchemaLocationDir = configuredSchemaLocationDir
             this.enabled = enabled
-            this.schemaLocationDir = schemaLocationDir.map { dir -> enabled.get() ? dir : null }
+            this.schemaLocationDir = schemaLocationDir
+            this.nullDirectory = nullDirectory
         }
 
         @Internal
@@ -325,19 +331,25 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 return []
             }
         }
+
+        @OutputDirectory
+        @Optional
+        Provider<Directory> getEffectiveSchemaLocationDir() {
+            return enabled.get() ? schemaLocationDir : nullDirectory
+        }
     }
 
     static class JavaCompilerRoomSchemaLocationArgumentProvider extends RoomSchemaLocationArgumentProvider {
-        JavaCompilerRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir, Supplier<Boolean> enabled) {
-            super(configuredSchemaLocationDir, schemaLocationDir, enabled)
+        JavaCompilerRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir, Provider<Directory> nullDirectory, Supplier<Boolean> enabled) {
+            super(configuredSchemaLocationDir, schemaLocationDir, nullDirectory, enabled)
         }
     }
 
     static class KaptRoomSchemaLocationArgumentProvider extends RoomSchemaLocationArgumentProvider {
         private Provider<Directory> temporarySchemaLocationDir
 
-        KaptRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
-            super(configuredSchemaLocationDir, schemaLocationDir, { true } as Supplier<Boolean>)
+        KaptRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir, Provider<Directory> nullDirectory) {
+            super(configuredSchemaLocationDir, schemaLocationDir, nullDirectory, { true } as Supplier<Boolean>)
             this.temporarySchemaLocationDir = schemaLocationDir.map {it.dir("../${it.asFile.name}Temp") }
         }
 

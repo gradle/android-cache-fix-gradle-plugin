@@ -76,6 +76,14 @@ jobs:
     -   name: Setup NDK
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager 'ndk;20.0.5594570'
 
+    # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing
+    -   name: Patch api-versions
+        run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
+
+    # List all installed Android SDK packages (for troubleshooting)
+    -   name: List Android Packages
+        run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
+
     # Use Java 8
     -   uses: actions/setup-java@v1
         with:

@@ -76,7 +76,7 @@ jobs:
     -   name: Setup NDK
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager 'ndk;20.0.5594570'
 
-    # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing
+    # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
     -   name: Patch api-versions
         run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
 

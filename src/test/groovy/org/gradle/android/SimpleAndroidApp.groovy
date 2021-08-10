@@ -366,7 +366,12 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
-            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << '''
+            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << legacySchemaContents
+        }
+    }
+
+    static String getLegacySchemaContents() {
+        return '''
                 {
                   "formatVersion": 1,
                   "database": {
@@ -414,7 +419,6 @@ class SimpleAndroidApp {
                   }
                 }
             '''.stripIndent()
-        }
     }
 
     private static String activityDependency() {

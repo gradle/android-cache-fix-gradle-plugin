@@ -243,7 +243,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     def "schemas are correctly generated when only one variant is built incrementally (Android #androidVersion)"() {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
-            .withKotlinVersion(VersionNumber.parse("1.5.0"))
+            .withKotlinVersion(TestVersions.latestSupportedKotlinVersion())
             .build()
             .writeProject()
 
@@ -452,6 +452,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     void assertSchemasExist(String project, String baseDirPath) {
         assert file("${roomSchemaDirPath(project, baseDirPath)}/1.json").exists()
         assert file("${roomSchemaDirPath(project, baseDirPath)}/2.json").exists()
+        assertLegacySchemaUnchanged(file("${roomSchemaDirPath(project, baseDirPath)}/1.json"))
     }
 
     static String roomSchemaDirPath(String project, String baseDirPath) {
@@ -485,5 +486,9 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         def schemaSourceFile = file("${project}/src/main/java/org/gradle/android/example/${project}/JavaUser.java")
         schemaSourceFile.text = schemaSourceFile.text.replaceAll("ColumnInfo\\(name = .${oldColumnName}.\\)", "ColumnInfo(name = \"${newColumnName}\")")
         assert schemaSourceFile.text.contains("@ColumnInfo(name = \"${newColumnName}\")")
+    }
+
+    static void assertLegacySchemaUnchanged(File legacySchemaFile) {
+        assert legacySchemaFile.text == SimpleAndroidApp.legacySchemaContents
     }
 }

@@ -58,6 +58,11 @@ class SimpleAndroidApp {
                         ${kotlinPluginDependencyIfEnabled}
                     }
                 }
+                subprojects {
+                  plugins.withType(com.android.build.gradle.api.AndroidBasePlugin) {
+                    project.apply plugin: "org.gradle.android.cache-fix"
+                  }
+                }
             """.stripIndent()
 
         writeActivity(library, libPackage, libraryActivity)
@@ -132,7 +137,7 @@ class SimpleAndroidApp {
         """
             apply plugin: "$androidPlugin"
             ${kotlinPluginsIfEnabled}
-            apply plugin: "org.gradle.android.cache-fix"
+//            apply plugin: "org.gradle.android.cache-fix"
 
             repositories {
                 google()

@@ -36,7 +36,7 @@ plugins {
 }
 
 subprojects {
-    plugins.withType(com.android.build.gradle.BasePlugin) {
+    plugins.withType(com.android.build.gradle.api.AndroidBasePlugin) {
         project.apply plugin: "org.gradle.android.cache-fix"
     }
 }
@@ -52,7 +52,7 @@ plugins {
 }
 
 subprojects {
-    plugins.withType<com.android.build.gradle.BasePlugin>() {
+    plugins.withType<com.android.build.gradle.api.AndroidBasePlugin>() {
         apply(plugin = "org.gradle.android.cache-fix")
     }
 }

@@ -20,6 +20,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.process.CommandLineArgumentProvider
 import org.gradle.util.VersionNumber
+import org.gradle.work.DisableCachingByDefault
 
 import javax.inject.Inject
 import java.lang.reflect.Field
@@ -385,6 +386,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
      * We don't want to create task dependencies on the compile/kapt tasks because we don't want to force execution
      * of those tasks if only a single variant is being assembled.
      */
+    @DisableCachingByDefault(because = 'This is a disk bound copy/merge task.')
     static abstract class RoomSchemaLocationMergeTask extends DefaultTask {
 
         // Using older internal API to maintain compatibility with Gradle 5.x

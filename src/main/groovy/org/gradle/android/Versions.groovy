@@ -7,6 +7,8 @@ import com.google.common.collect.Multimap
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.gradle.android.workarounds.SystemPropertiesCompat
+import org.gradle.api.Project
 import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 
@@ -52,5 +54,25 @@ class Versions {
 
     static VersionNumber latestAndroidVersion() {
         return SUPPORTED_ANDROID_VERSIONS.max()
+    }
+
+    static boolean isSupportedAndroidVersion(Project project) {
+        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
+            SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
+    }
+
+    static boolean isMaybeSupportedAndroidVersion(Project project) {
+        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
+            isSameMajorAndMinorAsSupportedVersion()
+    }
+
+    static boolean isSameMajorAndMinorAsSupportedVersion() {
+        return isSameMajorAndMinorAsSupportedVersion(CURRENT_ANDROID_VERSION)
+    }
+
+    static boolean isSameMajorAndMinorAsSupportedVersion(VersionNumber versionNumber) {
+        return SUPPORTED_ANDROID_VERSIONS.stream().anyMatch { supportedVersion ->
+            versionNumber.major == supportedVersion.major && versionNumber.minor == supportedVersion.minor
+        }
     }
 }

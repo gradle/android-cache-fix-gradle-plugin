@@ -11,7 +11,6 @@ import org.gradle.android.workarounds.MergeResourcesWorkaround
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_4_2
 import org.gradle.android.workarounds.MergeSourceSetFoldersWorkaround
 import org.gradle.android.workarounds.StripDebugSymbolsWorkaround
-import org.gradle.android.workarounds.SystemPropertiesCompat
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
@@ -29,17 +28,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AndroidCacheFixPlugin)
 
     private final List<Workaround> workarounds = [] as List<Workaround>
-
-    private static boolean isSupportedAndroidVersion(Project project) {
-        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
-            SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
-    }
-
-    private static boolean isMaybeSupportedAndroidVersion(Project project) {
-        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
-            (CURRENT_ANDROID_VERSION <= latestAndroidVersion() &&
-                CURRENT_ANDROID_VERSION >= earliestMaybeSupportedAndroidVersion())
-    }
 
     static List<Workaround> initializeWorkarounds(Project project) {
         // This avoids trying to apply these workarounds to a build with a version of Android that does not contain

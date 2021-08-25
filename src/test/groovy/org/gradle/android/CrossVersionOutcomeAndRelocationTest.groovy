@@ -141,6 +141,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid35xTo40x = androidVersion >= android("3.5.0") && androidVersion <= android("4.1.0-alpha01")
         def isAndroid35xTo41x = androidVersion >= android("3.5.0") && androidVersion <= android("4.2.0-alpha01")
         def isAndroid35xTo42x = androidVersion >= android("3.5.0") && androidVersion <= android("7.0.0-alpha01")
+        def isAndroid35xTo70x = androidVersion >= android("3.5.0") && androidVersion <= android("7.1.0-alpha01")
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
@@ -150,6 +151,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid42x = androidVersion >= android("4.2.0-alpha01") && androidVersion < android("7.0.0-alpha01")
         def isAndroid42xOrHigher = androidVersion >= android("4.2.0-alpha01")
         def isAndroid70xOrHigher = androidVersion >= android("7.0.0-alpha01")
+        def isAndroid71xOrHigher = androidVersion >= android("7.1.0-alpha01")
 
         def builder = new ExpectedOutcomeBuilder()
 
@@ -181,6 +183,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // Applies to 3.5.x, 3.6.x, 4.0.x, 4.1.x and 4.2.x
         if (isAndroid35xTo42x) {
             android35xTo42xExpectations(builder)
+        }
+
+        if (isAndroid35xTo70x) {
+            android35xTo70xExpectations(builder)
         }
 
         // Applies to anything 3.6.0 or higher
@@ -226,6 +232,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
             android70xOrHigherExpectations(builder)
         }
 
+        if (isAndroid71xOrHigher) {
+            android71xOrHigherExpectations(builder)
+        }
+
         new ExpectedResults(
             builder.build()
         )
@@ -241,12 +251,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:compileDebugJavaWithJavac', FROM_CACHE)
         builder.expect(':app:compileDebugKotlin', FROM_CACHE)
         builder.expect(':app:compileDebugRenderscript', FROM_CACHE)
-        builder.expect(':app:compileDebugSources', UP_TO_DATE)
         builder.expect(':app:compileReleaseAidl', NO_SOURCE)
         builder.expect(':app:compileReleaseJavaWithJavac', FROM_CACHE)
         builder.expect(':app:compileReleaseKotlin', FROM_CACHE)
         builder.expect(':app:compileReleaseRenderscript', FROM_CACHE)
-        builder.expect(':app:compileReleaseSources', UP_TO_DATE)
         builder.expect(':app:createDebugCompatibleScreenManifests', FROM_CACHE)
         builder.expect(':app:createReleaseCompatibleScreenManifests', FROM_CACHE)
         builder.expect(':app:dataBindingGenBaseClassesDebug', FROM_CACHE)
@@ -298,12 +306,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:compileDebugJavaWithJavac', FROM_CACHE)
         builder.expect(':library:compileDebugKotlin', FROM_CACHE)
         builder.expect(':library:compileDebugRenderscript', FROM_CACHE)
-        builder.expect(':library:compileDebugSources', UP_TO_DATE)
         builder.expect(':library:compileReleaseAidl', NO_SOURCE)
         builder.expect(':library:compileReleaseJavaWithJavac', FROM_CACHE)
         builder.expect(':library:compileReleaseKotlin', FROM_CACHE)
         builder.expect(':library:compileReleaseRenderscript', FROM_CACHE)
-        builder.expect(':library:compileReleaseSources', UP_TO_DATE)
         builder.expect(':library:dataBindingGenBaseClassesDebug', FROM_CACHE)
         builder.expect(':library:dataBindingGenBaseClassesRelease', FROM_CACHE)
         builder.expect(':library:dataBindingMergeDependencyArtifactsDebug', FROM_CACHE)
@@ -410,6 +416,13 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:processReleaseResources', FROM_CACHE)
         builder.expect(':app:mergeDebugNativeLibs', SUCCESS)
         builder.expect(':app:mergeReleaseNativeLibs', SUCCESS)
+    }
+    
+    static void android35xTo70xExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:compileDebugSources', UP_TO_DATE)
+        builder.expect(':app:compileReleaseSources', UP_TO_DATE)
+        builder.expect(':library:compileDebugSources', UP_TO_DATE)
+        builder.expect(':library:compileReleaseSources', UP_TO_DATE)
     }
 
     static void android35xOnlyExpectations(ExpectedOutcomeBuilder builder) {
@@ -560,5 +573,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:compileReleaseArtProfile', FROM_CACHE)
         builder.expect(':library:prepareReleaseArtProfile', SUCCESS)
         builder.expect(':library:prepareDebugArtProfile', SUCCESS)
+    }
+
+    static void android71xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:createDebugApkListingFileRedirect', SUCCESS)
+        builder.expect(':app:createReleaseApkListingFileRedirect', SUCCESS)
     }
 }

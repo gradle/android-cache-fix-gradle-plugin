@@ -23,7 +23,7 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 ## Applying the plugin
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied.  Typically,
-this can just be injected from the root project's build.gradle (change '2.4.1' to the latest version of the cache fix plugin
+this can just be injected from the root project's build.gradle (change '2.4.2' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
 <details open>
@@ -32,7 +32,7 @@ this can just be injected from the root project's build.gradle (change '2.4.1' t
 
 ```groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "2.4.1" apply false
+    id "org.gradle.android.cache-fix" version "2.4.2" apply false
 }
 
 subprojects {

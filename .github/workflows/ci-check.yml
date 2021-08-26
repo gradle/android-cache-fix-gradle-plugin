@@ -34,8 +34,6 @@ jobs:
         matrix: ${{ steps.setup-matrix.outputs.matrix }}
 
   sanity_check:
-    needs: generate_versions
-
     runs-on: ubuntu-latest
 
     steps:

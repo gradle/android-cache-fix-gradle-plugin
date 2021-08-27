@@ -41,7 +41,14 @@ jobs:
     -   uses: actions/checkout@v1
 
     # Sets up the NDK required by AGP 3.6.x
+    -   name: NDK Cache
+        id: ndk-cache
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/lib/android/sdk/ndk/20.0.5594570
+          key: ndk-cache-20.0.5594570
     -   name: Setup NDK
+        if: steps.ndk-cache.outputs.cache-hit != 'true'
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager 'ndk;20.0.5594570'
 
     # Use Java 8
@@ -71,7 +78,14 @@ jobs:
     -   uses: actions/checkout@v1
 
     # Sets up the NDK required by AGP 3.6.x
+    -   name: NDK Cache
+        id: ndk-cache
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/lib/android/sdk/ndk/20.0.5594570
+          key: ndk-cache-20.0.5594570
     -   name: Setup NDK
+        if: steps.ndk-cache.outputs.cache-hit != 'true'
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager 'ndk;20.0.5594570'
 
     # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)

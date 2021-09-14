@@ -483,10 +483,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:mergeDebugGeneratedProguardFiles', FROM_CACHE)
         builder.expect(':library:mergeReleaseConsumerProguardFiles', FROM_CACHE)
         builder.expect(':library:mergeReleaseGeneratedProguardFiles', FROM_CACHE)
-        builder.expect(':library:bundleLibCompileToJarDebug', FROM_CACHE)
+        builder.expect(':library:bundleLibCompileToJarDebug', SUCCESS)
         builder.expect(':library:bundleLibResDebug', NO_SOURCE)
         builder.expect(':library:bundleLibResRelease', NO_SOURCE)
-        builder.expect(':library:bundleLibCompileToJarRelease', FROM_CACHE)
+        builder.expect(':library:bundleLibCompileToJarRelease', SUCCESS)
         builder.expect(':library:stripDebugDebugSymbols', NO_SOURCE)
         builder.expect(':library:stripReleaseDebugSymbols', NO_SOURCE)
         builder.expect(':app:collectReleaseDependencies', SUCCESS)
@@ -494,8 +494,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     }
 
     static void android40xTo41xExpectation(ExpectedOutcomeBuilder builder) {
-        builder.expect(':library:bundleLibRuntimeToJarDebug', FROM_CACHE)
-        builder.expect(':library:bundleLibRuntimeToJarRelease', FROM_CACHE)
+        builder.expect(':library:bundleLibRuntimeToJarDebug', SUCCESS)
+        builder.expect(':library:bundleLibRuntimeToJarRelease', SUCCESS)
     }
 
     static void android41xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
@@ -540,8 +540,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         // Renamed from ToJar to ToDir
-        builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE)
-        builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE)
+        builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE) // Should this be SUCCESS?
+        builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE) // Should this be SUCCESS?
         builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
         builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
         builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)

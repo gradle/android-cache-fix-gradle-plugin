@@ -14,7 +14,7 @@ class WorkaroundTest extends Specification {
         androidVersion  | expectedWorkarounds
         "7.0.1"         | ['BundleLibraryClassesJar_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_7_0']
         "4.2.2"         | ['BundleLibraryClassesJar_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_2', 'MergeResources']
-        "4.1.3"         | ['BundleLibraryClassesJar', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
+        "4.1.3"         | ['BundleLibraryClassesJar_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
         "4.0.2"         | ['BundleLibraryClassesJar', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
         "3.6.4"         | ['BundleLibraryClassesJar', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs']
         "3.5.4"         | ['BundleLibraryClassesJar', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs']

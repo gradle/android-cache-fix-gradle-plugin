@@ -8,7 +8,7 @@ import org.gradle.api.Project
  * Disables caching of the BundleLibraryClasses task which is mostly disk bound and unlikely to provide positive
  * performance benefits.
  */
-@AndroidIssue(introducedIn = "3.5.0", fixedIn = ["4.2.0-alpha09"], link = "https://issuetracker.google.com/issues/199763362")
+@AndroidIssue(introducedIn = "3.5.0", fixedIn = ["4.1.0-alpha01"], link = "https://issuetracker.google.com/issues/199763362")
 class BundleLibraryClassesJarWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.BundleLibraryClassesJar.caching.enabled"
 

@@ -1,5 +1,6 @@
 package org.gradle.android.workarounds
 
+import com.android.build.gradle.internal.tasks.BundleLibraryClasses
 import org.gradle.android.AndroidIssue
 import org.gradle.api.Project
 

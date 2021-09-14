@@ -125,6 +125,6 @@ room {
 * There can only be a single schema export directory for the project - you cannot configure variant-specific export
 directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.
 
-### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, and MergeSourceSetFolders Workarounds
+### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, MergeSourceSetFolders, and BundleLibraryClassesJar Workarounds
 
-It has been observed that caching the `MergeNativeLibsTask`, `StripDebugSymbols`, `MergeJavaResources`, and `MergeSourceSetFolders` tasks rarely provide any significant positive avoidance savings.  In fact, they frequently provide negative savings, especially when fetched from a remote cache node.  As such, these workarounds actually disable caching for these tasks.
+It has been observed that caching the `MergeNativeLibsTask`, `StripDebugSymbols`, `MergeJavaResources`, `MergeSourceSetFolders`, and `BundleLibraryClassesJar` tasks rarely provide any significant positive avoidance savings.  In fact, they frequently provide negative savings, especially when fetched from a remote cache node.  As such, these workarounds actually disable caching for these tasks.

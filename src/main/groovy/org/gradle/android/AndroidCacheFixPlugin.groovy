@@ -2,8 +2,8 @@ package org.gradle.android
 
 import com.google.common.collect.ImmutableList
 import groovy.transform.CompileStatic
-import org.gradle.android.workarounds.BundleLibraryClassesJarWorkaround
-import org.gradle.android.workarounds.BundleLibraryClassesJarWorkaround_4_2
+import org.gradle.android.workarounds.BundleLibraryClassesWorkaround
+import org.gradle.android.workarounds.BundleLibraryClassesWorkaround_4_2
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_4_0
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_7_0
 import org.gradle.android.workarounds.CompilerArgsProcessor
@@ -46,8 +46,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 new CompileLibraryResourcesWorkaround_7_0(),
                 new MergeResourcesWorkaround(),
                 new StripDebugSymbolsWorkaround(),
-                new BundleLibraryClassesJarWorkaround(),
-                new BundleLibraryClassesJarWorkaround_4_2()
+                new BundleLibraryClassesWorkaround(),
+                new BundleLibraryClassesWorkaround_4_2()
             )
         } else {
             return Collections.emptyList()

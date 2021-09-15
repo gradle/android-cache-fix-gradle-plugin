@@ -540,8 +540,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         // Renamed from ToJar to ToDir
-        builder.expect(':library:bundleLibRuntimeToDirDebug', FROM_CACHE) // Should this be SUCCESS?
-        builder.expect(':library:bundleLibRuntimeToDirRelease', FROM_CACHE) // Should this be SUCCESS?
+        builder.expect(':library:bundleLibRuntimeToDirDebug', SUCCESS)
+        builder.expect(':library:bundleLibRuntimeToDirRelease', SUCCESS)
         builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
         builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
         builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)

@@ -259,8 +259,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:createReleaseCompatibleScreenManifests', FROM_CACHE)
         builder.expect(':app:dataBindingGenBaseClassesDebug', FROM_CACHE)
         builder.expect(':app:dataBindingGenBaseClassesRelease', FROM_CACHE)
-        builder.expect(':app:dataBindingMergeDependencyArtifactsDebug', FROM_CACHE)
-        builder.expect(':app:dataBindingMergeDependencyArtifactsRelease', FROM_CACHE)
+        builder.expect(':app:dataBindingMergeDependencyArtifactsDebug', SUCCESS)
+        builder.expect(':app:dataBindingMergeDependencyArtifactsRelease', SUCCESS)
         builder.expect(':app:generateDebugAssets', UP_TO_DATE)
         builder.expect(':app:generateDebugBuildConfig', FROM_CACHE)
         builder.expect(':app:generateDebugResValues', FROM_CACHE)
@@ -312,8 +312,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:compileReleaseRenderscript', FROM_CACHE)
         builder.expect(':library:dataBindingGenBaseClassesDebug', FROM_CACHE)
         builder.expect(':library:dataBindingGenBaseClassesRelease', FROM_CACHE)
-        builder.expect(':library:dataBindingMergeDependencyArtifactsDebug', FROM_CACHE)
-        builder.expect(':library:dataBindingMergeDependencyArtifactsRelease', FROM_CACHE)
+        builder.expect(':library:dataBindingMergeDependencyArtifactsDebug', SUCCESS)
+        builder.expect(':library:dataBindingMergeDependencyArtifactsRelease', SUCCESS)
         builder.expect(':library:extractDebugAnnotations', FROM_CACHE)
         builder.expect(':library:extractReleaseAnnotations', FROM_CACHE)
         builder.expect(':library:generateDebugAssets', UP_TO_DATE)
@@ -417,7 +417,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:mergeDebugNativeLibs', SUCCESS)
         builder.expect(':app:mergeReleaseNativeLibs', SUCCESS)
     }
-    
+
     static void android35xTo70xExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:compileDebugSources', UP_TO_DATE)
         builder.expect(':app:compileReleaseSources', UP_TO_DATE)

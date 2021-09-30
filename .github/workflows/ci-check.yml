@@ -20,7 +20,7 @@ jobs:
     -   uses: actions/checkout@v1
 
     # Gradle build
-    -   uses: gradle/gradle-build-action@v1
+    -   uses: gradle/gradle-build-action@v2
         with:
             arguments: generateTestTasksJson -I gradle/buildScanInit.gradle
 
@@ -46,7 +46,7 @@ jobs:
             java-version: 8
 
     # Gradle build
-    -   uses: gradle/gradle-build-action@v1
+    -   uses: gradle/gradle-build-action@v2
         with:
             arguments: sanityCheck -I gradle/buildScanInit.gradle
 
@@ -80,7 +80,7 @@ jobs:
             java-version: 8
 
     # Gradle build
-    - uses: gradle/gradle-build-action@v1
+    - uses: gradle/gradle-build-action@v2
       with:
         arguments: ${{ matrix.androidTestTask }} -I gradle/buildScanInit.gradle
 

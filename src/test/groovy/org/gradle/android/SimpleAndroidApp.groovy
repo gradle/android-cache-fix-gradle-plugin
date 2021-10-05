@@ -2,6 +2,8 @@ package org.gradle.android
 
 import org.gradle.util.VersionNumber
 
+import java.nio.file.Paths
+
 import static org.gradle.android.Versions.android
 
 class SimpleAndroidApp {
@@ -43,13 +45,15 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
+        def localRepo = Paths.get(System.getProperty("local.repo")).toUri()
+
         file("build.gradle") << """
                 buildscript {
                     repositories {
                         google()
                         jcenter()
                         maven {
-                            url = "${System.getProperty("local.repo")}"
+                            url = "${localRepo}"
                         }
                     }
                     dependencies {

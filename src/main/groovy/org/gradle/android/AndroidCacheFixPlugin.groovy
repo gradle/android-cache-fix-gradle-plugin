@@ -8,6 +8,7 @@ import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_4_0
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_7_0
 import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.DataBindingMergeDependencyArtifactsWorkaround
+import org.gradle.android.workarounds.LibraryJniLibsWorkaround
 import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
 import org.gradle.android.workarounds.MergeNativeLibsWorkaround
 import org.gradle.android.workarounds.MergeResourcesWorkaround
@@ -49,7 +50,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 new StripDebugSymbolsWorkaround(),
                 new BundleLibraryClassesWorkaround(),
                 new BundleLibraryClassesWorkaround_4_2(),
-                new DataBindingMergeDependencyArtifactsWorkaround()
+                new DataBindingMergeDependencyArtifactsWorkaround(),
+                new LibraryJniLibsWorkaround()
             )
         } else {
             return Collections.emptyList()

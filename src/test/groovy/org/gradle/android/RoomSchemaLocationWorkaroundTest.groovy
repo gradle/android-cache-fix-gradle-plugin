@@ -81,6 +81,10 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers disabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
+        def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
+        // There are kotlin module version errors when using older versions of kotlin with AGP 7.2.0+ in this configuration
+        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.2.0-alpha01") && kotlinVersionNumber < VersionNumber.parse("1.5.0"))
+
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))

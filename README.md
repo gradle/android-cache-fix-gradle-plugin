@@ -6,7 +6,7 @@
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions.
 
 * Supported Gradle versions: 5.4.1+
-* Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.3, 4.2.2, 7.0.2, 7.1.0-alpha11
+* Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.3, 4.2.2, 7.0.3, 7.1.0-beta03, 7.2.0-alpha04
 * Supported Kotlin versions: 1.3.70+
 
 We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 3.6.2), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.
@@ -23,7 +23,7 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 ## Applying the plugin
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied.  Typically,
-this can just be injected from the root project's build.gradle (change '2.4.4' to the latest version of the cache fix plugin
+this can just be injected from the root project's build.gradle (change '2.4.5' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
 <details open>
@@ -32,7 +32,7 @@ this can just be injected from the root project's build.gradle (change '2.4.4' t
 
 ```groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "2.4.4" apply false
+    id "org.gradle.android.cache-fix" version "2.4.5" apply false
 }
 
 subprojects {
@@ -48,7 +48,7 @@ subprojects {
 
 ```kotlin
 plugins {
-    id("org.gradle.android.cache-fix") version "2.4.4" apply false
+    id("org.gradle.android.cache-fix") version "2.4.5" apply false
 }
 
 subprojects {

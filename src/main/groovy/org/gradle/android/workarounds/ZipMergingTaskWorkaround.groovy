@@ -16,7 +16,7 @@ class ZipMergingTaskWorkaround implements Workaround {
     @Override
     void apply(WorkaroundContext context) {
         context.project.tasks.withType(ZipMergingTask).configureEach {
-            outputs.doNotCacheIf("Caching ZipMergingTask is unlikely to provide positive performance results.", {true })
+            outputs.doNotCacheIf("Caching ZipMergingTask is unlikely to provide positive performance results.", { true })
         }
     }
 

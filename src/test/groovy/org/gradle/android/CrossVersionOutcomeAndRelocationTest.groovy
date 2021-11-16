@@ -48,13 +48,13 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         withGradleVersion(gradleVersion.version)
             .withProjectDir(originalDir)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments("assemble", "createFullJarDebug", "createFullJarRelease", "--build-cache", "--stacktrace")
             .build()
 
         when:
         def result = withGradleVersion(gradleVersion.version)
             .withProjectDir(relocatedDir)
-            .withArguments("assemble", "--build-cache", "--stacktrace")
+            .withArguments("assemble", "createFullJarDebug", "createFullJarRelease", "--build-cache", "--stacktrace")
             .build()
 
         then:
@@ -541,7 +541,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     }
 
     static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
-        // Renamed from ToJar to ToDir
         builder.expect(':library:bundleLibRuntimeToDirDebug', SUCCESS)
         builder.expect(':library:bundleLibRuntimeToDirRelease', SUCCESS)
         builder.expect(':library:bundleLibRuntimeToJarDebug', SUCCESS)

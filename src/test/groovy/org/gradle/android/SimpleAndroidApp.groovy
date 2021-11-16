@@ -113,7 +113,10 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
-        file("${library}/build.gradle") << subprojectConfiguration("com.android.library") << activityDependency()
+        file("${library}/build.gradle") << subprojectConfiguration("com.android.library") << activityDependency() <<
+            """
+                tasks['assemble'].dependsOn 'createFullJarDebug', 'createFullJarRelease'
+            """.stripIndent()
 
         file("gradle.properties") << """
                 android.useAndroidX=true

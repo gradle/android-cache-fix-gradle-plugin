@@ -310,6 +310,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:compileReleaseJavaWithJavac', FROM_CACHE)
         builder.expect(':library:compileReleaseKotlin', FROM_CACHE)
         builder.expect(':library:compileReleaseRenderscript', FROM_CACHE)
+        builder.expect(':library:createFullJarDebug', SUCCESS)
+        builder.expect(':library:createFullJarRelease', SUCCESS)
         builder.expect(':library:dataBindingGenBaseClassesDebug', FROM_CACHE)
         builder.expect(':library:dataBindingGenBaseClassesRelease', FROM_CACHE)
         builder.expect(':library:dataBindingMergeDependencyArtifactsDebug', SUCCESS)
@@ -542,6 +544,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         // Renamed from ToJar to ToDir
         builder.expect(':library:bundleLibRuntimeToDirDebug', SUCCESS)
         builder.expect(':library:bundleLibRuntimeToDirRelease', SUCCESS)
+        builder.expect(':library:bundleLibRuntimeToJarDebug', SUCCESS)
+        builder.expect(':library:bundleLibRuntimeToJarRelease', SUCCESS)
         builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
         builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
         builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)

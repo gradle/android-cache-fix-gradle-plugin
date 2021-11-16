@@ -18,6 +18,7 @@ import org.gradle.android.workarounds.StripDebugSymbolsWorkaround
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.WorkaroundContext
+import org.gradle.android.workarounds.ZipMergingTaskWorkaround
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.util.GradleVersion
@@ -51,7 +52,8 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 new BundleLibraryClassesWorkaround(),
                 new BundleLibraryClassesWorkaround_4_2(),
                 new DataBindingMergeDependencyArtifactsWorkaround(),
-                new LibraryJniLibsWorkaround()
+                new LibraryJniLibsWorkaround(),
+                new ZipMergingTaskWorkaround()
             )
         } else {
             return Collections.emptyList()

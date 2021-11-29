@@ -77,12 +77,10 @@ static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 
 ### Unresolved Issues
 
-The following caching issues are fixed by the cache fix plugin but unresolved in any current or upcoming preview release of the Android Gradle Plugin as of 21.08.2020.
+The following caching issues are fixed by the cache fix plugin but unresolved in any current or upcoming preview release of the Android Gradle Plugin as of 29.11.2021.
 
 Please star them if you are experiencing them in your project.
 
-* CompileLibraryResourcesTask is not relocatable: https://issuetracker.google.com/issues/155218379
-* DexFileDependenciesTask is not cacheable: https://issuetracker.google.com/160138798
 * MergeResources is not relocatable: https://issuetracker.google.com/issues/141301405
 * Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
 

@@ -77,7 +77,7 @@ static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 
 ### Unresolved Issues
 
-The following caching issues are fixed by the cache fix plugin but unresolved in any current or upcoming preview release of the Android Gradle Plugin as of 21.08.2020.
+The following caching issues are fixed by the cache fix plugin but unresolved in any current or upcoming preview release of the Android Gradle Plugin as of 2021-11-29.
 
 Please star them if you are experiencing them in your project.
 

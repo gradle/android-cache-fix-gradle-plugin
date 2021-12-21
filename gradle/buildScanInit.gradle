@@ -3,7 +3,7 @@ import com.gradle.scan.plugin.BuildScanPlugin
 import org.gradle.util.GradleVersion
 
 initscript {
-    def pluginVersion = "3.7.1"
+    def pluginVersion = "3.8"
 
     repositories {
         gradlePluginPortal()

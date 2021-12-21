@@ -145,7 +145,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
         def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
         def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
-        def isAndroid40xTo41x = androidVersion >= android("4.0.0") && androidVersion <= android("4.2.0-alpha01")
+        def isAndroid40xTo41x = androidVersion >= android("4.0.0") && androidVersion < android("4.2.0-alpha01")
+        def isAndroid40xTo70x = androidVersion >= android("4.0.0") && androidVersion < android("7.1.0-alpha01")
         def isAndroid41xOrHigher = androidVersion >= android("4.1.0-alpha01")
         def isAndroid41x = androidVersion >= android("4.1.0-alpha01") && androidVersion < android("4.2.0-alpha01")
         def isAndroid42x = androidVersion >= android("4.2.0-alpha01") && androidVersion < android("7.0.0-alpha01")
@@ -209,6 +210,10 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         if (isAndroid40xTo41x) {
             android40xTo41xExpectation(builder)
+        }
+
+        if (isAndroid40xTo70x) {
+            android40xTo70xExpectation(builder)
         }
 
         // Applies to anything 4.1.0 or higher
@@ -486,8 +491,6 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:mergeReleaseConsumerProguardFiles', FROM_CACHE)
         builder.expect(':library:mergeReleaseGeneratedProguardFiles', FROM_CACHE)
         builder.expect(':library:bundleLibCompileToJarDebug', SUCCESS)
-        builder.expect(':library:bundleLibResDebug', NO_SOURCE)
-        builder.expect(':library:bundleLibResRelease', NO_SOURCE)
         builder.expect(':library:bundleLibCompileToJarRelease', SUCCESS)
         builder.expect(':library:stripDebugDebugSymbols', NO_SOURCE)
         builder.expect(':library:stripReleaseDebugSymbols', NO_SOURCE)
@@ -499,6 +502,11 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:bundleLibRuntimeToJarDebug', SUCCESS)
         builder.expect(':library:bundleLibRuntimeToJarRelease', SUCCESS)
     }
+
+    static void android40xTo70xExpectation(ExpectedOutcomeBuilder builder) {
+        builder.expect(':library:bundleLibResDebug', NO_SOURCE)
+        builder.expect(':library:bundleLibResRelease', NO_SOURCE)
+   }
 
     static void android41xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':library:dataBindingTriggerDebug', FROM_CACHE)
@@ -581,5 +589,9 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     static void android71xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:createDebugApkListingFileRedirect', SUCCESS)
         builder.expect(':app:createReleaseApkListingFileRedirect', SUCCESS)
+
+        // Previously were `NO_SOURCE` but now `FROM_CACHE`
+        builder.expect(':library:bundleLibResDebug', FROM_CACHE)
+        builder.expect(':library:bundleLibResRelease', FROM_CACHE)
     }
 }

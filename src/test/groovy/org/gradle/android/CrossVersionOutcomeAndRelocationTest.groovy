@@ -581,5 +581,9 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     static void android71xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:createDebugApkListingFileRedirect', SUCCESS)
         builder.expect(':app:createReleaseApkListingFileRedirect', SUCCESS)
+
+        // Previously were `NO_SOURCE` but now `FROM_CACHE`
+        builder.expect(':library:bundleLibResDebug', FROM_CACHE)
+        builder.expect(':library:bundleLibResRelease', FROM_CACHE)
     }
 }

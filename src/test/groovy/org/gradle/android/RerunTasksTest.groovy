@@ -12,7 +12,7 @@ class RerunTasksTest extends AbstractTest {
 
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)
-                .withKotlinVersion(VersionNumber.parse("1.5.0"))
+                .withKotlinVersion(TestVersions.latestSupportedKotlinVersion())
                 .build()
                 .writeProject()
 

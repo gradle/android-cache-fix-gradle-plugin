@@ -15,9 +15,10 @@ class SimpleAndroidApp {
     private final boolean dataBindingEnabled
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
+    private final boolean useRootProjectPlugin
     private final RoomConfiguration roomConfiguration
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, boolean useRootProjectPlugin) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -26,6 +27,7 @@ class SimpleAndroidApp {
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
         this.roomConfiguration = roomConfiguration
+        this.useRootProjectPlugin = useRootProjectPlugin
     }
 
     def writeProject() {
@@ -63,6 +65,12 @@ class SimpleAndroidApp {
                     }
                 }
             """.stripIndent()
+
+        if (useRootProjectPlugin) {
+            file("build.gradle") << """
+                    apply plugin: "org.gradle.android.allprojects.cache-fix"
+                """.stripIndent()
+        }
 
         writeActivity(library, libPackage, libraryActivity)
         writeRoomSourcesIfEnabled(library, libPackage)
@@ -132,11 +140,15 @@ class SimpleAndroidApp {
         """ : ""
     }
 
+    private String getPluginIfNotRoot() {
+        return useRootProjectPlugin ? "" : """apply plugin: 'org.gradle.android.cache-fix'"""
+    }
+
     private subprojectConfiguration(String androidPlugin) {
         """
             apply plugin: "$androidPlugin"
             ${kotlinPluginsIfEnabled}
-            apply plugin: "org.gradle.android.cache-fix"
+            ${pluginIfNotRoot}
 
             repositories {
                 google()
@@ -460,6 +472,7 @@ class SimpleAndroidApp {
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
         RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
+        boolean useRootProjectPlugin = false
 
         VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         VersionNumber kotlinVersion = TestVersions.latestSupportedKotlinVersion()
@@ -526,8 +539,13 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withRootProjectPlugin() {
+            this.useRootProjectPlugin = true
+            return this
+        }
+
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, useRootProjectPlugin)
         }
     }
 }

@@ -1,5 +1,6 @@
 package org.gradle.android
 
+
 import spock.lang.Unroll
 
 import static java.util.regex.Pattern.quote
@@ -47,7 +48,7 @@ class PluginApplicationTest extends AbstractTest {
     def "can use root project plugin"() {
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)
-            .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())
+            .withAndroidVersion(TestVersions.getLatestAndroidVersions().last())
             .withRootProjectPlugin()
             .build()
             .writeProject()

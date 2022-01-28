@@ -22,8 +22,8 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 
 ## Applying the plugin
 
-This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied.  Typically,
-this can just be injected from the root project's build.gradle (change '2.4.5' to the latest version of the cache fix plugin
+This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied. We recommend adding the plugin to your project's [conventions plugin](https://docs.gradle.org/current/samples/sample_convention_plugins.html).
+If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '2.4.6' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
 
 <details open>

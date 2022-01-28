@@ -23,8 +23,35 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 ## Applying the plugin
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied. We recommend adding the plugin to your project's [conventions plugin](https://docs.gradle.org/current/samples/sample_convention_plugins.html).
+
+<details open>
+<summary>Groovy</summary>
+<br>
+
+```groovy
+plugins {
+    id 'com.android.application' // or 'com.android.library'
+    // Add this next line to your existing convention plugin. You can specify the version in the implementation dependency artifact of the convention plugin project's build file.
+    id 'com.gradle.android.cache-fix'
+}
+```
+
+</details>
+<details>
+<summary>Kotlin</summary>
+<br>
+
+```kotlin
+plugins {
+    id("com.android.application") // or "com.android.library"
+  // Add this next line to your existing convention plugin. You can specify the version in the implementation dependency artifact of the convention plugin project's build file.
+    id("com.gradle.android.cache-fix")
+}
+```
+</details>
+
 If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '2.4.6' to the latest version of the cache fix plugin
-[here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)):
+[here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)). We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#sec:convention_plugins_vs_cross_configuration).
 
 <details open>
 <summary>Groovy</summary>

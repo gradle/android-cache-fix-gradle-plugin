@@ -48,7 +48,7 @@ subprojects {
 
 ```kotlin
 plugins {
-    id("org.gradle.android.cache-fix") version "2.4.5" apply false
+    id("org.gradle.android.cache-fix") version "2.4.6" apply false
 }
 
 subprojects {

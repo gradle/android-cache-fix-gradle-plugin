@@ -32,7 +32,7 @@ This plugin should be applied anywhere the `com.android.application` or `com.and
 plugins {
     id 'com.android.application' // or 'com.android.library'
     // Add this next line to your existing convention plugin. You can specify the version in the implementation dependency artifact of the convention plugin project's build file.
-    id 'com.gradle.android.cache-fix'
+    id 'org.gradle.android.cache-fix'
 }
 ```
 
@@ -45,7 +45,7 @@ plugins {
 plugins {
     id("com.android.application") // or "com.android.library"
   // Add this next line to your existing convention plugin. You can specify the version in the implementation dependency artifact of the convention plugin project's build file.
-    id("com.gradle.android.cache-fix")
+    id("org.gradle.android.cache-fix")
 }
 ```
 </details>

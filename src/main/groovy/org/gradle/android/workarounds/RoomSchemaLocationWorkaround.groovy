@@ -52,13 +52,13 @@ import java.util.function.Supplier
 @AndroidIssue(introducedIn = "3.5.0", fixedIn = [], link = "https://issuetracker.google.com/issues/132245929")
 class RoomSchemaLocationWorkaround implements Workaround {
     public static final String ROOM_SCHEMA_LOCATION = "room.schemaLocation"
-    private static final VersionNumber MINIMUM_KOTLIN_VERSION = VersionNumber.parse("1.3.70")
+    private static final VersionNumber MINIMUM_KOTLIN_VERSION = VersionNumber.parse("1.4.32")
     private static final VersionNumber KOTLIN_VERSION = getKotlinVersion()
 
     @Override
     boolean canBeApplied(Project project) {
         if (KOTLIN_VERSION != VersionNumber.UNKNOWN && KOTLIN_VERSION < MINIMUM_KOTLIN_VERSION) {
-            project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.3.70 or higher (found ${KOTLIN_VERSION.toString()}).")
+            project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.4.32 or higher (found ${KOTLIN_VERSION.toString()}).")
             return false
         } else {
             return true

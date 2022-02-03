@@ -2,17 +2,16 @@ package org.gradle.android
 
 import com.google.common.collect.ImmutableList
 import groovy.transform.CompileStatic
+
 import org.gradle.android.workarounds.BundleLibraryClassesWorkaround
-import org.gradle.android.workarounds.BundleLibraryClassesWorkaround_4_2
-import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_4_0
-import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_7_0
+
+import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
 import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.DataBindingMergeDependencyArtifactsWorkaround
 import org.gradle.android.workarounds.LibraryJniLibsWorkaround
 import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
 import org.gradle.android.workarounds.MergeNativeLibsWorkaround
-import org.gradle.android.workarounds.MergeResourcesWorkaround
-import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_4_2
+
 import org.gradle.android.workarounds.MergeSourceSetFoldersWorkaround
 import org.gradle.android.workarounds.StripDebugSymbolsWorkaround
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
@@ -44,13 +43,9 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
                 new MergeNativeLibsWorkaround(),
                 new MergeSourceSetFoldersWorkaround(),
                 new RoomSchemaLocationWorkaround(),
-                new CompileLibraryResourcesWorkaround_4_0(),
-                new CompileLibraryResourcesWorkaround_4_2(),
-                new CompileLibraryResourcesWorkaround_7_0(),
-                new MergeResourcesWorkaround(),
+                new CompileLibraryResourcesWorkaround(),
                 new StripDebugSymbolsWorkaround(),
                 new BundleLibraryClassesWorkaround(),
-                new BundleLibraryClassesWorkaround_4_2(),
                 new DataBindingMergeDependencyArtifactsWorkaround(),
                 new LibraryJniLibsWorkaround(),
                 new ZipMergingTaskWorkaround()

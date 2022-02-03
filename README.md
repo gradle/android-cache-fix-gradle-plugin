@@ -29,9 +29,17 @@ This plugin should be applied anywhere the `com.android.application` or `com.and
 <br>
 
 ```groovy
+// in build.grade for convention plugin build
+dependencies {
+    // ...
+    implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.4.6")
+    // ...
+}
+
+// in com.myconventions.build.gradle
 plugins {
     id 'com.android.application' // or 'com.android.library'
-    // Add this next line to your existing convention plugin. You can specify the version in the implementation dependency artifact of the convention plugin project's build file.
+    // Add this next line to your existing convention plugin.
     id 'org.gradle.android.cache-fix'
 }
 ```
@@ -42,9 +50,17 @@ plugins {
 <br>
 
 ```kotlin
+// in build.grade.kts for convention plugin build
+dependencies {
+  // ...
+  implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.4.6")
+  // ...
+}
+
+// in com.myconentions.build.gradle.kts
 plugins {
     id("com.android.application") // or "com.android.library"
-  // Add this next line to your existing convention plugin. You can specify the version in the implementation dependency artifact of the convention plugin project's build file.
+  // Add this next line to your existing convention plugin.
     id("org.gradle.android.cache-fix")
 }
 ```

@@ -57,7 +57,7 @@ dependencies {
   // ...
 }
 
-// in com.myconentions.build.gradle.kts
+// in com.myconventions.build.gradle.kts
 plugins {
     id("com.android.application") // or "com.android.library"
   // Add this next line to your existing convention plugin.

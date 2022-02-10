@@ -16,8 +16,8 @@ class DataBindingMergeDependencyArtifactsWorkaround implements Workaround {
 
     @Override
     void apply(WorkaroundContext context) {
-        context.project.tasks.withType(DataBindingMergeDependencyArtifactsTask).configureEach {
-            it.outputs.doNotCacheIf("Caching DataBindingMergeDependencyArtifacts is unlikely to provide positive performance results.", { true })
+        context.project.tasks.withType(DataBindingMergeDependencyArtifactsTask).configureEach { DataBindingMergeDependencyArtifactsTask task ->
+            task.outputs.doNotCacheIf("Caching DataBindingMergeDependencyArtifacts is unlikely to provide positive performance results.", { true })
         }
     }
 

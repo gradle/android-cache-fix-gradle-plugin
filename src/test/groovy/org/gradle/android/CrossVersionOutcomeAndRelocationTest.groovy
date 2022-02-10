@@ -145,7 +145,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     }
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, VersionNumber kotlinVersion) {
-        def isAndroid35xOrHigher = androidVersion >= android("3.5.0")
+        def isAndroid70xOrHigher = androidVersion >= android("7.0.0-alpha01")
         def isAndroid70xTo71x = androidVersion >= android("7.0.0-alpha01") && androidVersion < android("7.2.0-alpha01")
         def isAndroid70xOnly = androidVersion >= android("7.0.0-alpha01") && androidVersion < android("7.1.0-alpha01")
         def isAndroid71xOrHigher = androidVersion >= android("7.1.0-alpha01")
@@ -154,8 +154,8 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         def builder = new ExpectedOutcomeBuilder()
 
-        // Applies to anything 3.5.0 or higher
-        if (isAndroid35xOrHigher) {
+        // Applies to anything 7.0.0-alpha01 or higher
+        if (isAndroid70xOrHigher) {
             android35xOrHigherExpectations(builder)
         }
 

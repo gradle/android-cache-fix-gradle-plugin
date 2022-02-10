@@ -3,7 +3,7 @@
 ![CI](https://github.com/gradle/android-cache-fix-gradle-plugin/workflows/CI/badge.svg?branch=master)
 ![Plugin Portal](https://img.shields.io/maven-metadata/v?metadataUrl=https://plugins.gradle.org/m2/gradle/plugin/org/gradle/android/android-cache-fix-gradle-plugin/maven-metadata.xml&label=Plugin%20Portal)
 
-Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions.
+Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions. For other versions, please see [older versions.](#older-android-gradle-plugin-versions)
 
 * Supported Gradle versions: 7.0+
 * Supported Android Gradle Plugin versions: 7.0.4, 7.1.1, 7.2.0-beta01
@@ -12,11 +12,6 @@ Some Android plugin versions have issues with Gradle's build cache feature. When
 We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 3.6.2), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.
 
 The Android cache fix plugin is compatible with the [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html#header) when used in conjunction with Android Gradle Plugin 4.2.0 and above.  Using the configuration cache with earlier versions of the Android Gradle Plugin is not supported.
-
-### Older Android Gradle Plugin Versions
-
-Use Android Cache Fix Plugin 2.4.6 when using an older Android Gradle Plugin version.
-Android Cache Fix Plugin 2.4.6 is compatible with Android Gradle Plugin 3.5.4, 3.6.4, 4.0.1, 4.1.3 and 4.2.2.
 
 ## Should I use this?
 Take a look at the [list of issues](#list-of-issues) especially [unresolved issues](#unresolved-issues). If any of these apply to your project, you can use this plugin to solve them.
@@ -174,3 +169,11 @@ directories.  Schemas exported from different variants will be merged in the dir
 ### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, MergeSourceSetFolders, BundleLibraryClassesJar, DataBindingMergeDependencyArtifacts, LibraryJniLibs and ZipMerging Workarounds
 
 It has been observed that caching the `MergeNativeLibsTask`, `StripDebugSymbols`, `MergeJavaResources`, `MergeSourceSetFolders`, `BundleLibraryClassesJar`, `DataBindingMergeDependencyArtifacts`, `LibraryJniLibs` and  `ZipMergingTask` tasks rarely provide any significant positive avoidance savings.  In fact, they frequently provide negative savings, especially when fetched from a remote cache node.  As such, these workarounds actually disable caching for these tasks.
+
+### Older Android Gradle Plugin Versions
+
+Use Android Cache Fix Plugin 2.4.6 when using an older Android Gradle Plugin version.
+
+* Supported Gradle versions: 5.4.1+
+* Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.3, 4.2.2
+* Supported Kotlin versions: 1.3.70+

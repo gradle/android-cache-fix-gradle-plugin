@@ -1,10 +1,10 @@
 package org.gradle.android
 
-import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround_7_0
+import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
 import org.junit.Assume
 
 @MultiVersionTest
-class CompileLibraryResourcesWorkaround_7_0Test extends AbstractTest {
+class CompileLibraryResourcesWorkaroundTest extends AbstractTest {
     def "warns when experimental flags are not provided"() {
         Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() >= Versions.android("7.0.0-alpha09"))
 
@@ -18,8 +18,8 @@ class CompileLibraryResourcesWorkaround_7_0Test extends AbstractTest {
         def result = withGradleVersion(TestVersions.latestGradleVersion().version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "-P${CompileLibraryResourcesWorkaround_7_0.ENABLE_SOURCE_SET_PATHS_MAP}=false",
-                "-P${CompileLibraryResourcesWorkaround_7_0.CACHE_COMPILE_LIB_RESOURCES}=false",
+                "-P${CompileLibraryResourcesWorkaround.ENABLE_SOURCE_SET_PATHS_MAP}=false",
+                "-P${CompileLibraryResourcesWorkaround.CACHE_COMPILE_LIB_RESOURCES}=false",
                 'assembleDebug'
             )
             .build()
@@ -31,8 +31,8 @@ class CompileLibraryResourcesWorkaround_7_0Test extends AbstractTest {
         result = withGradleVersion(TestVersions.latestGradleVersion().version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "-P${CompileLibraryResourcesWorkaround_7_0.ENABLE_SOURCE_SET_PATHS_MAP}=false",
-                "-P${CompileLibraryResourcesWorkaround_7_0.CACHE_COMPILE_LIB_RESOURCES}=false",
+                "-P${CompileLibraryResourcesWorkaround.ENABLE_SOURCE_SET_PATHS_MAP}=false",
+                "-P${CompileLibraryResourcesWorkaround.CACHE_COMPILE_LIB_RESOURCES}=false",
                 'assembleDebug'
             )
             .build()
@@ -54,8 +54,8 @@ class CompileLibraryResourcesWorkaround_7_0Test extends AbstractTest {
         def result = withGradleVersion(TestVersions.latestGradleVersion().version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "-P${CompileLibraryResourcesWorkaround_7_0.ENABLE_SOURCE_SET_PATHS_MAP}=true",
-                "-P${CompileLibraryResourcesWorkaround_7_0.CACHE_COMPILE_LIB_RESOURCES}=true",
+                "-P${CompileLibraryResourcesWorkaround.ENABLE_SOURCE_SET_PATHS_MAP}=true",
+                "-P${CompileLibraryResourcesWorkaround.CACHE_COMPILE_LIB_RESOURCES}=true",
                 'assembleDebug'
             )
             .build()
@@ -77,8 +77,8 @@ class CompileLibraryResourcesWorkaround_7_0Test extends AbstractTest {
         def result = withGradleVersion(TestVersions.latestGradleVersion().version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "-P${CompileLibraryResourcesWorkaround_7_0.ENABLE_SOURCE_SET_PATHS_MAP}=false",
-                "-P${CompileLibraryResourcesWorkaround_7_0.CACHE_COMPILE_LIB_RESOURCES}=false",
+                "-P${CompileLibraryResourcesWorkaround.ENABLE_SOURCE_SET_PATHS_MAP}=false",
+                "-P${CompileLibraryResourcesWorkaround.CACHE_COMPILE_LIB_RESOURCES}=false",
                 'assembleDebug'
             )
             .build()

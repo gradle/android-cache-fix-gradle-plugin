@@ -9,7 +9,7 @@ import org.gradle.api.Project
  * with 7.0.0-alpha09.
  */
 @AndroidIssue(introducedIn = "7.0.0-alpha09", fixedIn = [], link = "https://issuetracker.google.com/issues/155218379")
-class CompileLibraryResourcesWorkaround_7_0 implements Workaround {
+class CompileLibraryResourcesWorkaround implements Workaround {
     public static final String ENABLE_SOURCE_SET_PATHS_MAP = "android.experimental.enableSourceSetPathsMap"
     public static final String CACHE_COMPILE_LIB_RESOURCES = "android.experimental.cacheCompileLibResources"
 

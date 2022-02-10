@@ -145,129 +145,26 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
     }
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, VersionNumber kotlinVersion) {
-        def isAndroid35xOrHigher = androidVersion >= android("3.5.0")
-        def isAndroid350to352 = androidVersion >= android("3.5.0") && androidVersion <= android("3.5.2")
-        def isAndroid35x = androidVersion >= android("3.5.0") && androidVersion < android("3.6.0")
-        def isAndroid35xTo36x = androidVersion >= android("3.5.0") && androidVersion <= android("3.6.4")
-        def isAndroid35xTo40x = androidVersion >= android("3.5.0") && androidVersion < android("4.1.0-alpha01")
-        def isAndroid35xTo41x = androidVersion >= android("3.5.0") && androidVersion < android("4.2.0-alpha01")
-        def isAndroid35xTo42x = androidVersion >= android("3.5.0") && androidVersion < android("7.0.0-alpha01")
-        def isAndroid35xTo70x = androidVersion >= android("3.5.0") && androidVersion < android("7.1.0-alpha01")
-        def isAndroid35xTo71x = androidVersion >= android("3.5.0") && androidVersion < android("7.2.0-alpha01")
-        def isAndroid36xOrHigher = androidVersion >= android("3.6.0")
-        def isAndroid40xOrHigher = androidVersion >= android("4.0.0-beta01")
-        def isAndroid40x = androidVersion >= android("4.0.0") && androidVersion < android("4.1.0-alpha01")
-        def isAndroid40xTo41x = androidVersion >= android("4.0.0") && androidVersion < android("4.2.0-alpha01")
-        def isAndroid40xTo70x = androidVersion >= android("4.0.0") && androidVersion < android("7.1.0-alpha01")
-        def isAndroid40xTo71x = androidVersion >= android("4.0.0") && androidVersion < android("7.2.0-alpha01")
-        def isAndroid41xOrHigher = androidVersion >= android("4.1.0-alpha01")
-        def isAndroid41x = androidVersion >= android("4.1.0-alpha01") && androidVersion < android("4.2.0-alpha01")
-        def isAndroid41xTo71x = androidVersion >= android("4.1.0") && androidVersion < android("7.2.0-alpha01")
-        def isAndroid42x = androidVersion >= android("4.2.0-alpha01") && androidVersion < android("7.0.0-alpha01")
-        def isAndroid42xTo71x = androidVersion >= android("4.2.0") && androidVersion < android("7.2.0-alpha01")
-        def isAndroid42xOrHigher = androidVersion >= android("4.2.0-alpha01")
         def isAndroid70xOrHigher = androidVersion >= android("7.0.0-alpha01")
+        def isAndroid70xTo71x = androidVersion >= android("7.0.0-alpha01") && androidVersion < android("7.2.0-alpha01")
+        def isAndroid70xOnly = androidVersion >= android("7.0.0-alpha01") && androidVersion < android("7.1.0-alpha01")
         def isAndroid71xOrHigher = androidVersion >= android("7.1.0-alpha01")
         def isAndroid71x = androidVersion >= android("7.1.0-alpha01") && androidVersion < android("7.2.0-alpha01")
         def isAndroid72xOrHigher = androidVersion >= android("7.2.0-alpha01")
 
         def builder = new ExpectedOutcomeBuilder()
 
-        // Applies to anything 3.5.0 or higher
-        if (isAndroid35xOrHigher) {
+        // Applies to anything 7.0.0-alpha01 or higher
+        if (isAndroid70xOrHigher) {
             android35xOrHigherExpectations(builder)
         }
 
-        // Applies only to 3.5.x
-        if (isAndroid35x) {
-            android35xOnlyExpectations(builder)
+        if (isAndroid70xOnly) {
+            android70xOnlyExpectations(builder)
         }
 
-        // Applies to 3.5.0, 3.5.1, and 3.5.2
-        if (isAndroid350to352) {
-            android350to352OnlyExpectations(builder)
-        }
-
-        // Applies to 3.5.x or 3.6.x
-        if (isAndroid35xTo36x) {
-            android35xTo36xExpectations(builder)
-        }
-
-        // Applies to 3.5.x, 3.6.x, 4.0.x and 4.1.x
-        if (isAndroid35xTo41x) {
-            android35xTo41xExpectations(builder)
-        }
-
-        // Applies to 3.5.x, 3.6.x, 4.0.x, 4.1.x and 4.2.x
-        if (isAndroid35xTo42x) {
-            android35xTo42xExpectations(builder)
-        }
-
-        if (isAndroid35xTo70x) {
-            android35xTo70xExpectations(builder)
-        }
-
-        if (isAndroid35xTo71x) {
-            android35xTo71xExpectations(builder)
-        }
-
-        // Applies to anything 3.6.0 or higher
-        if (isAndroid36xOrHigher) {
-            android36xOrHigherExpectations(builder)
-        }
-
-        // Applies to anything 4.0.0 or higher
-        if (isAndroid40xOrHigher) {
-            android40xOrHigherExpectations(builder)
-        }
-
-        if (isAndroid35xTo40x) {
-            android35xTo40xExpectations(builder)
-        }
-
-        if (isAndroid40x) {
-            android40xOnlyExpectations(builder)
-        }
-
-        if (isAndroid40xTo41x) {
-            android40xTo41xExpectations(builder)
-        }
-
-        if (isAndroid40xTo70x) {
-            android40xTo70xExpectations(builder)
-        }
-
-        if (isAndroid40xTo71x) {
-            android40xTo71xExpectations(builder)
-        }
-
-        // Applies to anything 4.1.0 or higher
-        if (isAndroid41xOrHigher) {
-            android41xOrHigherExpectations(builder)
-        }
-
-        if (isAndroid41x) {
-            android41xOnlyExpectations(builder)
-        }
-
-        if (isAndroid41xTo71x) {
-            android41xTo71xExpectations(builder)
-        }
-
-        if (isAndroid42x) {
-            android42xOnlyExpectations(builder)
-        }
-
-        if (isAndroid42xTo71x) {
-            android42xTo71xExpectations(builder)
-        }
-
-        if (isAndroid42xOrHigher) {
-            android42xOrHigherExpectations(builder)
-        }
-
-        if (isAndroid70xOrHigher) {
-            android70xOrHigherExpectations(builder)
+        if (isAndroid70xTo71x) {
+            android70xTo71xExpectations(builder)
         }
 
         if (isAndroid71xOrHigher) {
@@ -402,109 +299,17 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         // the outcome of this task is not consistent with the kotlin plugin applied
         builder.expectChangingValue(':library:verifyReleaseResources')
-    }
 
-    static void android35xTo36xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:compileDebugShaders', FROM_CACHE)
-        builder.expect(':app:compileReleaseShaders', FROM_CACHE)
-        builder.expect(':app:dataBindingExportBuildInfoDebug', SUCCESS)
-        builder.expect(':app:dataBindingExportBuildInfoRelease', SUCCESS)
-        builder.expect(':app:dataBindingMergeGenClassesDebug', SUCCESS)
-        builder.expect(':app:dataBindingMergeGenClassesRelease', SUCCESS)
-        builder.expect(':app:mainApkListPersistenceDebug', FROM_CACHE)
-        builder.expect(':app:mainApkListPersistenceRelease', FROM_CACHE)
-        builder.expect(':app:stripDebugDebugSymbols', SUCCESS)
-        builder.expect(':app:stripReleaseDebugSymbols', SUCCESS)
-        builder.expect(':library:bundleLibCompileDebug', SUCCESS)
-        builder.expect(':library:bundleLibCompileRelease', SUCCESS)
-        builder.expect(':library:bundleLibResDebug', SUCCESS)
-        builder.expect(':library:bundleLibResRelease', SUCCESS)
-        builder.expect(':library:bundleLibRuntimeDebug', SUCCESS)
-        builder.expect(':library:bundleLibRuntimeRelease', SUCCESS)
-        builder.expect(':library:compileDebugShaders', FROM_CACHE)
-        builder.expect(':library:compileReleaseShaders', FROM_CACHE)
-        builder.expect(':library:dataBindingExportBuildInfoDebug', SUCCESS)
-        builder.expect(':library:dataBindingExportBuildInfoRelease', SUCCESS)
-        builder.expect(':library:dataBindingMergeGenClassesDebug', SUCCESS)
-        builder.expect(':library:dataBindingMergeGenClassesRelease', SUCCESS)
-        builder.expect(':library:mergeDebugConsumerProguardFiles', SUCCESS)
-        builder.expect(':library:mergeDebugGeneratedProguardFiles', SUCCESS)
-        builder.expect(':library:mergeReleaseConsumerProguardFiles', SUCCESS)
-        builder.expect(':library:mergeReleaseGeneratedProguardFiles', SUCCESS)
-        builder.expect(':library:stripDebugDebugSymbols', SUCCESS)
-        builder.expect(':library:stripReleaseDebugSymbols', SUCCESS)
-    }
+        builder.expect(':app:processDebugMainManifest', FROM_CACHE)
+        builder.expect(':app:processDebugManifestForPackage', FROM_CACHE)
+        builder.expect(':app:processReleaseMainManifest', FROM_CACHE)
+        builder.expect(':app:processReleaseManifestForPackage', FROM_CACHE)
+        builder.expect(':app:compressDebugAssets', FROM_CACHE)
+        builder.expect(':app:compressReleaseAssets', FROM_CACHE)
+        builder.expect(':app:mergeDebugNativeDebugMetadata', NO_SOURCE)
+        builder.expect(':library:mergeDebugNativeLibs', NO_SOURCE)
+        builder.expect(':library:mergeReleaseNativeLibs', NO_SOURCE)
 
-    static void android35xTo40xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:prepareLintJarForPublish', SUCCESS)
-        builder.expect(':app:dataBindingExportFeaturePackageIdsDebug', FROM_CACHE)
-        builder.expect(':app:dataBindingExportFeaturePackageIdsRelease', FROM_CACHE)
-        builder.expect(':app:generateDebugSources', SUCCESS)
-        builder.expect(':app:generateReleaseSources', SUCCESS)
-        builder.expect(':library:generateDebugSources', SUCCESS)
-        builder.expect(':library:generateReleaseSources', SUCCESS)
-        builder.expect(':library:prepareLintJar', SUCCESS)
-        builder.expect(':app:prepareLintJar', SUCCESS)
-        builder.expect(':library:mergeDebugNativeLibs', SUCCESS)
-        builder.expect(':library:mergeReleaseNativeLibs', SUCCESS)
-    }
-
-    static void android35xTo41xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:javaPreCompileDebug', FROM_CACHE)
-        builder.expect(':app:javaPreCompileRelease', FROM_CACHE)
-        builder.expect(':library:javaPreCompileDebug', FROM_CACHE)
-        builder.expect(':library:javaPreCompileRelease', FROM_CACHE)
-    }
-
-    static void android35xTo42xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:mergeDebugResources', FROM_CACHE)
-        builder.expect(':app:mergeReleaseResources', FROM_CACHE)
-        builder.expect(':app:processDebugResources', FROM_CACHE)
-        builder.expect(':app:processReleaseResources', FROM_CACHE)
-        builder.expect(':app:mergeDebugNativeLibs', SUCCESS)
-        builder.expect(':app:mergeReleaseNativeLibs', SUCCESS)
-    }
-
-    static void android35xTo70xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:compileDebugSources', UP_TO_DATE)
-        builder.expect(':app:compileReleaseSources', UP_TO_DATE)
-        builder.expect(':library:compileDebugSources', UP_TO_DATE)
-        builder.expect(':library:compileReleaseSources', UP_TO_DATE)
-    }
-
-    static void android35xTo71xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:checkDebugDuplicateClasses', FROM_CACHE)
-        builder.expect(':app:checkReleaseDuplicateClasses', FROM_CACHE)
-        builder.expect(':app:createDebugCompatibleScreenManifests', FROM_CACHE)
-        builder.expect(':app:createReleaseCompatibleScreenManifests', FROM_CACHE)
-        builder.expect(':app:validateSigningDebug', FROM_CACHE)
-    }
-
-    static void android35xOnlyExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:checkDebugManifest', SUCCESS)
-        builder.expect(':app:checkReleaseManifest', SUCCESS)
-        builder.expect(':app:signingConfigWriterDebug', FROM_CACHE)
-        builder.expect(':app:signingConfigWriterRelease', FROM_CACHE)
-        builder.expect(':app:transformClassesWithDexBuilderForDebug', SUCCESS)
-        builder.expect(':app:transformClassesWithDexBuilderForRelease', SUCCESS)
-        builder.expect(':library:checkDebugManifest', SUCCESS)
-        builder.expect(':library:checkReleaseManifest', SUCCESS)
-        builder.expect(':library:parseDebugLibraryResources', FROM_CACHE)
-        builder.expect(':library:parseReleaseLibraryResources', FROM_CACHE)
-        builder.expect(':library:transformClassesAndResourcesWithSyncLibJarsForDebug', SUCCESS)
-        builder.expect(':library:transformClassesAndResourcesWithSyncLibJarsForRelease', SUCCESS)
-        builder.expect(':library:transformNativeLibsWithIntermediateJniLibsForDebug', SUCCESS)
-        builder.expect(':library:transformNativeLibsWithIntermediateJniLibsForRelease', SUCCESS)
-        builder.expect(':library:transformNativeLibsWithSyncJniLibsForDebug', SUCCESS)
-        builder.expect(':library:transformNativeLibsWithSyncJniLibsForRelease', SUCCESS)
-    }
-
-    static void android350to352OnlyExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':library:createFullJarDebug', FROM_CACHE)
-        builder.expect(':library:createFullJarRelease', FROM_CACHE)
-    }
-
-    static void android36xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:dexBuilderDebug', FROM_CACHE)
         builder.expect(':app:dexBuilderRelease', FROM_CACHE)
         builder.expect(':app:extractDeepLinksDebug', FROM_CACHE)
@@ -521,9 +326,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:syncReleaseLibJars', FROM_CACHE)
         builder.expect(':library:compileDebugLibraryResources', FROM_CACHE)
         builder.expect(':library:compileReleaseLibraryResources', FROM_CACHE)
-    }
 
-    static void android40xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:compileDebugShaders', NO_SOURCE)
         builder.expect(':app:compileReleaseShaders', NO_SOURCE)
         builder.expect(':app:dataBindingMergeGenClassesDebug', FROM_CACHE)
@@ -540,85 +343,14 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':library:stripReleaseDebugSymbols', NO_SOURCE)
         builder.expect(':app:collectReleaseDependencies', SUCCESS)
         builder.expect(':app:sdkReleaseDependencyData', SUCCESS)
-    }
 
-    static void android40xTo41xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':library:bundleLibRuntimeToJarDebug', SUCCESS)
-        builder.expect(':library:bundleLibRuntimeToJarRelease', SUCCESS)
-    }
-
-    static void android40xTo70xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':library:bundleLibResDebug', NO_SOURCE)
-        builder.expect(':library:bundleLibResRelease', NO_SOURCE)
-   }
-
-    static void android40xTo71xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':library:mergeDebugConsumerProguardFiles', FROM_CACHE)
-        builder.expect(':library:mergeDebugGeneratedProguardFiles', FROM_CACHE)
-        builder.expect(':library:mergeReleaseConsumerProguardFiles', FROM_CACHE)
-        builder.expect(':library:mergeReleaseGeneratedProguardFiles', FROM_CACHE)
-    }
-
-    static void android41xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:processDebugMainManifest', FROM_CACHE)
-        builder.expect(':app:processDebugManifestForPackage', FROM_CACHE)
-        builder.expect(':app:processReleaseMainManifest', FROM_CACHE)
-        builder.expect(':app:processReleaseManifestForPackage', FROM_CACHE)
-        builder.expect(':app:compressDebugAssets', FROM_CACHE)
-        builder.expect(':app:compressReleaseAssets', FROM_CACHE)
-        builder.expect(':app:mergeDebugNativeDebugMetadata', NO_SOURCE)
-        builder.expect(':library:mergeDebugNativeLibs', NO_SOURCE)
-        builder.expect(':library:mergeReleaseNativeLibs', NO_SOURCE)
-    }
-
-    static void android41xOnlyExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
-    }
-
-    static void android41xTo71xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:dataBindingTriggerDebug', FROM_CACHE)
-        builder.expect(':app:dataBindingTriggerRelease', FROM_CACHE)
-        builder.expect(':library:dataBindingTriggerDebug', FROM_CACHE)
-        builder.expect(':library:dataBindingTriggerRelease', FROM_CACHE)
-        builder.expect(':app:checkDebugAarMetadata', FROM_CACHE)
-        builder.expect(':app:checkReleaseAarMetadata', FROM_CACHE)
-        builder.expect(':library:writeDebugAarMetadata', FROM_CACHE)
-        builder.expect(':library:writeReleaseAarMetadata', FROM_CACHE)
-    }
-
-    static void android40xOnlyExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:dataBindingExportBuildInfoDebug', FROM_CACHE)
-        builder.expect(':app:dataBindingExportBuildInfoRelease', FROM_CACHE)
-        builder.expect(':library:dataBindingExportBuildInfoDebug', FROM_CACHE)
-        builder.expect(':library:dataBindingExportBuildInfoRelease', FROM_CACHE)
-    }
-
-    static void android42xOnlyExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:desugarDebugFileDependencies', SUCCESS)
-        builder.expect(':app:desugarReleaseFileDependencies', SUCCESS)
-        // New non-cacheable tasks in 4.2.0-alpha10:
-        builder.expect(':app:writeReleaseApplicationId', SUCCESS)
-        builder.expect(':app:analyticsRecordingRelease', SUCCESS)
-        builder.expect(':app:extractReleaseNativeSymbolTables', NO_SOURCE)
-    }
-
-    static void android42xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':library:bundleLibRuntimeToDirDebug', SUCCESS)
         builder.expect(':library:bundleLibRuntimeToDirRelease', SUCCESS)
         builder.expect(':library:bundleLibRuntimeToJarDebug', SUCCESS)
         builder.expect(':library:bundleLibRuntimeToJarRelease', SUCCESS)
         builder.expect(':app:optimizeReleaseResources', FROM_CACHE)
         builder.expect(':app:mergeReleaseNativeDebugMetadata', NO_SOURCE)
-    }
 
-    static void android42xTo71xExpectations(ExpectedOutcomeBuilder builder) {
-        builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)
-        builder.expect(':app:writeReleaseAppMetadata', FROM_CACHE)
-        builder.expect(':app:writeDebugSigningConfigVersions', FROM_CACHE)
-        builder.expect(':app:writeReleaseSigningConfigVersions', FROM_CACHE)
-    }
-
-    static void android70xOrHigherExpectations(ExpectedOutcomeBuilder builder) {
         builder.expect(':app:desugarDebugFileDependencies', FROM_CACHE)
         builder.expect(':app:desugarReleaseFileDependencies', FROM_CACHE)
         builder.expect(':app:extractReleaseNativeSymbolTables', NO_SOURCE)
@@ -641,6 +373,39 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
         builder.expect(':app:compileReleaseArtProfile', FROM_CACHE)
         builder.expect(':library:prepareReleaseArtProfile', SUCCESS)
         builder.expect(':library:prepareDebugArtProfile', SUCCESS)
+    }
+
+    static void android70xOnlyExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:compileDebugSources', UP_TO_DATE)
+        builder.expect(':app:compileReleaseSources', UP_TO_DATE)
+        builder.expect(':library:compileDebugSources', UP_TO_DATE)
+        builder.expect(':library:compileReleaseSources', UP_TO_DATE)
+        builder.expect(':library:bundleLibResDebug', NO_SOURCE)
+        builder.expect(':library:bundleLibResRelease', NO_SOURCE)
+    }
+
+    static void android70xTo71xExpectations(ExpectedOutcomeBuilder builder) {
+        builder.expect(':app:checkDebugDuplicateClasses', FROM_CACHE)
+        builder.expect(':app:checkReleaseDuplicateClasses', FROM_CACHE)
+        builder.expect(':app:createDebugCompatibleScreenManifests', FROM_CACHE)
+        builder.expect(':app:createReleaseCompatibleScreenManifests', FROM_CACHE)
+        builder.expect(':app:validateSigningDebug', FROM_CACHE)
+        builder.expect(':library:mergeDebugConsumerProguardFiles', FROM_CACHE)
+        builder.expect(':library:mergeDebugGeneratedProguardFiles', FROM_CACHE)
+        builder.expect(':library:mergeReleaseConsumerProguardFiles', FROM_CACHE)
+        builder.expect(':library:mergeReleaseGeneratedProguardFiles', FROM_CACHE)
+        builder.expect(':app:dataBindingTriggerDebug', FROM_CACHE)
+        builder.expect(':app:dataBindingTriggerRelease', FROM_CACHE)
+        builder.expect(':library:dataBindingTriggerDebug', FROM_CACHE)
+        builder.expect(':library:dataBindingTriggerRelease', FROM_CACHE)
+        builder.expect(':app:checkDebugAarMetadata', FROM_CACHE)
+        builder.expect(':app:checkReleaseAarMetadata', FROM_CACHE)
+        builder.expect(':library:writeDebugAarMetadata', FROM_CACHE)
+        builder.expect(':library:writeReleaseAarMetadata', FROM_CACHE)
+        builder.expect(':app:writeDebugAppMetadata', FROM_CACHE)
+        builder.expect(':app:writeReleaseAppMetadata', FROM_CACHE)
+        builder.expect(':app:writeDebugSigningConfigVersions', FROM_CACHE)
+        builder.expect(':app:writeReleaseSigningConfigVersions', FROM_CACHE)
     }
 
     static void android71xOrHigherExpectations(ExpectedOutcomeBuilder builder) {

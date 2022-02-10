@@ -20,11 +20,6 @@ def supportedVersions = [
     "7.2.0-beta01": ["7.3.3"],
     "7.1.1": ["7.3.3"],
     "7.0.4": ["7.3.3"],
-    "4.2.2": ["6.9.1", "7.3.3"],
-    "4.1.3": ["6.5.1", "6.9.1"],
-    "4.0.2": ["6.1.1", "6.9.1"],
-    "3.6.4": ["5.6.4", "6.9.1"],
-    "3.5.4": ["5.4.1", "5.6.4", "6.9.1"]
 ]
 
 repositories {
@@ -38,7 +33,7 @@ configurations {
 
 dependencies {
     def versions = [
-        'agp': '3.5.4',
+        'agp': '7.0.4',
         'spock': '2.0-M5-groovy-3.0'
     ]
 
@@ -46,6 +41,7 @@ dependencies {
     groovyClasspath 'org.codehaus.groovy:groovy-all:2.5.12'
 
     compileOnly "com.android.tools.build:gradle:${versions.agp}"
+    implementation("com.google.guava:guava:31.0.1-jre")
 
     implementation gradleApi()
 
@@ -59,7 +55,8 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        // AGP 7+ only supports JDK 11+
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
@@ -156,10 +153,6 @@ supportedVersions.keySet().each { androidVersion ->
         description = "Runs the multi-version tests for AGP ${androidVersion}"
         group = "verification"
 
-        javaLauncher = javaToolchains.launcherFor {
-            languageVersion = jdkVersionFor(androidVersion)
-        }
-
         systemProperty 'org.gradle.android.testVersion', androidVersion
     }
 
@@ -174,10 +167,6 @@ static def androidTestTaskName(String androidVersion) {
 
 static def normalizeVersion(String version) {
     return version.replaceAll('[.\\-]', '_')
-}
-
-static def jdkVersionFor(String version) {
-    return JavaLanguageVersion.of(VersionNumber.parse(version) > VersionNumber.parse("7.0.0-alpha01") ? 11 : 8)
 }
 
 // A basic sanity check to run before running all test tasks

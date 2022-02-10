@@ -2,15 +2,12 @@ package org.gradle.android
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.util.VersionNumber
-import org.junit.Assume
 
 @MultiVersionTest
 class ConfigurationCachingTest extends AbstractTest {
     private static final VersionNumber SUPPORTED_KOTLIN_VERSION = TestVersions.latestSupportedKotlinVersion()
 
     def "plugin is compatible with configuration cache"() {
-        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() >= VersionNumber.parse("4.2.0-alpha01"))
-
         given:
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
                 .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())

@@ -12,13 +12,8 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "7.2.0-beta01" | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_7_0']
-        "7.1.1"  | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_7_0']
-        "7.0.4"         | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_7_0']
-        "4.2.2"         | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_2', 'MergeResources']
-        "4.1.3"         | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses_4_2', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
-        "4.0.2"         | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources_4_0', 'MergeResources']
-        "3.6.4"         | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs']
-        "3.5.4"         | ['ZipMergingTask', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs']
+        "7.2.0-beta01" | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources']
+        "7.1.1"  | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources']
+        "7.0.4"         | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'MergeJavaResources', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources']
     }
 }

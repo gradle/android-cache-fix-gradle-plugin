@@ -22,7 +22,7 @@ jobs:
     # Gradle build
     -   uses: gradle/gradle-build-action@v2
         with:
-            arguments: generateTestTasksJson -I gradle/buildScanInit.gradle
+            arguments: generateTestTasksJson
 
     -   id: setup-matrix
         run: echo "::set-output name=matrix::$(cat build/build-resources/androidTestTasks.json)"
@@ -48,7 +48,7 @@ jobs:
     # Gradle build
     -   uses: gradle/gradle-build-action@v2
         with:
-            arguments: sanityCheck -I gradle/buildScanInit.gradle
+            arguments: sanityCheck
 
   android_version_tests:
     needs: [generate_versions, sanity_check]
@@ -82,5 +82,5 @@ jobs:
     # Gradle build
     - uses: gradle/gradle-build-action@v2
       with:
-        arguments: ${{ matrix.androidTestTask }} -I gradle/buildScanInit.gradle
+        arguments: ${{ matrix.androidTestTask }}
 

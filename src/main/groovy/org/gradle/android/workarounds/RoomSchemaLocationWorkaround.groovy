@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import org.gradle.android.AndroidIssue
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
@@ -41,10 +42,8 @@ import java.util.function.Supplier
  * This workaround adds a 'room' project extension which can be used to configure the annotation processor:
  *
  * <pre>
- *     room {
- *         schemaLocationDir.set(file("roomSchemas"))
- *     }
- * </pre>
+ *     room {*         schemaLocationDir.set(file("roomSchemas"))
+ *}* </pre>
  *
  * Note that this workaround only works with Kotlin Gradle plugin 1.3.70 or higher.
  *
@@ -90,9 +89,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
         boolean javaCompileSchemaGenerationEnabled = true
 
-        def configureVariant = new Action<Variant>() {
+        def configureVariant = new Action<Object>() {
             @Override
-            void execute(Variant variant) {
+            void execute(Object variant) {
                 // Make sure that the annotation processor argument has not been explicitly configured in the Android
                 // configuration (i.e. we only want this configured through the room extension
                 Map<String, String> arguments = variant.javaCompileOptions.annotationProcessorOptions.arguments
@@ -105,95 +104,127 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 }
 
                 // Configure the annotation processor argument provider on the Java compile task
-                javaCompileProvider.configure { JavaCompile task ->
-                    def taskSpecificSchemaDir = project.objects.directoryProperty()
-                    taskSpecificSchemaDir.set(getTaskSpecificSchemaDir(task))
+                variant.javaCompileProvider.configure(new Action<JavaCompile>() {
+                    @Override
+                    void execute(JavaCompile task) {
+                        def taskSpecificSchemaDir = project.objects.directoryProperty()
+                        taskSpecificSchemaDir.set(getTaskSpecificSchemaDir(task))
 
-                    // Add a command line argument provider to the task-specific list of providers
-                    task.options.compilerArgumentProviders.add(
-                            new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, taskSpecificSchemaDir, nullDirectory, { javaCompileSchemaGenerationEnabled } as Supplier)
-                    )
+                        // Add a command line argument provider to the task-specific list of providers
+                        task.options.compilerArgumentProviders.add(
+                                new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, taskSpecificSchemaDir, nullDirectory, { javaCompileSchemaGenerationEnabled } as Supplier)
+                        )
 
-                    // Register the generated schemas to be merged back to the original specified schema directory
-                    task.project.gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
-                        if (graph.hasTask(task)) {
-                            roomExtension.registerOutputDirectory(taskSpecificSchemaDir)
-                        }
+                        // Register the generated schemas to be merged back to the original specified schema directory
+//                    task.project.gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
+//                        if (graph.hasTask(task)) {
+//                            roomExtension.registerOutputDirectory(taskSpecificSchemaDir)
+//                        }
+//                    }
+
+                        // Seed the task-specific generated schema dir with the existing schemas
+                        task.doFirst(new Action<Task>() {
+                            @Override
+                            void execute(Task foo) {
+                                if (javaCompileSchemaGenerationEnabled) {
+                                    copyExistingSchemasToTaskSpecificTmpDir(fileOperations, roomExtension.schemaLocationDir, taskSpecificSchemaDir)
+                                }
+                            }
+                        })
+
+//                    task.finalizedBy({ roomExtension.schemaLocationDir.isPresent() ? mergeTask : null })
                     }
-
-                    // Seed the task-specific generated schema dir with the existing schemas
-                    task.doFirst {
-                        if (javaCompileSchemaGenerationEnabled) {
-                            copyExistingSchemasToTaskSpecificTmpDir(fileOperations, roomExtension.schemaLocationDir, taskSpecificSchemaDir)
-                        }
-                    }
-
-                    task.finalizedBy { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
-                }
+                })
             }
         }
 
         applyToAllAndroidVariants(project, configureVariant)
 
-        project.plugins.withId("kotlin-kapt") {
-            // The kapt task has a list of annotation processor providers which _is_ the list of providers
-            // in the Android variant, so we can't just add a task-specific provider.  To handle kapt tasks,
-            // we _have_ to add the task-specific provider to the variant.
-            applyToAllAndroidVariants(project) { variant ->
-                def variantSpecificSchemaDir = project.objects.directoryProperty()
-                variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
-                variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir, nullDirectory))
-            }
+        project.plugins.withId("kotlin-kapt", new Action<Plugin>() {
+            @Override
+            void execute(Plugin plugin) {
 
-            // Kapt tasks will remove the contents of any output directories, which will interfere with any additional
-            // annotation processors that use the room schema location processor argument and expect existing schemas to
-            // be present.  Sooo, we need to generate the schemas to a temporary directory via the annotation processor,
-            // then copy the generated schemas to the registered output directory as a last step.  Perhaps this act of
-            // pre-seeding the directory with existing schemas should be a capability of the room annotation processor
-            // somehow?
-            def configureKaptTask = new Action<Task>() {
-                @Override
-                public void execute(Task task) {
-                    def annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
+                // in the Android variant, so we can't just add a task-specific provider.  To handle kapt tasks,
+                // we _have_ to add the task-specific provider to the variant.
+                applyToAllAndroidVariants(project, new Action<Object>() {
+                    @Override
+                    void execute(Object variant) {
+                        def variantSpecificSchemaDir = project.objects.directoryProperty()
+                        variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
+                        variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir, nullDirectory))
 
-                    task.doFirst onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
-                        // Populate the variant-specific schemas dir with the existing schemas
-                        copyExistingSchemasToTaskSpecificTmpDirForKapt(fileOperations, roomExtension.schemaLocationDir, provider)
                     }
+                })
 
-                    task.doLast onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
-                        // Copy the generated schemas into the registered output directory
-                        copyGeneratedSchemasToOutputDirForKapt(fileOperations, provider)
-                    }
+                // Kapt tasks will remove the contents of any output directories, which will interfere with any additional
+                // annotation processors that use the room schema location processor argument and expect existing schemas to
+                // be present.  Sooo, we need to generate the schemas to a temporary directory via the annotation processor,
+                // then copy the generated schemas to the registered output directory as a last step.  Perhaps this act of
+                // pre-seeding the directory with existing schemas should be a capability of the room annotation processor
+                // somehow?
+                Action<Task> configureKaptTask = new Action<Task>() {
+                    @Override
+                    void execute(Task task) {
 
-                    task.finalizedBy onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
+                        def annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
 
-                    TaskExecutionGraph taskGraph = task.project.gradle.taskGraph
-                    taskGraph.whenReady onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
-                        if (taskGraph.hasTask(task)) {
-                            // Register the variant-specific directory with the merge task
-                            roomExtension.registerOutputDirectory(provider.schemaLocationDir)
-                        }
+                        task.doFirst(onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders, new Action<KaptRoomSchemaLocationArgumentProvider>() {
+                            @Override
+                            void execute(KaptRoomSchemaLocationArgumentProvider provider) {
+                                // Populate the variant-specific schemas dir with the existing schemas
+                                copyExistingSchemasToTaskSpecificTmpDirForKapt(fileOperations, roomExtension.schemaLocationDir, provider)
+                            }
+                        }))
+
+                        task.doLast(onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders, new Action<KaptRoomSchemaLocationArgumentProvider>() {
+                            @Override
+                            void execute(KaptRoomSchemaLocationArgumentProvider provider) {
+                                // Copy the generated schemas into the registered output directory
+                                copyGeneratedSchemasToOutputDirForKapt(fileOperations, provider)
+                            }
+                        }))
+
+//                        task.finalizedBy(onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders, new Action<KaptRoomSchemaLocationArgumentProvider>() {
+//                            @Override
+//                            void execute(KaptRoomSchemaLocationArgumentProvider provider) {
+//                                roomExtension.schemaLocationDir.isPresent() ? mergeTask : null
+//                            }
+//                        }))
+
+                        TaskExecutionGraph taskGraph = task.project.gradle.taskGraph
+//                    taskGraph.whenReady(onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders, new Action<KaptRoomSchemaLocationArgumentProvider>() {
+//                        @Override
+//                        void execute(KaptRoomSchemaLocationArgumentProvider provider) {
+//                            if (taskGraph.hasTask(task)) {
+//                                 Register the variant-specific directory with the merge task
+//                                roomExtension.registerOutputDirectory(provider.schemaLocationDir)
+//                            }
+//                        }
+//                    }))
                     }
                 }
+
+                project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach(configureKaptTask)
+                project.tasks.withType(kaptWithKotlincTaskClass).configureEach(configureKaptTask)
+
+                // Since we've added a new kapt-specific provider to the variant, disable the provider
+                // used for the JavaCompile task.  This is not great, but there
+                // does not seem to be a way around this with the way the kotlin android plugin
+                // maps annotation processor providers from the variant directly onto kapt tasks.
+                javaCompileSchemaGenerationEnabled = false
             }
-
-            project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach(configureKaptTask)
-            project.tasks.withType(kaptWithKotlincTaskClass).configureEach(configureKaptTask)
-
-            // Since we've added a new kapt-specific provider to the variant, disable the provider
-            // used for the JavaCompile task.  This is not great, but there
-            // does not seem to be a way around this with the way the kotlin android plugin
-            // maps annotation processor providers from the variant directly onto kapt tasks.
-            javaCompileSchemaGenerationEnabled = false
-        }
+        })
+        // The kapt task has a list of annotation processor providers which _is_ the list of providers
     }
 
-    private static Action onlyIfAnnotationProcessorConfiguredForKapt(def annotationProcessorOptionProviders, Action<?> action) {
-        return {
-            def provider = annotationProcessorOptionProviders.flatten().find { it instanceof KaptRoomSchemaLocationArgumentProvider }
-            if (provider != null) {
-                action.call(provider)
+    private static Action<Task> onlyIfAnnotationProcessorConfiguredForKapt(def annotationProcessorOptionProviders, Action<KaptRoomSchemaLocationArgumentProvider> action) {
+        return new Action<Task>() {
+            @Override
+            void execute(Task task) {
+                KaptRoomSchemaLocationArgumentProvider provider = annotationProcessorOptionProviders.flatten().find { it instanceof KaptRoomSchemaLocationArgumentProvider }
+                if (provider != null) {
+                    action.execute(provider)
+                }
             }
         }
     }
@@ -223,7 +254,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     @CompileStatic
-    private static void copyExistingSchemasToTaskSpecificTmpDir(FileOperations fileOperations, DirectoryProperty existingSchemaDir, Provider<Directory> taskSpecificTmpDir) {
+    static void copyExistingSchemasToTaskSpecificTmpDir(FileOperations fileOperations, DirectoryProperty existingSchemaDir, Provider<Directory> taskSpecificTmpDir) {
         // populate the task-specific tmp dir with any existing (non-generated) schemas
         // this allows other annotation processors that might operate on these schemas
         // to find them via the schema location argument
@@ -237,7 +268,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     @CompileStatic
-    private static void copyExistingSchemasToTaskSpecificTmpDirForKapt(FileOperations fileOperations, DirectoryProperty existingSchemaDir, KaptRoomSchemaLocationArgumentProvider provider) {
+    static void copyExistingSchemasToTaskSpecificTmpDirForKapt(FileOperations fileOperations, DirectoryProperty existingSchemaDir, KaptRoomSchemaLocationArgumentProvider provider) {
         // Derive the variant directory from the command line provider it is configured with
         def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
 
@@ -245,7 +276,8 @@ class RoomSchemaLocationWorkaround implements Workaround {
         copyExistingSchemasToTaskSpecificTmpDir(fileOperations, existingSchemaDir, temporaryVariantSpecificSchemaDir)
     }
 
-    private static void copyGeneratedSchemasToOutputDirForKapt(FileOperations fileOperations, KaptRoomSchemaLocationArgumentProvider provider) {
+    @CompileStatic
+    static void copyGeneratedSchemasToOutputDirForKapt(FileOperations fileOperations, KaptRoomSchemaLocationArgumentProvider provider) {
         // Copy the generated generated schemas from the task-specific tmp dir to the
         // task-specific output dir.  This dance prevents the kapt task from clearing out
         // the existing schemas before the annotation processors run
@@ -366,7 +398,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
         KaptRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir, Provider<Directory> nullDirectory) {
             super(configuredSchemaLocationDir, schemaLocationDir, nullDirectory, { true } as Supplier<Boolean>)
-            this.temporarySchemaLocationDir = schemaLocationDir.map {it.dir("../${it.asFile.name}Temp") }
+            this.temporarySchemaLocationDir = schemaLocationDir.map { it.dir("../${it.asFile.name}Temp") }
         }
 
         @Override
@@ -407,7 +439,8 @@ class RoomSchemaLocationWorkaround implements Workaround {
     static abstract class RoomSchemaLocationMergeTask extends DefaultTask {
 
         // Using older internal API to maintain compatibility with Gradle 5.x
-        @Inject abstract FileOperations getFileOperations()
+        @Inject
+        abstract FileOperations getFileOperations()
 
         @Internal
         MergeAssociations roomSchemaMergeLocations

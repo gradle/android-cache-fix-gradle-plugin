@@ -5,7 +5,7 @@ plugins {
 
 rootProject.name = 'android-cache-fix-gradle-plugin'
 
-def isCI = System.getenv('GITHUB_ACTIONS') != null // adjust to your CI provider
+def isCI = System.getenv('GITHUB_ACTIONS') != null
 
 gradleEnterprise {
     server = "https://ge.solutions-team.gradle.com"

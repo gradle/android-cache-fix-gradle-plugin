@@ -5,13 +5,15 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'signing'
     id 'codenarc'
     id "com.gradle.plugin-publish" version "0.20.0"
     id "org.gradle.test-retry" version "1.3.1"
+    id 'com.github.breadmoirai.github-release' version '2.2.12'
 }
 
 group = "org.gradle.android"
-version = ["git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
+version = layout.projectDirectory.file("release/version.txt").asFile.text.trim()
 
 def isCI = (System.getenv('CI') ?: 'false').toBoolean()
 
@@ -100,16 +102,22 @@ gradlePlugin {
     }
 }
 
+def isProdPortal = !System.getProperty('gradle.portal.url')
 pluginBundle {
     website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
     vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
 
     tags = ['android', 'cache', 'fix']
 
-    mavenCoordinates {
-        groupId = "gradle.plugin.org.gradle.android"
+    // The legacy groupId gradle.plugin.* is only allowed when the plugin
+    // has already been published
+    if (isProdPortal) {
+        mavenCoordinates {
+            groupId = "gradle.plugin.org.gradle.android"
+        }
     }
 }
+
 
 // A local repo we publish our library to for testing in order to workaround limitations
 // in the TestKit plugin classpath.
@@ -177,4 +185,42 @@ tasks.register("sanityCheck") {
 tasks.withType(ValidatePlugins).configureEach {
     failOnWarning = true
     enableStricterValidation = true
+}
+
+signing {
+    // Require publications to be signed on CI. Otherwise, publication will be signed only if keys are provided.
+    required isCI
+
+    useInMemoryPgpKeys(
+        providers.environmentVariable("PGP_SIGNING_KEY").forUseAtConfigurationTime().orNull,
+        providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").forUseAtConfigurationTime().orNull)
+
+    sign(configurations.archives)
+}
+
+githubRelease {
+   token = System.getenv("ANDROID_CACHE_FIX_PLUGIN_GIT_TOKEN") ?: ''
+   owner = "gradle"
+   repo = "android-cache-fix-gradle-plugin"
+   releaseName = gitHubReleaseName()
+   tagName = gitReleaseTag()
+   prerelease = false
+   overwrite = false
+   body = layout.projectDirectory.file("release/changes.md").asFile.text.trim()
+}
+
+tasks.register('createReleaseTag', CreateGitTag) {
+    tagName = gitReleaseTag()
+}
+
+tasks.named("githubRelease") {
+    dependsOn("createReleaseTag")
+}
+
+def gitHubReleaseName() {
+    return version.toString()
+}
+
+def gitReleaseTag() {
+    return "v${version}"
 }

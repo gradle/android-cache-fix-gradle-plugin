@@ -1,6 +1,5 @@
 package org.gradle.android.workarounds
 
-import com.android.build.api.variant.Variant
 import groovy.transform.CompileStatic
 import org.gradle.android.AndroidIssue
 import org.gradle.api.Action

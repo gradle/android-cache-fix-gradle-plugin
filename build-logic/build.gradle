@@ -1,0 +1,22 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'groovy'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+}
+
+gradlePlugin {
+    plugins {
+        androidVersionsPlugin {
+            id = 'org.gradle.android.plugin'
+            implementationClass = 'org.gradle.android.plugin.AndroidVersionsPlugin'
+        }
+    }
+}

@@ -1,3 +1,11 @@
+> _This repository is maintained by the Gradle Enterprise Solutions team, as one of several publicly available repositories:_
+> - _[Gradle Enterprise Build Configuration Samples][ge-build-config-samples]_
+> - _[Gradle Enterprise Build Optimization Experiments][ge-build-optimization-experiments]_
+> - _[Gradle Enterprise Build Validation Scripts][ge-build-validation-scripts]_
+> - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
+> - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
+> - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin] (this repository)_
+
 # Android Cache Fix Gradle Plugin
 
 [![CI](https://github.com/gradle/android-cache-fix-gradle-plugin/workflows/CI/badge.svg?branch=master)](https://github.com/gradle/android-cache-fix-gradle-plugin/actions/workflows/ci-check.yml)
@@ -179,3 +187,16 @@ Use Android Cache Fix Plugin 2.4.6 when using an older Android Gradle Plugin ver
 * Supported Gradle versions: 5.4.1+
 * Supported Android Gradle Plugin versions: 3.5.4, 3.6.4, 4.0.1, 4.1.3, 4.2.2
 * Supported Kotlin versions: 1.3.70+
+
+## License
+
+The  Android Cache Fix Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
+
+[ge-build-config-samples]: https://github.com/gradle/gradle-enterprise-build-config-samples
+[ge-build-optimization-experiments]: https://github.com/gradle/gradle-enterprise-build-optimization-experiments
+[ge-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts
+[ccud-gradle-plugin]: https://github.com/gradle/common-custom-user-data-gradle-plugin
+[ccud-maven-extension]: https://github.com/gradle/common-custom-user-data-maven-extension
+[android-cache-fix-plugin]: https://github.com/gradle/android-cache-fix-gradle-plugin
+[gradle-enterprise]: https://gradle.com/enterprise
+[apache-license]: https://www.apache.org/licenses/LICENSE-2.0.html

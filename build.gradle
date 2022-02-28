@@ -39,7 +39,7 @@ configurations {
 dependencies {
     def versions = [
         'agp'  : '7.0.4',
-        'spock': '2.0-M5-groovy-3.0'
+        'spock': '2.1-groovy-3.0'
     ]
 
     // Used for compiling the main classes

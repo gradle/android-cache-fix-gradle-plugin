@@ -43,7 +43,7 @@ dependencies {
     groovyClasspath 'org.codehaus.groovy:groovy-all:2.5.12'
 
     compileOnly "com.android.tools.build:gradle:${versions.agp}"
-    implementation("com.google.guava:guava:31.0.1-jre")
+    implementation("com.google.guava:guava:31.1-jre")
 
     implementation gradleApi()
 

@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
+  env:
+    GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
   generate_versions:
     name: Generate versions
     runs-on: ubuntu-latest
-    env:
-      GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: gradle/gradle-build-action@v2

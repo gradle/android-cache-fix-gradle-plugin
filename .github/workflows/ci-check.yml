@@ -1,9 +1,6 @@
-# This is a basic workflow to help you get started with Actions
+## TODO RENAME THIS FILE TO build-verification.yml BEFORE MERGING (KEPT SAME FOR EASIER REVIEW)
+name: Verify Build
 
-name: CI
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
     branches: [ master, citest ]
@@ -11,82 +8,54 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   generate_versions:
+    name: Generate versions
     runs-on: ubuntu-latest
-
+    env:
+      GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    -   uses: actions/checkout@v1
-
-    # Gradle build
-    -   uses: gradle/gradle-build-action@v2
-        env:
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+      - uses: actions/checkout@v2
+      - uses: gradle/gradle-build-action@v2
         with:
-            arguments: generateTestTasksJson
-
-    -   id: setup-matrix
+          arguments: generateTestTasksJson
+      - id: setup-matrix
         run: echo "::set-output name=matrix::$(cat build/build-resources/androidTestTasks.json)"
-
-    -   name: debug
+      - name: debug
         run: echo ${{ steps.setup-matrix.outputs.matrix }}
-
     outputs:
-        matrix: ${{ steps.setup-matrix.outputs.matrix }}
+      matrix: ${{ steps.setup-matrix.outputs.matrix }}
 
   sanity_check:
+    name: Sanity check
     runs-on: ubuntu-latest
-
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    -   uses: actions/checkout@v1
-
-    # Use Java 8
-    -   uses: actions/setup-java@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
         with:
-            java-version: 11
-
-    # Gradle build
-    -   uses: gradle/gradle-build-action@v2
-        env:
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+          java-version: 11
+      - uses: gradle/gradle-build-action@v2
         with:
-            arguments: sanityCheck
+          arguments: sanityCheck
 
   android_version_tests:
-    needs: [generate_versions, sanity_check]
-
-    # The type of runner that the job will run on
+    name: Android version tests
+    needs: [ generate_versions, sanity_check ]
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
         androidTestTask: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    -   uses: actions/checkout@v1
-
-    # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
-    -   name: Patch api-versions
+      - uses: actions/checkout@v2
+      # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
+      - name: Patch api-versions
         run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
-
-    # List all installed Android SDK packages (for troubleshooting)
-    -   name: List Android Packages
+      - name: List Android Packages
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
-
-    # Use Java 8
-    -   uses: actions/setup-java@v1
+      - uses: actions/setup-java@v2
         with:
-            java-version: 8
-
-    # Gradle build
-    -   uses: gradle/gradle-build-action@v2
-        env:
-            GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+          java-version: 11
+      - uses: gradle/gradle-build-action@v2
         with:
-            arguments: ${{ matrix.androidTestTask }} -x signArchives
+          arguments: ${{ matrix.androidTestTask }} -x signArchives

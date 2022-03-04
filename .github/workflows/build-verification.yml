@@ -1,4 +1,3 @@
-## TODO RENAME THIS FILE TO build-verification.yml BEFORE MERGING (KEPT SAME FOR EASIER REVIEW)
 name: Verify Build
 
 on:

@@ -207,6 +207,7 @@ githubRelease {
    prerelease = false
    overwrite = false
    body = layout.projectDirectory.file("release/changes.md").asFile.text.trim()
+   targetCommitish = "main"
 }
 
 tasks.register('createReleaseTag', CreateGitTag) {

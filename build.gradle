@@ -19,7 +19,7 @@ def isCI = (System.getenv('CI') ?: 'false').toBoolean()
 
 // Maps supported Android plugin versions to the versions of Gradle that support it
 def supportedVersions = [
-    "7.2.0-beta02": ["7.3.3"],
+    "7.2.0-beta03": ["7.3.3"],
     "7.1.2": ["7.3.3"],
     "7.0.4": ["7.3.3"],
 ]

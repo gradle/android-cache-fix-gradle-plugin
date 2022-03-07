@@ -2,17 +2,17 @@ name: Verify Build
 
 on:
   push:
-    branches: [ master, citest ]
+    branches: [ main, citest ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
+env:
+  GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
 jobs:
   generate_versions:
     name: Generate versions
     runs-on: ubuntu-latest
-    env:
-      GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: gradle/gradle-build-action@v2

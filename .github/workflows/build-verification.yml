@@ -2,9 +2,9 @@ name: Verify Build
 
 on:
   push:
-    branches: [ master, citest ]
+    branches: [ main, citest ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 env:

@@ -8,6 +8,7 @@ import static org.gradle.android.Versions.android
 
 class SimpleAndroidApp {
     public static final ROOM_LIBRARY_VERSION = "2.2.5"
+    public static final String PLUGIN_VERSION_SYSTEM_PROPERTY = 'org.gradle.android.cache-fix.version'
     final File projectDir
     private final File cacheDir
     final VersionNumber androidVersion
@@ -37,6 +38,11 @@ class SimpleAndroidApp {
         def libPackage = 'org.gradle.android.example.library'
         def libraryActivity = 'LibraryActivity'
 
+        def pluginVersion = System.getProperty(PLUGIN_VERSION_SYSTEM_PROPERTY)
+        if (pluginVersion == null) {
+            throw new IllegalStateException("The '${PLUGIN_VERSION_SYSTEM_PROPERTY}' system property must be set in order to apply the plugin under test!")
+        }
+
         file("settings.gradle") << """
                 buildCache {
                     local {
@@ -58,7 +64,7 @@ class SimpleAndroidApp {
                     }
                     dependencies {
                         classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
-                        classpath "org.gradle.android:android-cache-fix-gradle-plugin:${Versions.PLUGIN_VERSION}"
+                        classpath "org.gradle.android:android-cache-fix-gradle-plugin:${pluginVersion}"
                         ${kotlinPluginDependencyIfEnabled}
                     }
                 }

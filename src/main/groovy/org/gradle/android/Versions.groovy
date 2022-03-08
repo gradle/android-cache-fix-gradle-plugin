@@ -14,7 +14,6 @@ import org.gradle.util.VersionNumber
 
 @CompileStatic(TypeCheckingMode.SKIP)
 class Versions {
-    static final VersionNumber PLUGIN_VERSION;
     static final Set<GradleVersion> SUPPORTED_GRADLE_VERSIONS
     static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
     static final Multimap<VersionNumber, GradleVersion> SUPPORTED_VERSIONS_MATRIX
@@ -23,7 +22,6 @@ class Versions {
 
     static {
         def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
-        PLUGIN_VERSION = VersionNumber.parse(versions.version)
 
         def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
         versions.supportedVersions.each { String androidVersion, List<String> gradleVersions ->

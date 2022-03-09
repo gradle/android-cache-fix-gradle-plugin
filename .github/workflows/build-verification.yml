@@ -15,11 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: generateTestTasksJson
       - id: setup-matrix
-        run: echo "::set-output name=matrix::$(cat build/build-resources/androidTestTasks.json)"
+        run: echo "::set-output name=matrix::$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')"
       - name: debug
         run: echo ${{ steps.setup-matrix.outputs.matrix }}
     outputs:
@@ -45,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        androidTestTask: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
+        versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v2
       # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
@@ -59,4 +56,4 @@ jobs:
           distribution: 'adopt'
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: ${{ matrix.androidTestTask }} -x signArchives
+          arguments: testAndroid${{ matrix.versions }} -x signArchives

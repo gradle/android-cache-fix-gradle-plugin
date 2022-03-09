@@ -1,5 +1,4 @@
-import groovy.json.JsonBuilder
-import org.gradle.util.VersionNumber
+import groovy.json.JsonSlurper
 
 plugins {
     id 'groovy'
@@ -16,13 +15,6 @@ group = "org.gradle.android"
 version = layout.projectDirectory.file("release/version.txt").asFile.text.trim()
 
 def isCI = (System.getenv('CI') ?: 'false').toBoolean()
-
-// Maps supported Android plugin versions to the versions of Gradle that support it
-def supportedVersions = [
-    "7.2.0-beta03": ["7.3.3"],
-    "7.1.2": ["7.3.3"],
-    "7.0.4": ["7.3.3"],
-]
 
 repositories {
     google()
@@ -69,27 +61,6 @@ tasks.named('compileGroovy').configure {
     groovyClasspath = configurations.groovyClasspath
 }
 
-// Generate a json file that contains the matrix of Gradle and AGP versions to test against.
-def generatedResources = "$buildDir/generated-resources/main"
-tasks.register('generateVersions') {
-    def outputFile = file("$generatedResources/versions.json")
-    inputs.property "version", version
-    inputs.property "supportedVersions", supportedVersions
-    outputs.dir generatedResources
-    doLast {
-        outputFile.text = new JsonBuilder([
-            version: version,
-            supportedVersions: supportedVersions
-        ]).toPrettyString()
-    }
-}
-
-sourceSets {
-    main {
-        output.dir(generatedResources, builtBy: tasks.named('generateVersions'))
-    }
-}
-
 // Main plugin publishing metadata
 gradlePlugin {
     plugins {
@@ -130,24 +101,12 @@ publishing {
     }
 }
 
-// This is used by github actions to split out jobs by Android version test task
-def generatedBuildResources = "$buildDir/build-resources"
-tasks.register('generateTestTasksJson') {
-    def outputFile = file("${generatedBuildResources}/androidTestTasks.json")
-    inputs.property "supportedVersions", supportedVersions
-    outputs.dir generatedBuildResources
-    doLast {
-        outputFile.text = new JsonBuilder(
-            ['test'] + (supportedVersions.keySet().collect {androidVersion -> androidTestTaskName(androidVersion) })
-        ).toString()
-    }
-}
-
 // Configuration common to all test tasks
 tasks.withType(Test).configureEach {
     dependsOn publish
     workingDir projectDir
     systemProperty "local.repo", projectDir.toPath().relativize(localRepo.toPath()).toString()
+    systemProperty "org.gradle.android.cache-fix.version", version
     useJUnitPlatform()
     retry {
         maxRetries = isCI ? 1 : 0
@@ -156,6 +115,7 @@ tasks.withType(Test).configureEach {
 }
 
 // Generate a test task for each Android version and run the tests annotated with the MultiVersionTest category
+def supportedVersions = new JsonSlurper().parse(file('src/main/resources/versions.json')).supportedVersions
 supportedVersions.keySet().each { androidVersion ->
     def versionSpecificTest = tasks.register(androidTestTaskName(androidVersion), Test) {
         description = "Runs the multi-version tests for AGP ${androidVersion}"

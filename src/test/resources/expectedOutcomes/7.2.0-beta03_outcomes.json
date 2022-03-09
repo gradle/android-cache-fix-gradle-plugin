@@ -2,7 +2,6 @@
     ":app:assemble"                                      :  "SUCCESS",
     ":app:assembleDebug"                                 :  "SUCCESS",
     ":app:assembleRelease"                               :  "SUCCESS",
-    ":app:buildKotlinToolingMetadata"                    :  "SUCCESS",
     ":app:checkDebugAarMetadata"                         :  "SUCCESS",
     ":app:checkDebugDuplicateClasses"                    :  "SUCCESS",
     ":app:checkReleaseAarMetadata"                       :  "SUCCESS",

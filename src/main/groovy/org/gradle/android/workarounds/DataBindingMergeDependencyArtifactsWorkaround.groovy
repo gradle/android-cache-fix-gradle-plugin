@@ -4,6 +4,7 @@ import com.android.build.gradle.internal.tasks.databinding.DataBindingMergeDepen
 import groovy.transform.CompileStatic
 import org.gradle.android.AndroidIssue
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 /**
  * Disables caching of the DataBindingMergeDependencyArtifactsTask task which is mostly disk bound and
@@ -16,8 +17,8 @@ class DataBindingMergeDependencyArtifactsWorkaround implements Workaround {
 
     @Override
     void apply(WorkaroundContext context) {
-        context.project.tasks.withType(DataBindingMergeDependencyArtifactsTask).configureEach {
-            it.outputs.doNotCacheIf("Caching DataBindingMergeDependencyArtifacts is unlikely to provide positive performance results.", { true })
+        context.project.tasks.withType(DataBindingMergeDependencyArtifactsTask).configureEach { Task task ->
+            task.outputs.doNotCacheIf("Caching DataBindingMergeDependencyArtifacts is unlikely to provide positive performance results.", { true })
         }
     }
 

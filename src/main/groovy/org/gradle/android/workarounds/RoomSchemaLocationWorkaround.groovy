@@ -150,12 +150,12 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
                 task.doFirst onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
                     // Populate the variant-specific schemas dir with the existing schemas
-                    copyExistingSchemasToTaskSpecificTmpDirForKapt(fileOperations, roomExtension.schemaLocationDir, provider)
+                    RoomSchemaLocationWorkaround.copyExistingSchemasToTaskSpecificTmpDirForKapt(fileOperations, roomExtension.schemaLocationDir, provider)
                 }
 
                 task.doLast onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
                     // Copy the generated schemas into the registered output directory
-                    copyGeneratedSchemasToOutputDirForKapt(fileOperations, provider)
+                    RoomSchemaLocationWorkaround.copyGeneratedSchemasToOutputDirForKapt(fileOperations, provider)
                 }
 
                 task.finalizedBy onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }

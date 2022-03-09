@@ -32,7 +32,7 @@ dependencies {
     ]
 
     // Used for compiling the main classes
-    groovyClasspath 'org.codehaus.groovy:groovy-all:2.5.12'
+    groovyClasspath 'org.codehaus.groovy:groovy-all:3.0.10'
 
     compileOnly "com.android.tools.build:gradle:${versions.agp}"
     implementation("com.google.guava:guava:31.1-jre")

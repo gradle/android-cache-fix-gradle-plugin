@@ -1,5 +1,6 @@
 package org.gradle.android.workarounds
 
+import groovy.transform.CompileStatic
 import org.gradle.android.AndroidIssue
 import org.gradle.android.Warnings
 import org.gradle.api.Project
@@ -9,6 +10,7 @@ import org.gradle.api.Project
  * with 7.0.0-alpha09.
  */
 @AndroidIssue(introducedIn = "7.0.0-alpha09", fixedIn = [], link = "https://issuetracker.google.com/issues/155218379")
+@CompileStatic
 class CompileLibraryResourcesWorkaround implements Workaround {
     public static final String ENABLE_SOURCE_SET_PATHS_MAP = "android.experimental.enableSourceSetPathsMap"
     public static final String CACHE_COMPILE_LIB_RESOURCES = "android.experimental.cacheCompileLibResources"

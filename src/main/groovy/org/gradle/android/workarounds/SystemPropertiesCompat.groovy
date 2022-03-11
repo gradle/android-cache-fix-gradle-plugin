@@ -1,9 +1,11 @@
 package org.gradle.android.workarounds
 
+import groovy.transform.CompileStatic
 import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.util.GradleVersion
 
+@CompileStatic
 class SystemPropertiesCompat {
 
     /**

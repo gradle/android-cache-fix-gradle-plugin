@@ -21,18 +21,11 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    groovyClasspath
-}
-
 dependencies {
     def versions = [
         'agp': '7.0.4',
-        'spock': '2.0-M5-groovy-3.0'
+        'spock': '2.2-M1-groovy-3.0'
     ]
-
-    // Used for compiling the main classes
-    groovyClasspath 'org.codehaus.groovy:groovy-all:3.0.10'
 
     compileOnly "com.android.tools.build:gradle:${versions.agp}"
     implementation("com.google.guava:guava:31.1-jre")
@@ -52,13 +45,6 @@ java {
         // AGP 7+ only supports JDK 11+
         languageVersion = JavaLanguageVersion.of(11)
     }
-}
-
-// We do this only for the the main source set as the test source set needs to use
-// Groovy 3 for Spock 2.0 compatibility.  The main classes need to be compiled with
-// Groovy 2 so that they will work with older versions of Gradle.
-tasks.named('compileGroovy').configure {
-    groovyClasspath = configurations.groovyClasspath
 }
 
 // Main plugin publishing metadata

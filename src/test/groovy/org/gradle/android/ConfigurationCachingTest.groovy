@@ -22,7 +22,10 @@ class ConfigurationCachingTest extends AbstractTest {
                 .build()
 
         then:
-        !result.output.contains("problems were found storing the configuration cache")
+        // In Gradle 7.4 the build always uses the following words.
+        if (!result.output.contains("0 problems were found storing the configuration cache")) {
+            !result.output.contains("problems were found storing the configuration cache")
+        }
 
         when:
         result = withGradleVersion(TestVersions.latestGradleVersion().version)

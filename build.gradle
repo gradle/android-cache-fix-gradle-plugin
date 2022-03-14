@@ -27,10 +27,10 @@ dependencies {
         'spock': '2.2-M1-groovy-3.0'
     ]
 
+    compileOnly gradleApi()
     compileOnly "com.android.tools.build:gradle:${versions.agp}"
     implementation("com.google.guava:guava:31.1-jre")
 
-    implementation gradleApi()
 
     testImplementation gradleTestKit()
     testImplementation "com.android.tools.build:gradle:${versions.agp}"

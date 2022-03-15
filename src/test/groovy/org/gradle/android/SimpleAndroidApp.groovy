@@ -7,7 +7,7 @@ import java.nio.file.Paths
 import static org.gradle.android.Versions.android
 
 class SimpleAndroidApp {
-    public static final ROOM_LIBRARY_VERSION = "2.2.5"
+    public static final ROOM_LIBRARY_VERSION = "2.4.1"
     public static final String PLUGIN_VERSION_SYSTEM_PROPERTY = 'org.gradle.android.cache-fix.version'
     final File projectDir
     private final File cacheDir
@@ -87,7 +87,8 @@ class SimpleAndroidApp {
                     <application android:label="@string/app_name" >
                         <activity
                             android:name=".${appActivity}"
-                            android:label="@string/app_name" >
+                            android:label="@string/app_name" 
+                            android:exported="false">
                             <intent-filter>
                                 <action android:name="android.intent.action.MAIN" />
                                 <category android:name="android.intent.category.LAUNCHER" />
@@ -156,12 +157,11 @@ class SimpleAndroidApp {
 
             android {
                 ndkVersion "20.0.5594570"
-                compileSdkVersion 28
-                buildToolsVersion "29.0.3"
+                compileSdkVersion 32
                 dataBinding.enabled = $dataBindingEnabled
                 defaultConfig {
                     minSdkVersion 28
-                    targetSdkVersion 28
+                    targetSdkVersion 32
 
                     ${roomAnnotationProcessorArgumentIfEnabled}
 

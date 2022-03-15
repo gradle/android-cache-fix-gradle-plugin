@@ -6,6 +6,7 @@ import org.gradle.util.VersionNumber
 @MultiVersionTest
 class ConfigurationCachingTest extends AbstractTest {
     private static final VersionNumber SUPPORTED_KOTLIN_VERSION = TestVersions.latestSupportedKotlinVersion()
+    static final String CC_PROBLEMS_FOUND = "problems were found storing the configuration cache"
 
     def "plugin is compatible with configuration cache"() {
         given:
@@ -22,7 +23,7 @@ class ConfigurationCachingTest extends AbstractTest {
                 .build()
 
         then:
-        !result.output.contains("problems were found storing the configuration cache")
+        assertNoConfigCacheProblemsFound(result)
 
         when:
         result = withGradleVersion(TestVersions.latestGradleVersion().version)
@@ -36,5 +37,9 @@ class ConfigurationCachingTest extends AbstractTest {
 
     void assertConfigurationCacheIsReused(BuildResult result) {
         assert result.output.contains('Reusing configuration cache.')
+    }
+
+    void assertNoConfigCacheProblemsFound(BuildResult result) {
+        assert !result.output.contains(CC_PROBLEMS_FOUND) || result.output.contains("0 ${CC_PROBLEMS_FOUND}")
     }
 }

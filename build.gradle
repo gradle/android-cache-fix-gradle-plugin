@@ -11,7 +11,8 @@ plugins {
     id 'com.github.breadmoirai.github-release' version '2.2.12'
 }
 
-group = "org.gradle.android"
+group = 'org.gradle.android'
+def artifactId = 'android-cache-fix-gradle-plugin'
 version = layout.projectDirectory.file("release/version.txt").asFile.text.trim()
 
 def isCI = (System.getenv('CI') ?: 'false').toBoolean()
@@ -49,6 +50,8 @@ java {
 
 // Main plugin publishing metadata
 gradlePlugin {
+    automatedPublishing = false
+
     plugins {
         androidCacheFixPlugin {
             id = 'org.gradle.android.cache-fix'
@@ -68,10 +71,9 @@ pluginBundle {
 
     // The legacy groupId gradle.plugin.* is only allowed when the plugin
     // has already been published
-    if (isProdPortal) {
-        mavenCoordinates {
-            groupId = "gradle.plugin.org.gradle.android"
-        }
+    mavenCoordinates {
+        groupId = isProdPortal ? 'gradle.plugin.org.gradle.android' : group
+        artifactId = artifactId
     }
 }
 
@@ -80,6 +82,18 @@ pluginBundle {
 // in the TestKit plugin classpath.
 def localRepo = file("$buildDir/local-repo")
 publishing {
+    // Since for now we need to set `gradlePlugin { automatedPublishing = false ... }`, we have to create manually
+    // the Maven publication. This can be removed once a new `plugin-publish` version supports automatically
+    // publishing signatures
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = artifactId
+            version = version
+
+            from components.java
+        }
+    }
     repositories {
         maven {
             url = localRepo.toURI()

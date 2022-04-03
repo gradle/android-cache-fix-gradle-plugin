@@ -34,6 +34,6 @@ jobs:
       - name: Upgrade Wrappers
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: 'upgradeGradleWrapperAll --continue'
+          arguments: 'clean upgradeGradleWrapperAll --continue'
         env:
           WRAPPER_UPGRADE_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}

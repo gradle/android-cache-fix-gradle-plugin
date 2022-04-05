@@ -38,11 +38,6 @@ class SimpleAndroidApp {
         def libPackage = 'org.gradle.android.example.library'
         def libraryActivity = 'LibraryActivity'
 
-        def pluginVersion = System.getProperty(PLUGIN_VERSION_SYSTEM_PROPERTY)
-        if (pluginVersion == null) {
-            throw new IllegalStateException("The '${PLUGIN_VERSION_SYSTEM_PROPERTY}' system property must be set in order to apply the plugin under test!")
-        }
-
         file("settings.gradle") << """
                 buildCache {
                     local {
@@ -50,8 +45,6 @@ class SimpleAndroidApp {
                     }
                 }
             """.stripIndent()
-
-        def localRepo = Paths.get(System.getProperty("local.repo")).toUri()
 
         file("build.gradle") << """
                 buildscript {
@@ -87,7 +80,7 @@ class SimpleAndroidApp {
                     <application android:label="@string/app_name" >
                         <activity
                             android:name=".${appActivity}"
-                            android:label="@string/app_name" 
+                            android:label="@string/app_name"
                             android:exported="false">
                             <intent-filter>
                                 <action android:name="android.intent.action.MAIN" />
@@ -131,6 +124,18 @@ class SimpleAndroidApp {
             """.stripIndent()
 
         configureAndroidSdkHome()
+    }
+
+    static String getPluginVersion() {
+        def pluginVersion = System.getProperty(PLUGIN_VERSION_SYSTEM_PROPERTY)
+        if (pluginVersion == null) {
+            throw new IllegalStateException("The '${PLUGIN_VERSION_SYSTEM_PROPERTY}' system property must be set in order to apply the plugin under test!")
+        }
+        return pluginVersion
+    }
+
+    static String getLocalRepo() {
+        return Paths.get(System.getProperty("local.repo")).toUri()
     }
 
     private String getKotlinPluginDependencyIfEnabled() {

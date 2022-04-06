@@ -21,7 +21,7 @@ class CompileLibraryResourcesWorkaround implements Workaround {
         boolean cacheCompileLibResources = Boolean.valueOf(context.project.findProperty(CACHE_COMPILE_LIB_RESOURCES) as String)
 
         if (!(enableSourceSetPathsMap && cacheCompileLibResources)) {
-            Warnings.USE_COMPILE_LIBRARY_RESOURCES_EXPERIMENTAL.warnOnce(context.project.logger)
+            Warnings.USE_COMPILE_LIBRARY_RESOURCES_EXPERIMENTAL.warnOnce(context.project)
         }
     }
 

@@ -50,7 +50,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run unit tests
-        run: ./gradlew test
+        run: ./gradlew test -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
 
   android_version_tests:
     name: Android version tests
@@ -91,4 +91,4 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Build and test
-        run: ./gradlew testAndroid${{ matrix.versions }} -x signArchives
+        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication

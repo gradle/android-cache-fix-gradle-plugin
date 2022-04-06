@@ -9,6 +9,7 @@ import static org.gradle.android.Versions.android
 class SimpleAndroidApp {
     public static final ROOM_LIBRARY_VERSION = "2.4.1"
     public static final String PLUGIN_VERSION_SYSTEM_PROPERTY = 'org.gradle.android.cache-fix.version'
+    private static final String PLUGIN_GROUP_ID_SYSTEM_PROPERTY = "pluginGroupId"
     final File projectDir
     private final File cacheDir
     final VersionNumber androidVersion
@@ -61,7 +62,7 @@ class SimpleAndroidApp {
                     }
                     dependencies {
                         classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
-                        classpath "org.gradle.android:android-cache-fix-gradle-plugin:${pluginVersion}"
+                        classpath "${pluginGroupId}:android-cache-fix-gradle-plugin:${pluginVersion}"
                         ${kotlinPluginDependencyIfEnabled}
                     }
                 }
@@ -136,6 +137,10 @@ class SimpleAndroidApp {
             throw new IllegalStateException("The '${PLUGIN_VERSION_SYSTEM_PROPERTY}' system property must be set in order to apply the plugin under test!")
         }
         return pluginVersion
+    }
+
+    static String getPluginGroupId() {
+        return System.getProperty(PLUGIN_GROUP_ID_SYSTEM_PROPERTY)
     }
 
     static String getLocalRepo() {

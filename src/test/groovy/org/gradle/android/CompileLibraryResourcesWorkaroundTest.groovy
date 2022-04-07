@@ -2,6 +2,7 @@ package org.gradle.android
 
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
 import org.junit.Assume
+import spock.lang.Issue
 
 @MultiVersionTest
 class CompileLibraryResourcesWorkaroundTest extends AbstractTest {
@@ -79,6 +80,56 @@ class CompileLibraryResourcesWorkaroundTest extends AbstractTest {
             .withArguments(
                 "-P${CompileLibraryResourcesWorkaround.ENABLE_SOURCE_SET_PATHS_MAP}=false",
                 "-P${CompileLibraryResourcesWorkaround.CACHE_COMPILE_LIB_RESOURCES}=false",
+                'assembleDebug'
+            )
+            .build()
+
+        then:
+        result.output.count(warningForAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK().toString())) == 0
+    }
+
+    @Issue("https://github.com/gradle/android-cache-fix-gradle-plugin/issues/234")
+    def "does not warn about experimental flags when applied from a kotlin script plugin"() {
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())
+            .withKotlinDisabled()
+            .build()
+            .writeProject()
+
+        file('buildSrc/src/main/kotlin').mkdirs()
+        file('buildSrc/build.gradle.kts') << """
+            plugins {
+              `kotlin-dsl`
+            }
+
+            repositories {
+                google()
+                mavenCentral()
+                maven {
+                    url = uri("${SimpleAndroidApp.localRepo}")
+                }
+            }
+
+            dependencies {
+                implementation("org.gradle.android:android-cache-fix-gradle-plugin:${SimpleAndroidApp.pluginVersion}")
+                implementation("com.android.tools.build:gradle:${TestVersions.latestAndroidVersionForCurrentJDK().toString()}")
+            }
+        """
+        file('buildSrc/src/main/kotlin/script-plugin.gradle.kts') << """
+            plugins {
+                id("org.gradle.android.cache-fix")
+            }
+        """
+        file('app/build.gradle') << """
+            apply plugin: "script-plugin"
+        """
+
+        when:
+        def result = withGradleVersion(TestVersions.latestGradleVersion().version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "-P${CompileLibraryResourcesWorkaround.ENABLE_SOURCE_SET_PATHS_MAP}=true",
+                "-P${CompileLibraryResourcesWorkaround.CACHE_COMPILE_LIB_RESOURCES}=true",
                 'assembleDebug'
             )
             .build()

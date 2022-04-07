@@ -2,6 +2,7 @@ package org.gradle.android
 
 import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
+import org.gradle.api.Project
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -17,9 +18,9 @@ enum Warnings {
         this.warning = warning
     }
 
-    void warnOnce(org.gradle.api.logging.Logger logger) {
-        if (!warned.getAndSet(true)) {
-            logger.warn(warning)
+    void warnOnce(Project project) {
+        if (isNotKotlinDslAccessors(project) && !warned.getAndSet(true)) {
+            project.logger.warn(warning)
         }
     }
 
@@ -29,5 +30,9 @@ enum Warnings {
 
     static void resetAll() {
         values().each {it.reset() }
+    }
+
+    static boolean isNotKotlinDslAccessors(Project project) {
+        return project.rootProject.name != "gradle-kotlin-dsl-accessors"
     }
 }

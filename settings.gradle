@@ -3,8 +3,6 @@ plugins {
     id 'com.gradle.common-custom-user-data-gradle-plugin' version '1.6.5'
 }
 
-rootProject.name = 'android-cache-fix-gradle-plugin'
-
 def isCI = System.getenv('GITHUB_ACTIONS') != null
 
 gradleEnterprise {
@@ -33,3 +31,6 @@ buildCache {
         push = isCI
     }
 }
+
+rootProject.name = 'android-cache-fix-gradle-plugin'
+

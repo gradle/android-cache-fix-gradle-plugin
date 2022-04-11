@@ -9,7 +9,6 @@ import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
 import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.DataBindingMergeDependencyArtifactsWorkaround
 import org.gradle.android.workarounds.LibraryJniLibsWorkaround
-import org.gradle.android.workarounds.MergeJavaResourcesWorkaround
 import org.gradle.android.workarounds.MergeNativeLibsWorkaround
 
 import org.gradle.android.workarounds.MergeSourceSetFoldersWorkaround
@@ -39,7 +38,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         // error instead of a ClassDefNotFound.
         if (isMaybeSupportedAndroidVersion(project)) {
             return Arrays.<Workaround>asList(
-                new MergeJavaResourcesWorkaround(),
                 new MergeNativeLibsWorkaround(),
                 new MergeSourceSetFoldersWorkaround(),
                 new RoomSchemaLocationWorkaround(),

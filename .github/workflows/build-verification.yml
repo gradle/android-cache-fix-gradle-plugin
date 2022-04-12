@@ -33,9 +33,10 @@ jobs:
         with:
           java-version: 11
           distribution: 'adopt'
-      - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: sanityCheck
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Run sanityCheck
+        run: ./gradlew sanityCheck
 
   android_version_tests:
     name: Android version tests
@@ -52,10 +53,12 @@ jobs:
         run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
       - name: List Android Packages
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
-      - uses: actions/setup-java@v2
+      - name: Set up Java
+        uses: actions/setup-java@v2
         with:
           java-version: 11
           distribution: 'adopt'
-      - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: testAndroid${{ matrix.versions }} -x signArchives
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Build and test
+        run: ./gradlew testAndroid${{ matrix.versions }} -x signArchives

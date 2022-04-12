@@ -31,9 +31,9 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-      - name: Upgrade Wrappers
+      - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
-        with:
-          arguments: 'clean upgradeGradleWrapperAll --continue'
+      - name: Upgrade Wrappers
+        run: ./gradlew clean upgradeGradleWrapperAll --continue
         env:
           WRAPPER_UPGRADE_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}

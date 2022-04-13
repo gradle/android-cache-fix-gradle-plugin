@@ -12,9 +12,9 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "7.3.0-alpha07" | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources']
-        "7.2.0-beta04" | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources']
-        "7.1.3"  | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources']
-        "7.0.4"         | ['ZipMergingTask', 'LibraryJniLibs', 'DataBindingMergeDependencyArtifacts', 'BundleLibraryClasses', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'MergeNativeLibs', 'CompileLibraryResources']
+        "7.3.0-alpha08" | ['CompileLibraryResources', 'MergeNativeLibs', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask']
+        "7.2.0-beta04"  | ['CompileLibraryResources', 'MergeNativeLibs', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask']
+        "7.1.3"         | ['BundleLibraryClasses', 'CompileLibraryResources', 'DataBindingMergeDependencyArtifacts', 'LibraryJniLibs', 'MergeNativeLibs', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'ZipMergingTask']
+        "7.0.4"         | ['BundleLibraryClasses', 'CompileLibraryResources', 'DataBindingMergeDependencyArtifacts', 'LibraryJniLibs', 'MergeNativeLibs', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'ZipMergingTask']
     }
 }

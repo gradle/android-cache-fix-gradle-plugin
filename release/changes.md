@@ -1,3 +1,3 @@
-* Remove cache disabling fixes for tasks marked as non-cacheable.
-* Support latest versions of AGP
-* Fix for false positive warning in kotlin-dsl-accessors build.
+* Remove workarounds for tasks already marked as non-cacheable.
+* Support latest versions of AGP.
+* Fix for false positive warnings in kotlin-dsl-accessors build.

@@ -19,7 +19,6 @@ import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.android.workarounds.ZipMergingTaskWorkaround
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -74,13 +73,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
         }
 
-        if (GradleVersion.current() >= GradleVersion.version('6.1')) {
-            project.gradle.sharedServices.registerIfAbsent("warnings", WarningsService.class) {}.get()
-        } else {
-            project.gradle.buildFinished {
-                Warnings.resetAll()
-            }
-        }
+        project.gradle.sharedServices.registerIfAbsent("warnings", WarningsService.class) {}.get()
     }
 
     static List<Workaround> getWorkaroundsToApply(

@@ -53,9 +53,6 @@ class TestVersions {
     }
 
     static VersionNumber latestKotlinVersionForGradleVersion(GradleVersion gradleVersion) {
-        if (gradleVersion < GradleVersion.version("6.1")) {
-            return oldestSupportedKotlinVersion()
-        }
         return latestSupportedKotlinVersion()
     }
 }

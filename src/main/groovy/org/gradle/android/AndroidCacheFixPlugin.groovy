@@ -6,7 +6,6 @@ import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.BundleLibraryClassesWorkaround
 
 import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
-import org.gradle.android.workarounds.CompilerArgsProcessor
 import org.gradle.android.workarounds.DataBindingMergeDependencyArtifactsWorkaround
 import org.gradle.android.workarounds.LibraryJniLibsWorkaround
 import org.gradle.android.workarounds.MergeNativeLibsWorkaround
@@ -15,7 +14,6 @@ import org.gradle.android.workarounds.MergeSourceSetFoldersWorkaround
 import org.gradle.android.workarounds.StripDebugSymbolsWorkaround
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.android.workarounds.Workaround
-import org.gradle.android.workarounds.WorkaroundContext
 import org.gradle.android.workarounds.ZipMergingTaskWorkaround
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -63,12 +61,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             }
         }
 
-        def context = new WorkaroundContext(project, new CompilerArgsProcessor(project))
-
         def appliedWorkarounds = []
         getWorkaroundsToApply(CURRENT_ANDROID_VERSION, project, workarounds).each { Workaround workaround ->
             LOGGER.debug("Applying Android workaround {} to {}", workaround.getClass().simpleName, project)
-            workaround.apply(context)
+            workaround.apply(project)
             appliedWorkarounds += workaround.getClass().simpleName - "Workaround"
         }
 

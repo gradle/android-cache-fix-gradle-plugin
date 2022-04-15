@@ -17,8 +17,8 @@ class ZipMergingTaskWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.ZipMergingTask.caching.enabled"
 
     @Override
-    void apply(WorkaroundContext context) {
-        context.project.tasks.withType(ZipMergingTask).configureEach { Task task ->
+    void apply(Project project) {
+        project.tasks.withType(ZipMergingTask).configureEach { Task task ->
             task.outputs.doNotCacheIf("Caching ZipMergingTask is unlikely to provide positive performance results.", { true })
         }
     }

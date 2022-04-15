@@ -8,6 +8,6 @@ import org.gradle.api.Project
  */
 @CompileStatic
 interface Workaround {
-    void apply(WorkaroundContext context)
+    void apply(Project project)
     boolean canBeApplied(Project project)
 }

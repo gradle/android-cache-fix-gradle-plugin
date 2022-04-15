@@ -66,9 +66,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     @Override
-    void apply(WorkaroundContext context) {
-        def project = context.project
-
+    void apply(Project project) {
         // Project extension to hold all of the Room configuration
         def roomExtension = project.extensions.create("room", RoomExtension)
 

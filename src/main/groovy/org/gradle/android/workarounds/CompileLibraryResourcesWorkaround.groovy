@@ -16,12 +16,12 @@ class CompileLibraryResourcesWorkaround implements Workaround {
     public static final String CACHE_COMPILE_LIB_RESOURCES = "android.experimental.cacheCompileLibResources"
 
     @Override
-    void apply(WorkaroundContext context) {
-        boolean enableSourceSetPathsMap = Boolean.valueOf(context.project.findProperty(ENABLE_SOURCE_SET_PATHS_MAP) as String)
-        boolean cacheCompileLibResources = Boolean.valueOf(context.project.findProperty(CACHE_COMPILE_LIB_RESOURCES) as String)
+    void apply(Project project) {
+        boolean enableSourceSetPathsMap = Boolean.valueOf(project.findProperty(ENABLE_SOURCE_SET_PATHS_MAP) as String)
+        boolean cacheCompileLibResources = Boolean.valueOf(project.findProperty(CACHE_COMPILE_LIB_RESOURCES) as String)
 
         if (!(enableSourceSetPathsMap && cacheCompileLibResources)) {
-            Warnings.USE_COMPILE_LIBRARY_RESOURCES_EXPERIMENTAL.warnOnce(context.project)
+            Warnings.USE_COMPILE_LIBRARY_RESOURCES_EXPERIMENTAL.warnOnce(project)
         }
     }
 

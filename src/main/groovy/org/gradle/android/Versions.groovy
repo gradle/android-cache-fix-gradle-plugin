@@ -10,7 +10,6 @@ import groovy.transform.TypeCheckingMode
 import org.gradle.android.workarounds.SystemPropertiesCompat
 import org.gradle.api.Project
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 
 @CompileStatic(TypeCheckingMode.SKIP)
 class Versions {

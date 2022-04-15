@@ -1,6 +1,5 @@
 package org.gradle.android
 
-import org.gradle.util.VersionNumber
 import spock.lang.Specification
 import spock.lang.Unroll
 

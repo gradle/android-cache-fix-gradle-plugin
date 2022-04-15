@@ -3,8 +3,6 @@ package org.gradle.android
 import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.Multimap
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
-
 
 class TestVersions {
     static Multimap<VersionNumber, GradleVersion> getAllCandidateTestVersions() {

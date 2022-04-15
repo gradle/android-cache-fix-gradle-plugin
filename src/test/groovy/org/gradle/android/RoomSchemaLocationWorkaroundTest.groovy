@@ -3,7 +3,6 @@ package org.gradle.android
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
-import org.gradle.util.VersionNumber
 import org.junit.Assume
 import spock.lang.Unroll
 

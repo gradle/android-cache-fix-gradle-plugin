@@ -1,7 +1,6 @@
 package org.gradle.android
 
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.util.VersionNumber
 
 @MultiVersionTest
 class ConfigurationCachingTest extends AbstractTest {

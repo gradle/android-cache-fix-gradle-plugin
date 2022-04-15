@@ -1,7 +1,5 @@
 package org.gradle.android
 
-import org.gradle.util.VersionNumber
-
 import java.nio.file.Paths
 
 import static org.gradle.android.Versions.android

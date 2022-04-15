@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap
 import groovy.json.JsonSlurper
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 import spock.lang.Unroll
 
 import static org.gradle.android.TestVersions.latestKotlinVersionForGradleVersion

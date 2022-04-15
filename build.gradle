@@ -81,7 +81,7 @@ pluginBundle {
     // The legacy groupId gradle.plugin.* is only allowed when the plugin
     // has already been published
     mavenCoordinates {
-        groupId = isProdPortal ? 'gradle.plugin.org.gradle.android' : group
+        groupId = isProdPortal ? 'gradle.plugin.org.gradle.android' : project.group
         artifactId = artifactId
     }
 }
@@ -96,7 +96,7 @@ publishing {
     // publishing signatures
     publications {
         maven(MavenPublication) {
-            groupId = group
+            groupId = project.group
             artifactId = artifactId
             version = version
 

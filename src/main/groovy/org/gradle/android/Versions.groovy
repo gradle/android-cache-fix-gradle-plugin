@@ -1,6 +1,6 @@
 package org.gradle.android
 
-import com.android.builder.model.Version
+import com.android.Version
 import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.ImmutableSortedSet
 import com.google.common.collect.Multimap

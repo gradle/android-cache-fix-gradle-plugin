@@ -6,9 +6,9 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'codenarc'
-    id "com.gradle.plugin-publish" version "0.21.0"
-    id "org.gradle.test-retry" version "1.3.2"
-    id 'com.github.breadmoirai.github-release' version '2.2.12'
+    id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'org.gradle.test-retry' version '1.3.2'
+    id 'com.github.breadmoirai.github-release' version '2.3.7'
     id 'org.gradle.wrapper-upgrade' version '0.10.1'
 }
 

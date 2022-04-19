@@ -6,9 +6,9 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'codenarc'
-    id "com.gradle.plugin-publish" version "0.21.0"
-    id "org.gradle.test-retry" version "1.3.1"
-    id 'com.github.breadmoirai.github-release' version '2.2.12'
+    id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'org.gradle.test-retry' version '1.3.2'
+    id 'com.github.breadmoirai.github-release' version '2.3.7'
     id 'org.gradle.wrapper-upgrade' version '0.10.1'
 }
 
@@ -81,7 +81,7 @@ pluginBundle {
     // The legacy groupId gradle.plugin.* is only allowed when the plugin
     // has already been published
     mavenCoordinates {
-        groupId = isProdPortal ? 'gradle.plugin.org.gradle.android' : group
+        groupId = isProdPortal ? 'gradle.plugin.org.gradle.android' : project.group
         artifactId = artifactId
     }
 }
@@ -96,7 +96,7 @@ publishing {
     // publishing signatures
     publications {
         maven(MavenPublication) {
-            groupId = group
+            groupId = project.group
             artifactId = artifactId
             version = version
 

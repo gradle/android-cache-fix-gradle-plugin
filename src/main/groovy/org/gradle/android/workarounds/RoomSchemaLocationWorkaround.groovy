@@ -119,7 +119,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 // Seed the task-specific generated schema dir with the existing schemas
                 task.doFirst {
                     if (javaCompileSchemaGenerationEnabled) {
-                        copyExistingSchemasToTaskSpecificTmpDir(fileOperations, roomExtension.schemaLocationDir, taskSpecificSchemaDir)
+                        RoomSchemaLocationWorkaround.copyExistingSchemasToTaskSpecificTmpDir(fileOperations, roomExtension.schemaLocationDir, taskSpecificSchemaDir)
                     }
                 }
 

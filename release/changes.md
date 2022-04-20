@@ -1,0 +1,1 @@
+* Remove MergeNativeLibsWorkaround in AGP 7.2.0-alpha06+ (FIX)

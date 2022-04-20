@@ -16,8 +16,8 @@ class MergeSourceSetFoldersWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.MergeSourceSetFolders.caching.enabled"
 
     @Override
-    void apply(WorkaroundContext context) {
-        context.project.tasks.withType(MergeSourceSetFolders).configureEach { Task task ->
+    void apply(Project project) {
+        project.tasks.withType(MergeSourceSetFolders).configureEach { Task task ->
             task.outputs.doNotCacheIf("Caching MergeSourceSetFolders is unlikely to provide positive performance results.", { true })
         }
     }

@@ -16,11 +16,11 @@ class BundleLibraryClassesWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.BundleLibraryClasses.caching.enabled"
 
     @Override
-    void apply(WorkaroundContext context) {
-        context.project.tasks.withType(BundleLibraryClassesJar).configureEach { BundleLibraryClassesJar task ->
+    void apply(Project project) {
+        project.tasks.withType(BundleLibraryClassesJar).configureEach { BundleLibraryClassesJar task ->
             task.outputs.doNotCacheIf("Caching BundleLibraryClassesJar is unlikely to provide positive performance results.", { true })
         }
-        context.project.tasks.withType(BundleLibraryClassesDir).configureEach { BundleLibraryClassesDir task ->
+        project.tasks.withType(BundleLibraryClassesDir).configureEach { BundleLibraryClassesDir task ->
             task.outputs.doNotCacheIf("Caching BundleLibraryClassesDir is unlikely to provide positive performance results.", { true })
         }
     }

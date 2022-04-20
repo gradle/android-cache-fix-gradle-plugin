@@ -3,8 +3,6 @@ package org.gradle.android
 import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.Multimap
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
-
 
 class TestVersions {
     static Multimap<VersionNumber, GradleVersion> getAllCandidateTestVersions() {
@@ -53,9 +51,6 @@ class TestVersions {
     }
 
     static VersionNumber latestKotlinVersionForGradleVersion(GradleVersion gradleVersion) {
-        if (gradleVersion < GradleVersion.version("6.1")) {
-            return oldestSupportedKotlinVersion()
-        }
         return latestSupportedKotlinVersion()
     }
 }

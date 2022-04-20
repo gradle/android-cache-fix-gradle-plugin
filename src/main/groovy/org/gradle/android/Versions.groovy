@@ -1,6 +1,6 @@
 package org.gradle.android
 
-import com.android.builder.model.Version
+import com.android.Version
 import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.ImmutableSortedSet
 import com.google.common.collect.Multimap
@@ -10,7 +10,6 @@ import groovy.transform.TypeCheckingMode
 import org.gradle.android.workarounds.SystemPropertiesCompat
 import org.gradle.api.Project
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 
 @CompileStatic(TypeCheckingMode.SKIP)
 class Versions {

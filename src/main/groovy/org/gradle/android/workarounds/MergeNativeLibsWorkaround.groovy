@@ -12,8 +12,8 @@ class MergeNativeLibsWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.MergeNativeLibs.caching.enabled"
 
     @Override
-    void apply(WorkaroundContext context) {
-        context.project.tasks.withType(MergeNativeLibsTask).configureEach { Task task ->
+    void apply(Project project) {
+        project.tasks.withType(MergeNativeLibsTask).configureEach { Task task ->
             task.outputs.doNotCacheIf("Caching MergeNativeLibs is unlikely to provide positive performance results.", {true })
         }
     }

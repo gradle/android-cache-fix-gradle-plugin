@@ -1,7 +1,6 @@
 package org.gradle.android
 
 import org.gradle.testkit.runner.TaskOutcome
-import org.gradle.util.VersionNumber
 import org.junit.Assume
 
 @MultiVersionTest

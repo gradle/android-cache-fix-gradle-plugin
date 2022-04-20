@@ -16,8 +16,8 @@ class StripDebugSymbolsWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.StripDebugSymbols.caching.enabled"
 
     @Override
-    void apply(WorkaroundContext context) {
-        context.project.tasks.withType(StripDebugSymbolsTask).configureEach { Task task ->
+    void apply(Project project) {
+        project.tasks.withType(StripDebugSymbolsTask).configureEach { Task task ->
             task.outputs.doNotCacheIf("Caching StripDebugSymbolsTask is unlikely to provide positive performance results.", { true })
         }
     }

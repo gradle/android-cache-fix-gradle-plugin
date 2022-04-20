@@ -1,6 +1,7 @@
 package org.gradle.android.workarounds
 
 import org.gradle.android.AndroidIssue
+import org.gradle.android.VersionNumber
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -19,7 +20,6 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.process.CommandLineArgumentProvider
-import org.gradle.util.VersionNumber
 import org.gradle.work.DisableCachingByDefault
 
 import javax.inject.Inject
@@ -66,9 +66,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
     }
 
     @Override
-    void apply(WorkaroundContext context) {
-        def project = context.project
-
+    void apply(Project project) {
         // Project extension to hold all of the Room configuration
         def roomExtension = project.extensions.create("room", RoomExtension)
 

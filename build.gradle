@@ -184,11 +184,11 @@ tasks.register('createReleaseTag', CreateGitTag) {
     tagName = gitReleaseTag()
 }
 
-tasks.named("githubRelease") {
+tasks.named("githubRelease").configure {
     dependsOn("createReleaseTag")
 }
 
-tasks.named('publishPlugins') {
+tasks.named('publishPlugins').configure {
     notCompatibleWithConfigurationCache("$name task does not support configuration caching")
 }
 

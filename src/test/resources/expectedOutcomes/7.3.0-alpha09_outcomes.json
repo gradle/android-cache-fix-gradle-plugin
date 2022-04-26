@@ -137,6 +137,8 @@
     ":library:dataBindingTriggerRelease"                 :  "SUCCESS",
     ":library:extractDebugAnnotations"                   :  "FROM_CACHE",
     ":library:extractDeepLinksDebug"                     :  "FROM_CACHE",
+    ":library:extractDeepLinksForAarDebug"               :  "FROM_CACHE",
+    ":library:extractDeepLinksForAarRelease"             :  "FROM_CACHE",
     ":library:extractDeepLinksRelease"                   :  "FROM_CACHE",
     ":library:extractReleaseAnnotations"                 :  "FROM_CACHE",
     ":library:generateDebugAssets"                       :  "UP_TO_DATE",

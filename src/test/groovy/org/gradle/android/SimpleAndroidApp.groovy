@@ -1,5 +1,7 @@
 package org.gradle.android
 
+import org.gradle.api.JavaVersion
+
 import java.nio.file.Paths
 
 import static org.gradle.android.Versions.android
@@ -15,8 +17,10 @@ class SimpleAndroidApp {
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
     private final RoomConfiguration roomConfiguration
+    private final String toolchainVersion
+    private final JavaVersion sourceCompatibility
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -25,6 +29,8 @@ class SimpleAndroidApp {
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
         this.roomConfiguration = roomConfiguration
+        this.toolchainVersion = toolchainVersion
+        this.sourceCompatibility = sourceCompatibility
     }
 
     def writeProject() {
@@ -162,6 +168,7 @@ class SimpleAndroidApp {
                 ndkVersion "20.0.5594570"
                 compileSdkVersion 32
                 dataBinding.enabled = $dataBindingEnabled
+                ${sourceCompatibilityIfEnabled}
                 defaultConfig {
                     minSdkVersion 28
                     targetSdkVersion 32
@@ -175,6 +182,8 @@ class SimpleAndroidApp {
             }
 
             ${roomExtensionIfEnabled}
+
+            ${toolchainConfigurationIfEnabled}
         """.stripIndent()
     }
 
@@ -221,6 +230,29 @@ class SimpleAndroidApp {
     private String getKaptRoomDependencyIfEnabled() {
         return (roomConfiguration != RoomConfiguration.NO_LIBRARY) ? """
             kapt "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
+        """ : ""
+    }
+
+    private String getToolchainConfigurationIfEnabled() {
+        return (toolchainVersion != null) ? """
+            java {
+                toolchain {
+                    languageVersion.set(JavaLanguageVersion.of(${toolchainVersion}))
+                }
+            }
+
+            tasks.withType(JavaCompile).configureEach {
+                javaCompiler = javaToolchains.compilerFor(java.toolchain)
+            }
+        """ : ""
+    }
+
+    private String getSourceCompatibilityIfEnabled() {
+        return (sourceCompatibility != null) ? """
+            compileOptions {
+                sourceCompatibility JavaVersion.${sourceCompatibility.name()}
+                targetCompatibility JavaVersion.${sourceCompatibility.name()}
+            }
         """ : ""
     }
 
@@ -473,6 +505,9 @@ class SimpleAndroidApp {
         VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         VersionNumber kotlinVersion = TestVersions.latestSupportedKotlinVersion()
 
+        String toolchainVersion
+        JavaVersion sourceCompatibility
+
         File projectDir
         File cacheDir
 
@@ -535,8 +570,18 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withToolchainVersion(String toolchainVersion) {
+            this.toolchainVersion = toolchainVersion
+            return this
+        }
+
+        Builder withSourceCompatibility(JavaVersion sourceCompatibility) {
+            this.sourceCompatibility = sourceCompatibility
+            return this
+        }
+
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility)
         }
     }
 }

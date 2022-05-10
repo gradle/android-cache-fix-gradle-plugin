@@ -9,7 +9,7 @@ import org.gradle.api.Project
  * Warns if the user is not using experimental support for relative path sensitivity that was added
  * with 7.0.0-alpha09.
  */
-@AndroidIssue(introducedIn = "7.0.0-alpha09", fixedIn = "7.2.0-beta01", link = "https://issuetracker.google.com/issues/155218379")
+@AndroidIssue(introducedIn = "7.0.0-alpha09", fixedIn = "7.2.0", link = "https://issuetracker.google.com/issues/155218379")
 @CompileStatic
 class CompileLibraryResourcesWorkaround implements Workaround {
     public static final String ENABLE_SOURCE_SET_PATHS_MAP = "android.experimental.enableSourceSetPathsMap"

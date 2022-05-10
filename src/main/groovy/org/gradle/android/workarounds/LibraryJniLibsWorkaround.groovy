@@ -10,7 +10,7 @@ import org.gradle.api.Task;
  * Disables caching of the LibraryJniLibsTask task which is mostly disk bound and
  * unlikely to provide positive performance benefits.
  */
-@AndroidIssue(introducedIn = "3.6.0", fixedIn = "7.2.0-alpha06", link = "https://issuetracker.google.com/issues/200002454")
+@AndroidIssue(introducedIn = "3.6.0", fixedIn = "7.2.0", link = "https://issuetracker.google.com/issues/200002454")
 @CompileStatic
 class LibraryJniLibsWorkaround implements Workaround {
 

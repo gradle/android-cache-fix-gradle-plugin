@@ -10,7 +10,7 @@ import org.gradle.api.Task
  * Disables caching of the StripDebugSymbols task which is mostly disk bound and unlikely to provide positive
  * performance benefits.
  */
-@AndroidIssue(introducedIn = "3.5.0", fixedIn = "7.2.0-alpha06", link = "https://issuetracker.google.com/issues/181143775")
+@AndroidIssue(introducedIn = "3.5.0", fixedIn = "7.2.0", link = "https://issuetracker.google.com/issues/181143775")
 @CompileStatic
 class StripDebugSymbolsWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.StripDebugSymbols.caching.enabled"

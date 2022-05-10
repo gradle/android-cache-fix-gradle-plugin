@@ -8,7 +8,7 @@ import spock.lang.Issue
 class CompileLibraryResourcesWorkaroundTest extends AbstractTest {
     def "warns when experimental flags are not provided"() {
         Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() >= Versions.android("7.0.0-alpha09"))
-        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() < Versions.android("7.2.0-beta01"))
+        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() < Versions.android("7.2.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())
@@ -45,7 +45,7 @@ class CompileLibraryResourcesWorkaroundTest extends AbstractTest {
 
     def "does not warn when experimental flags are provided"() {
         Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() >= Versions.android("7.0.0-alpha09"))
-        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() <= Versions.android("7.2.0-beta01"))
+        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() <= Versions.android("7.2.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())

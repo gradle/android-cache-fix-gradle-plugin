@@ -1,0 +1,1 @@
+* [FIX] - Support latest versions of AGP

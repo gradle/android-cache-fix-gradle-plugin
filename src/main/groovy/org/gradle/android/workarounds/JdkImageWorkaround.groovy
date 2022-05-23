@@ -2,6 +2,7 @@ package org.gradle.android.workarounds
 
 import org.gradle.android.AndroidIssue
 import org.gradle.api.Project
+import org.gradle.api.artifacts.transform.CacheableTransform
 import org.gradle.api.artifacts.transform.InputArtifact
 import org.gradle.api.artifacts.transform.TransformAction
 import org.gradle.api.artifacts.transform.TransformOutputs
@@ -119,6 +120,7 @@ class JdkImageWorkaround implements Workaround {
         }
     }
 
+    @CacheableTransform
     abstract static class ExtractJdkImageTransform implements TransformAction<Parameters> {
         interface Parameters extends TransformParameters {
             @Internal

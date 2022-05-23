@@ -133,9 +133,9 @@ supportedVersions.keySet().each { androidVersion ->
         group = "verification"
 
         systemProperty 'org.gradle.android.testVersion', androidVersion
-        systemProperty 'org.gradle.android.java_zulu_path', System.getenv('ZULU_JDK')
-        systemProperty 'org.gradle.android.java_zulu_alt_path', System.getenv('ZULU_ALT_JDK')
-        systemProperty 'org.gradle.android.java_temurin_path', System.getenv('TEMURIN_JDK')
+        systemProperty 'org.gradle.android.java_zulu_path', project.providers.environmentVariable('ZULU_JDK').get()
+        systemProperty 'org.gradle.android.java_zulu_alt_path', project.providers.environmentVariable('ZULU_ALT_JDK').get()
+        systemProperty 'org.gradle.android.java_temurin_path', project.providers.environmentVariable('TEMURIN_JDK').get()
     }
 
     tasks.named('check').configure {

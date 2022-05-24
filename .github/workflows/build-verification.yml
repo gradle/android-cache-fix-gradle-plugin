@@ -83,14 +83,6 @@ jobs:
       - name: Set ZULU_ALT_JDK environment variable
         run: |
           echo "ZULU_ALT_JDK=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Setup TEMURIN_JDK
-        uses: actions/setup-java@v2
-        with:
-          java-version: 11.0.13
-          distribution: 'temurin'
-      - name: Set TEMURIN_JDK environment variable
-        run: |
-          echo "TEMURIN_JDK=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up Java
         uses: actions/setup-java@v2
         with:

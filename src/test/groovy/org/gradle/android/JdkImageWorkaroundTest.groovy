@@ -124,7 +124,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
     }
 
     def "jdkImage is normalized across different vendors same JDK versions"() {
-        def zuluPath = System.getProperty(ZULU_PATH)
+        def zuluPath = System.getProperty(ZULU_ALT_PATH)
         def temurinPath = System.getProperty(TEMURIN_PATH)
         Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
         Assume.assumeTrue("Temurin path is not available", temurinPath != null && new File(temurinPath).exists())

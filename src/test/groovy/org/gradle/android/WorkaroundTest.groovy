@@ -13,7 +13,7 @@ class WorkaroundTest extends Specification {
         where:
         androidVersion  | expectedWorkarounds
         "7.3.0-alpha09" | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask', 'JdkImage']
-        "7.2.0"    | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask', 'JdkImage']
+        "7.2.1"    | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask', 'JdkImage']
         "7.1.3"         | ['BundleLibraryClasses', 'CompileLibraryResources', 'DataBindingMergeDependencyArtifacts', 'LibraryJniLibs', 'MergeNativeLibs', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'ZipMergingTask', 'JdkImage']
         "7.0.4"         | ['BundleLibraryClasses', 'CompileLibraryResources', 'DataBindingMergeDependencyArtifacts', 'LibraryJniLibs', 'MergeNativeLibs', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'ZipMergingTask']
     }

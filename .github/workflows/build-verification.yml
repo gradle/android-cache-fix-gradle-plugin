@@ -67,6 +67,22 @@ jobs:
         run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
       - name: List Android Packages
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
+      - name: Setup ZULU_JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11.0.12
+          distribution: 'zulu'
+      - name: Set ZULU_JDK environment variable
+        run: |
+          echo "ZULU_JDK=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Setup ZULU_ALT_JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11.0.13
+          distribution: 'zulu'
+      - name: Set ZULU_ALT_JDK environment variable
+        run: |
+          echo "ZULU_ALT_JDK=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up Java
         uses: actions/setup-java@v2
         with:

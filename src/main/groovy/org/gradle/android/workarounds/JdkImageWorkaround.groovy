@@ -25,8 +25,15 @@ import java.lang.module.ModuleDescriptor
 import java.nio.ByteBuffer
 import java.nio.file.Files
 
-@AndroidIssue(introducedIn = "7.1.0", fixedIn = [], link = "")
+/**
+ * Works around cache misses due to the custom Java runtime used when source compatibility is set higher
+ * than Java 9.  This normalizes out minor inconsequential differences between JDKs used to generate the
+ * custom runtime and improve cache hits between environments.
+ */
+@AndroidIssue(introducedIn = "7.1.0", fixedIn = [], link = "https://issuetracker.google.com/u/1/issues/234820480")
 class JdkImageWorkaround implements Workaround {
+    static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.enabled"
+
     static final String JDK_IMAGE = "_internal_android_jdk_image"
     static final String JDK_IMAGE_EXTRACTED = "_internal_android_jdk_image_extracted"
     static final String JDK_IMAGE_CONFIG_NAME = "androidJdkImage"
@@ -99,7 +106,7 @@ class JdkImageWorkaround implements Workaround {
 
     @Override
     boolean canBeApplied(Project project) {
-        return true
+        return SystemPropertiesCompat.getBoolean(WORKAROUND_ENABLED_PROPERTY, project, true)
     }
 
     static class ExtractedJdkImageCommandLineProvider implements CommandLineArgumentProvider {

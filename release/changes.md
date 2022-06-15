@@ -1,2 +1,0 @@
-- [NEW] - Add workaround for jdkImage cache miss
-- [NEW] - Support AGP `7.3.0-beta03` and `7.4.0-alpha04`

@@ -5,6 +5,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Assume
+import spock.lang.Issue
 
 @MultiVersionTest
 class JdkImageWorkaroundTest extends AbstractTest {
@@ -201,5 +202,45 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         then:
         buildResult.output.contains("CommandLineArgumentProvider is ExtractedJdkImageCommandLineProvider")
+    }
+
+    @Issue("https://github.com/gradle/android-cache-fix-gradle-plugin/issues/307")
+    def "jdkImage is normalized when toolchain is not specified"() {
+        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
+        def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withKotlinDisabled()
+            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .build()
+            .writeProject()
+
+        when:
+        BuildResult buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "assemble",
+                "--build-cache"
+            ).build()
+
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        when:
+        buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "assemble",
+                "--build-cache"
+            ).build()
+
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
     }
 }

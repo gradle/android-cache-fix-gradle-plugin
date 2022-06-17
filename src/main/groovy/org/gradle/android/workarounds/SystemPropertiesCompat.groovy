@@ -3,6 +3,7 @@ package org.gradle.android.workarounds
 import groovy.transform.CompileStatic
 import org.gradle.android.Versions
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.util.GradleVersion
 
 @CompileStatic
@@ -31,14 +32,7 @@ class SystemPropertiesCompat {
      */
     static boolean getBoolean(String key, Project project, Boolean absentValue) {
         if (project != null) {
-            def systemProperty = project.providers.systemProperty(key)
-
-            if (Versions.gradle(project.gradle.gradleVersion) < GradleVersion.version("7.4")) {
-                systemProperty = systemProperty.forUseAtConfigurationTime()
-            }
-
-            systemProperty
-                .map{
+            getSystemProperty(key, project).map {
                     try {
                         return Boolean.parseBoolean(it)
                     } catch (IllegalArgumentException | NullPointerException ignored) {
@@ -49,5 +43,23 @@ class SystemPropertiesCompat {
         } else {
             return Boolean.getBoolean(key)
         }
+    }
+
+    static String getString(String key, Project project, String absentValue) {
+        if (project != null) {
+            getSystemProperty(key, project).getOrElse(absentValue)
+        } else {
+            return System.getProperty(key)
+        }
+    }
+
+    private static Provider<String> getSystemProperty(String key, Project project) {
+        def systemProperty = project.providers.systemProperty(key)
+
+        if (Versions.gradle(project.gradle.gradleVersion) < GradleVersion.version("7.4")) {
+            systemProperty = systemProperty.forUseAtConfigurationTime()
+        }
+
+        return systemProperty
     }
 }

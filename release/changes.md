@@ -1,1 +1,0 @@
-- [FIX] Fix issue with JdkImageWorkaround when toolchain is not specified (https://github.com/gradle/android-cache-fix-gradle-plugin/issues/307)

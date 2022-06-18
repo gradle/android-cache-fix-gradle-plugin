@@ -44,7 +44,7 @@ class JdkImageWorkaround implements Workaround {
             variant.javaCompileProvider.configure { JavaCompile task ->
                 def jdkImageInput = getJdkImageInput(task)
                 if (jdkImageInput != null) {
-                    setupExtractedJdkImageInputTransform(project, task.getJavaCompiler().map { it.metadata.installationPath })
+                    setupExtractedJdkImageInputTransform(project, getJvmHome(task))
                     replaceCommandLineProvider(task, jdkImageInput)
                     applyRuntimeClasspathNormalization(task.project)
                 }
@@ -96,12 +96,29 @@ class JdkImageWorkaround implements Workaround {
         def extractedJdkImage = jdkConfiguration.incoming.artifactView {viewConfiguration ->
             viewConfiguration.attributes {
                 it.attribute(ArtifactAttributes.ARTIFACT_FORMAT, JDK_IMAGE_EXTRACTED)
-                it.attribute(jdkId, task.javaCompiler.get().metadata.jvmVersion + task.javaCompiler.get().metadata.vendor)
+                it.attribute(jdkId, getJvmVersion(task) + getJvmVendor(task))
             }
         }.artifacts.artifactFiles
         def extractedJdkImageProvider = new ExtractedJdkImageCommandLineProvider(extractedJdkImage, jdkImageInput.jdkImage)
         task.options.compilerArgumentProviders.remove(jdkImageInput)
         task.options.compilerArgumentProviders.add(extractedJdkImageProvider)
+    }
+
+    static String getJvmVersion(JavaCompile task) {
+        return task.javaCompiler.map { it.metadata.jvmVersion }
+            .orElse(SystemPropertiesCompat.getString("java.version", task.project, null))
+    }
+
+    static String getJvmVendor(JavaCompile task) {
+        return task.javaCompiler.map { it.metadata.vendor }
+            .orElse(SystemPropertiesCompat.getString("java.vendor", task.project, null))
+    }
+
+    static Provider<Directory> getJvmHome(JavaCompile task) {
+        def defaultJvmHome = task.project.objects.directoryProperty()
+        defaultJvmHome.set(new File(SystemPropertiesCompat.getString("java.home", task.project, null)))
+        return task.javaCompiler.map { it.metadata.installationPath }
+            .orElse(defaultJvmHome)
     }
 
     @Override

@@ -180,6 +180,7 @@ githubRelease {
    tagName = gitReleaseTag()
    prerelease = false
    overwrite = false
+   generateReleaseNotes = false
    body = layout.projectDirectory.file("release/changes.md").asFile.text.trim()
    targetCommitish = "main"
 }

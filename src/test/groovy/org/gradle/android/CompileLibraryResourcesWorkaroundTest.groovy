@@ -113,7 +113,7 @@ class CompileLibraryResourcesWorkaroundTest extends AbstractTest {
             }
 
             dependencies {
-                implementation("org.gradle.android:android-cache-fix-gradle-plugin:${SimpleAndroidApp.pluginVersion}")
+                implementation("${SimpleAndroidApp.pluginGroupId}:android-cache-fix-gradle-plugin:${SimpleAndroidApp.pluginVersion}")
                 implementation("com.android.tools.build:gradle:${TestVersions.latestAndroidVersionForCurrentJDK().toString()}")
             }
         """

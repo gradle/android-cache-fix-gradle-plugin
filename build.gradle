@@ -6,14 +6,13 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'codenarc'
-    id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'com.gradle.plugin-publish' version '1.0.0'
     id 'org.gradle.test-retry' version '1.4.0'
     id 'com.github.breadmoirai.github-release' version '2.4.1'
     id 'org.gradle.wrapper-upgrade' version '0.10.2'
 }
 
 group = 'org.gradle.android'
-def artifactId = 'android-cache-fix-gradle-plugin'
 version = layout.projectDirectory.file("release/version.txt").asFile.text.trim()
 
 def isCI = (System.getenv('CI') ?: 'false').toBoolean()
@@ -61,8 +60,6 @@ java {
 
 // Main plugin publishing metadata
 gradlePlugin {
-    automatedPublishing = false
-
     plugins {
         androidCacheFixPlugin {
             id = 'org.gradle.android.cache-fix'
@@ -73,36 +70,26 @@ gradlePlugin {
     }
 }
 
-def isProdPortal = !System.getProperty('gradle.portal.url')
 pluginBundle {
     website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
     vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
 
     tags = ['android', 'cache', 'fix']
-
-    // The legacy groupId gradle.plugin.* is only allowed when the plugin
-    // has already been published
-    mavenCoordinates {
-        groupId = isProdPortal ? 'gradle.plugin.org.gradle.android' : project.group
-        artifactId = artifactId
-    }
 }
 
 
 // A local repo we publish our library to for testing in order to workaround limitations
 // in the TestKit plugin classpath.
 def localRepo = file("$buildDir/local-repo")
-publishing {
-    // Since for now we need to set `gradlePlugin { automatedPublishing = false ... }`, we have to create manually
-    // the Maven publication. This can be removed once a new `plugin-publish` version supports automatically
-    // publishing signatures
-    publications {
-        maven(MavenPublication) {
-            groupId = project.group
-            artifactId = artifactId
-            version = version
 
-            from components.java
+def isProdPortal = !System.getProperty('gradle.portal.url')
+// The legacy groupId gradle.plugin.* is only allowed when the plugin
+// has already been published
+def pluginGroupId = isCI && isProdPortal ? 'gradle.plugin.org.gradle.android' : project.group
+publishing {
+    publications {
+        pluginMaven(MavenPublication) {
+            groupId = pluginGroupId
         }
     }
     repositories {
@@ -117,6 +104,7 @@ tasks.withType(Test).configureEach {
     dependsOn publish
     workingDir projectDir
     systemProperty "local.repo", projectDir.toPath().relativize(localRepo.toPath()).toString()
+    systemProperty "pluginGroupId", pluginGroupId
     systemProperty "org.gradle.android.cache-fix.version", version
     useJUnitPlatform()
     retry {
@@ -168,8 +156,6 @@ signing {
         providers.environmentVariable("PGP_SIGNING_KEY").orNull,
         providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").orNull
     )
-
-    sign(configurations.archives)
 }
 
 githubRelease {

@@ -44,13 +44,18 @@ class JdkImageWorkaround implements Workaround {
 
     @Override
     void apply(Project project) {
+        // We would prefer not to configure this if a jdkImage is not in use, but the attributes
+        // being ignored are unlikely to ever have a runtime impact.  Doing this outside of task
+        // configuration prevents issues with things that use the tooling api to finalize the
+        // runtime configuration before querying (and instantiating) task configurations.
+        applyRuntimeClasspathNormalization(project)
+
         applyToAllAndroidVariants(project) { variant ->
             variant.javaCompileProvider.configure { JavaCompile task ->
                 def jdkImageInput = getJdkImageInput(task)
                 if (jdkImageInput != null) {
                     setupExtractedJdkImageInputTransform(project, getJvmHome(task))
                     replaceCommandLineProvider(task, jdkImageInput)
-                    applyRuntimeClasspathNormalization(task.project)
                 }
             }
         }

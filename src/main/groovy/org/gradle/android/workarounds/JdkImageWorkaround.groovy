@@ -1,5 +1,7 @@
 package org.gradle.android.workarounds
 
+import com.google.common.annotations.VisibleForTesting
+import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
@@ -24,6 +26,8 @@ import javax.inject.Inject
 import java.lang.module.ModuleDescriptor
 import java.nio.ByteBuffer
 import java.nio.file.Files
+import java.util.stream.Collectors
+import java.util.stream.Stream
 
 /**
  * Works around cache misses due to the custom Java runtime used when source compatibility is set higher
@@ -40,13 +44,18 @@ class JdkImageWorkaround implements Workaround {
 
     @Override
     void apply(Project project) {
+        // We would prefer not to configure this if a jdkImage is not in use, but the attributes
+        // being ignored are unlikely to ever have a runtime impact.  Doing this outside of task
+        // configuration prevents issues with things that use the tooling api to finalize the
+        // runtime configuration before querying (and instantiating) task configurations.
+        applyRuntimeClasspathNormalization(project)
+
         applyToAllAndroidVariants(project) { variant ->
             variant.javaCompileProvider.configure { JavaCompile task ->
                 def jdkImageInput = getJdkImageInput(task)
                 if (jdkImageInput != null) {
                     setupExtractedJdkImageInputTransform(project, getJvmHome(task))
                     replaceCommandLineProvider(task, jdkImageInput)
-                    applyRuntimeClasspathNormalization(task.project)
                 }
             }
         }
@@ -178,9 +187,9 @@ class JdkImageWorkaround implements Workaround {
 
             // Capture the module descriptor ignoring the version, which is not enforced anyways
             File moduleInfoFile = new File(targetDir, 'java.base/module-info.class')
-            ModuleDescriptor strippedDescriptor = captureModuleDescriptorWithoutVersion(moduleInfoFile)
+            ModuleDescriptor descriptor = captureModuleDescriptorWithoutVersion(moduleInfoFile)
             File descriptorData = new File(targetDir, "module-descriptor.txt")
-            descriptorData.text = strippedDescriptor.toString()
+            descriptorData.text = serializeDescriptor(descriptor)
 
             fileOperations.delete {
                 delete(moduleInfoFile)
@@ -188,18 +197,66 @@ class JdkImageWorkaround implements Workaround {
         }
 
         private static ModuleDescriptor captureModuleDescriptorWithoutVersion(File moduleFile) {
-            ModuleDescriptor descriptor = ModuleDescriptor.read(ByteBuffer.wrap(Files.readAllBytes(moduleFile.toPath())))
-            ModuleDescriptor.Builder strippedDescriptor = ModuleDescriptor.newModule(descriptor.name())
-            strippedDescriptor.packages(descriptor.packages())
-            if (descriptor.mainClass().present) {
-                strippedDescriptor.mainClass(descriptor.mainClass().get())
+            return ModuleDescriptor.read(ByteBuffer.wrap(Files.readAllBytes(moduleFile.toPath())))
+        }
+
+        @VisibleForTesting
+        static String serializeDescriptor(ModuleDescriptor descriptor) {
+            StringBuilder sb = new StringBuilder()
+
+            if (descriptor.isOpen())
+                sb.append("open ")
+            sb.append("module { name: ").append(descriptor.name())
+            if (!descriptor.requires().isEmpty())
+                sb.append(", ").append(descriptor.requires().sort().collect { serializeRequires(it) })
+            if (!descriptor.uses().isEmpty())
+                sb.append(", uses: ").append(descriptor.uses().sort())
+            if (!descriptor.exports().isEmpty())
+                sb.append(", exports: ").append(descriptor.exports().sort().collect { serializeExports(it) })
+            if (!descriptor.opens().isEmpty())
+                sb.append(", opens: ").append(descriptor.opens().sort().collect { serializeOpens(it) })
+            if (!descriptor.provides().isEmpty()) {
+                sb.append(", provides: ").append(descriptor.provides().sort().collect { serializeProvides(it) })
             }
-            descriptor.exports().each { strippedDescriptor.exports(it) }
-            descriptor.opens().each {strippedDescriptor.opens(it) }
-            descriptor.provides().each { strippedDescriptor.provides(it) }
-            descriptor.requires().each { strippedDescriptor.requires(it) }
-            descriptor.uses()each { strippedDescriptor.uses(it) }
-            return strippedDescriptor.build()
+            sb.append(" }")
+            return sb.toString()
+        }
+
+        private static String serializeRequires(ModuleDescriptor.Requires requires) {
+            String requireString
+            if (! requires.compiledVersion().empty) {
+                requireString = requires.name() + " (@" + requires.compiledVersion() + ")"
+            } else {
+                requireString = requires.name()
+            }
+            return withSerializedMods(requires.modifiers(), requireString)
+        }
+
+        private static String serializeExports(ModuleDescriptor.Exports exports) {
+            String s = withSerializedMods(exports.modifiers(), exports.source())
+            if (exports.targets().isEmpty())
+                return s;
+            else
+                return s + " to " + exports.targets().sort()
+        }
+
+        private static String serializeOpens(ModuleDescriptor.Opens opens) {
+            String s = withSerializedMods(opens.modifiers(), opens.source())
+            if (opens.targets().isEmpty())
+                return s;
+            else
+                return s + " to " + opens.targets().sort()
+        }
+
+        private static String serializeProvides(ModuleDescriptor.Provides provides) {
+            return provides.service() + " with " + Lists.newArrayList(provides.providers()).sort()
+        }
+
+        static <M> String withSerializedMods(Set<M> mods, String what) {
+            return (Stream.concat(mods.stream().map(e -> e.toString()
+                .toLowerCase(Locale.ROOT)).sorted(),
+                Stream.of(what)))
+                .collect(Collectors.joining(" "))
         }
     }
 }

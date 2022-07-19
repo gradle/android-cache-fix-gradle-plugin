@@ -1,0 +1,2 @@
+- [FIX] Fix issue with JdkImageWorkaround creating runtime classpath normalization rules inside task configuration (https://github.com/gradle/android-cache-fix-gradle-plugin/issues/313)
+- [FIX] Fix issue with JdkImageWorkaround where the ordering of module-descriptor.txt can be different across operating systems.

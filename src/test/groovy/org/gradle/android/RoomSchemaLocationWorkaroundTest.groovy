@@ -392,6 +392,67 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         !buildResult.output.contains('warning: The following options were not recognized by any processor: \'[room.schemaLocation')
     }
 
+    @Unroll
+    def "workaround can be disabled via system property (Android #androidVersion)"() {
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withRoomProcessingArgumentConfigured()
+            .build()
+            .writeProject()
+
+        cacheDir.deleteDir()
+        cacheDir.mkdirs()
+
+        when:
+        BuildResult buildResult = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(androidVersion).version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "assemble",
+                "--build-cache", "-D${RoomSchemaLocationWorkaround.WORKAROUND_ENABLED_PROPERTY}=false"
+            ).build()
+
+        then:
+        noExceptionThrown()
+
+        and:
+        assertNotExecuted(buildResult, ':app:mergeRoomSchemaLocations')
+
+        where:
+        //noinspection GroovyAssignabilityCheck
+        androidVersion << TestVersions.latestAndroidVersions
+    }
+
+    @Unroll
+    def "workaround is enabled when enabled via system property (Android #androidVersion)"() {
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .build()
+            .writeProject()
+
+        cacheDir.deleteDir()
+        cacheDir.mkdirs()
+
+        when:
+        BuildResult buildResult = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(androidVersion).version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "assemble",
+                "--build-cache", "-D${RoomSchemaLocationWorkaround.WORKAROUND_ENABLED_PROPERTY}=true"
+            ).build()
+
+        then:
+        noExceptionThrown()
+
+        and:
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+
+        where:
+        //noinspection GroovyAssignabilityCheck
+        androidVersion << TestVersions.latestAndroidVersions
+    }
+
     void assertNotExecuted(buildResult, String taskPath) {
         assert !buildResult.tasks.collect {it.path }.contains(taskPath)
     }

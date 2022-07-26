@@ -421,15 +421,13 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions].combinations()
+        androidVersion << TestVersions.latestAndroidVersionswhere
     }
 
     @Unroll
     def "workaround is enabled when enabled via system property (Android #androidVersion)"() {
-        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
-            .withKotlinVersion(TestVersions.latestSupportedKotlinVersion())
             .build()
             .writeProject()
 
@@ -450,6 +448,10 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
         and:
         buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+
+        where:
+        //noinspection GroovyAssignabilityCheck
+        androidVersion << TestVersions.latestAndroidVersions
     }
 
     void assertNotExecuted(buildResult, String taskPath) {

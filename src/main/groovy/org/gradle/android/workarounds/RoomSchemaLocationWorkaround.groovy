@@ -59,7 +59,6 @@ class RoomSchemaLocationWorkaround implements Workaround {
     @Override
     boolean canBeApplied(Project project) {
         if (KOTLIN_VERSION != VersionNumber.UNKNOWN && KOTLIN_VERSION < MINIMUM_KOTLIN_VERSION) {
-            SystemPropertiesCompat.getBoolean(WORKAROUND_ENABLED_PROPERTY, project, true)
             project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.4.32 or higher (found ${KOTLIN_VERSION.toString()}).")
             return false
         } else {

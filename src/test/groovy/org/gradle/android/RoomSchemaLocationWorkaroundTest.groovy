@@ -420,7 +420,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        androidVersion << TestVersions.latestAndroidVersionswhere
+        androidVersion << TestVersions.latestAndroidVersions
     }
 
     @Unroll

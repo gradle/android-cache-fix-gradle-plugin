@@ -412,7 +412,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
                 "--build-cache", "-D${RoomSchemaLocationWorkaround.WORKAROUND_ENABLED_PROPERTY}=false"
             ).build()
 
-
         then:
         noExceptionThrown()
 

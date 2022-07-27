@@ -1,0 +1,1 @@
+- [FIX] - Allow RoomSchemaLocationWorkaround to be disabled (https://github.com/gradle/android-cache-fix-gradle-plugin/issues/289)

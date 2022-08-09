@@ -55,7 +55,7 @@ class SimpleAndroidApp {
                 buildscript {
                     repositories {
                         google()
-                        jcenter()
+                        mavenCentral()
                         maven {
                             url = "${localRepo}"
                         }
@@ -161,7 +161,7 @@ class SimpleAndroidApp {
 
             repositories {
                 google()
-                jcenter()
+                mavenCentral()
             }
 
             dependencies {

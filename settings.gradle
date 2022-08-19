@@ -24,7 +24,6 @@ buildCache {
     }
 
     remote(gradleEnterprise.buildCache) {
-        allowUntrustedServer = false
         enabled = true
         push = isCI
     }

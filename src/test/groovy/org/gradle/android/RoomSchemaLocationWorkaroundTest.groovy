@@ -87,6 +87,10 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
         // There are kotlin module version errors when using older versions of kotlin with AGP 7.2.0+ in this configuration
         Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.2.0-alpha01") && kotlinVersionNumber < VersionNumber.parse("1.5.0"))
+        // Since 7.4.0-alpha09, some AGP libraries are compiled with a newer Kotlin Compiler.
+        // Builds using KGP < 1.6.0 and AGP 7.4.0-alpha09+ cause metadata incompatibilities.
+        // https://issuetracker.google.com/issues/241287607
+        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.4.0-alpha09") && kotlinVersionNumber < VersionNumber.parse("1.6.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)

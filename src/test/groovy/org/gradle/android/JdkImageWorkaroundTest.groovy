@@ -166,7 +166,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
     def "workaround is enabled when enabled via system property"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
+        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01")  && androidVersion < VersionNumber.parse("7.4.0-alpha07"))
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)

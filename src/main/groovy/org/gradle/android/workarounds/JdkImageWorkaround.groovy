@@ -34,7 +34,7 @@ import java.util.stream.Stream
  * than Java 9.  This normalizes out minor inconsequential differences between JDKs used to generate the
  * custom runtime and improve cache hits between environments.
  */
-@AndroidIssue(introducedIn = "7.1.0", fixedIn = [], link = "https://issuetracker.google.com/u/1/issues/234820480")
+@AndroidIssue(introducedIn = "7.1.0", fixedIn = ['7.4.0-alpha07'], link = "https://issuetracker.google.com/u/1/issues/234820480")
 class JdkImageWorkaround implements Workaround {
     static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.enabled"
 

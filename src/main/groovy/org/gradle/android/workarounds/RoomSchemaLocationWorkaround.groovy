@@ -397,7 +397,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         @TaskAction
         void mergeSourcesToDestinations() {
             roomSchemaMergeLocations.mergeAssociations.each { destination, source ->
-                println "Merging schemas to ${destination.get().asFile}"
+                logger.info("Merging schemas to ${destination.get().asFile}")
                 fileOperations.copy {
                     it.duplicatesStrategy = DuplicatesStrategy.INCLUDE
                     it.into(destination)

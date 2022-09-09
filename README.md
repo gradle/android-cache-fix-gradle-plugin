@@ -135,7 +135,7 @@ The following caching issues are fixed by the cache fix plugin but unresolved in
 
 Please star them if you are experiencing them in your project.
 
-* MergeResources is not relocatable: https://issuetracker.google.com/issues/141301405
+* MergeResources is not relocatable: https://issuetracker.google.com/issues/141301405 and now https://issuetracker.google.com/issues/236001083
 * Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
 
 ## Implementation Notes

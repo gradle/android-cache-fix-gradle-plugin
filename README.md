@@ -131,12 +131,14 @@ static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 
 ### Unresolved Issues
 
-The following caching issues are fixed by the cache fix plugin but unresolved in any current or upcoming preview release of the Android Gradle Plugin as of 2021-11-29.
+The following caching issues are fixed by the cache fix plugin but unresolved in any current or upcoming preview release of the Android Gradle Plugin as of 2022-09-09.
 
 Please star them if you are experiencing them in your project.
 
-* MergeResources is not relocatable: https://issuetracker.google.com/issues/141301405 and now https://issuetracker.google.com/issues/236001083
 * Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
+
+The following issue is not fixed by the Android Cache Fix plugin since it has no workaround and is not fixed in any current or future release of the Android Gradle Plugin. 
+* MergeResources is not relocatable: https://issuetracker.google.com/issues/236001083
 
 ## Implementation Notes
 
@@ -179,7 +181,7 @@ directories.  Schemas exported from different variants will be merged in the dir
 
 ### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, MergeSourceSetFolders, BundleLibraryClassesJar, DataBindingMergeDependencyArtifacts, LibraryJniLibs and ZipMerging Workarounds
 
-It has been observed that caching the `MergeNativeLibsTask`, `StripDebugSymbols`, `MergeJavaResources`, `MergeSourceSetFolders`, `BundleLibraryClassesJar`, `DataBindingMergeDependencyArtifacts`, `LibraryJniLibs` and  `ZipMergingTask` tasks rarely provide any significant positive avoidance savings.  In fact, they frequently provide negative savings, especially when fetched from a remote cache node.  As such, these workarounds actually disable caching for these tasks.
+It has been observed that caching the `MergeNativeLibsTask`, `StripDebugSymbols`, `MergeSourceSetFolders`, `BundleLibraryClassesJar`, `DataBindingMergeDependencyArtifacts`, `LibraryJniLibs` and  `ZipMergingTask` tasks rarely provide any significant positive avoidance savings.  In fact, they frequently provide negative savings, especially when fetched from a remote cache node.  As such, these workarounds disable caching for these tasks.
 
 ### Older Android Gradle Plugin Versions
 
@@ -191,7 +193,7 @@ Use Android Cache Fix Plugin 2.4.6 when using an older Android Gradle Plugin ver
 
 ## License
 
-The  Android Cache Fix Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
+The Android Cache Fix Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
 
 [ge-build-config-samples]: https://github.com/gradle/gradle-enterprise-build-config-samples
 [ge-build-optimization-experiments]: https://github.com/gradle/gradle-enterprise-build-optimization-experiments

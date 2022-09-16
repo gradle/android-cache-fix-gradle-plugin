@@ -17,7 +17,7 @@
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions. For other versions, please see [older versions.](#older-android-gradle-plugin-versions)
 
 * Supported Gradle versions: 7.0+
-* Supported Android Gradle Plugin versions: 7.0.4, 7.1.3, 7.2.2, 7.3.0-rc01, 7.4.0-alpha10
+* Supported Android Gradle Plugin versions: 7.0.4, 7.1.3, 7.2.2, 7.3.0, 7.4.0-alpha10
 * Supported Kotlin versions: 1.4.32+
 
 We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 7.0.1), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.
@@ -137,7 +137,7 @@ Please star them if you are experiencing them in your project.
 
 * Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
 
-The following issue is not fixed by the Android Cache Fix plugin since it has no workaround and is not fixed in any current or future release of the Android Gradle Plugin. 
+The following issue is not fixed by the Android Cache Fix plugin since it has no workaround and is not fixed in any current or future release of the Android Gradle Plugin.
 * MergeResources is not relocatable: https://issuetracker.google.com/issues/236001083
 
 ## Implementation Notes

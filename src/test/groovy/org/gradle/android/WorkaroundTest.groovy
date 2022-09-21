@@ -12,7 +12,8 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "7.4.0-alpha10" | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask']
+        "8.0.0-alpha01" | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask']
+        "7.4.0-beta01"  | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask']
         "7.3.0"         | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask', 'JdkImage']
         "7.2.2"         | ['MergeSourceSetFolders', 'RoomSchemaLocation', 'ZipMergingTask', 'JdkImage']
         "7.1.3"         | ['BundleLibraryClasses', 'CompileLibraryResources', 'DataBindingMergeDependencyArtifacts', 'LibraryJniLibs', 'MergeNativeLibs', 'MergeSourceSetFolders', 'RoomSchemaLocation', 'StripDebugSymbols', 'ZipMergingTask', 'JdkImage']

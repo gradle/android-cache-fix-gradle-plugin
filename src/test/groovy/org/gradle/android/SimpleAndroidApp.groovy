@@ -71,16 +71,14 @@ class SimpleAndroidApp {
         writeActivity(library, libPackage, libraryActivity)
         writeRoomSourcesIfEnabled(library, libPackage)
         file("${library}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
-                <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-                    package="${libPackage}">
+                <manifest xmlns:android="http://schemas.android.com/apk/res/android">
                 </manifest>
             """.stripIndent()
 
         writeActivity(app, appPackage, appActivity)
         writeRoomSourcesIfEnabled(app, appPackage)
         file("${app}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
-                <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-                    package="${appPackage}">
+                <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
                     <application android:label="@string/app_name" >
                         <activity
@@ -109,7 +107,7 @@ class SimpleAndroidApp {
                 include ':${library}'
             """.stripIndent()
 
-        file("${app}/build.gradle") << subprojectConfiguration("com.android.application") << """
+        file("${app}/build.gradle") << subprojectConfiguration("com.android.application", appPackage) << """
                 android.defaultConfig.applicationId "org.gradle.android.test.app"
             """.stripIndent() << activityDependency() <<
             """
@@ -118,7 +116,7 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
-        file("${library}/build.gradle") << subprojectConfiguration("com.android.library") << activityDependency()
+        file("${library}/build.gradle") << subprojectConfiguration("com.android.library", libPackage) << activityDependency()
 
         file("gradle.properties") << """
                 android.useAndroidX=true
@@ -153,7 +151,7 @@ class SimpleAndroidApp {
         """ : ""
     }
 
-    private subprojectConfiguration(String androidPlugin) {
+    private subprojectConfiguration(String androidPlugin, String namespace) {
         """
             apply plugin: "$androidPlugin"
             ${kotlinPluginsIfEnabled}
@@ -170,6 +168,7 @@ class SimpleAndroidApp {
             }
 
             android {
+                namespace "$namespace"
                 ndkVersion "20.0.5594570"
                 compileSdkVersion 32
                 dataBinding.enabled = $dataBindingEnabled

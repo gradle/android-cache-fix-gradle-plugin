@@ -91,7 +91,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                     // Make sure that the annotation processor argument has not been explicitly configured in the Android
                     // configuration (i.e. we only want this configured through the room extension)
                     Map<String, String> arguments = variant.javaCompileOptions.annotationProcessorOptions.arguments
-                    errorIfAnnotationProcessorSet(arguments.keySet())
+                    errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet())
 
                     def variantSpecificSchemaDir = project.objects.directoryProperty()
                     variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
@@ -111,7 +111,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                     // Make sure that the annotation processor argument has not been explicitly configured in the Android
                     // configuration (i.e. we only want this configured through the room extension
                     MapProperty<String, String> arguments = variant.javaCompilation.annotationProcessor.arguments
-                    errorIfAnnotationProcessorSet(arguments.keySet().get())
+                    errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet().get())
 
                     def variantSpecificSchemaDir = project.objects.directoryProperty()
                     variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
@@ -225,7 +225,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         }
     }
 
-    private static void errorIfAnnotationProcessorSet(Set<String> options) {
+    private static void errorIfRoomSchemaAnnotationArgumentSet(Set<String> options) {
         if (options.contains(ROOM_SCHEMA_LOCATION)) {
             throw new IllegalStateException("""${RoomSchemaLocationWorkaround.class.name} cannot be used with an explicit '${ROOM_SCHEMA_LOCATION}' annotation processor argument.  Please change this to configure the schema location directory via the 'room' project extension:
     room {

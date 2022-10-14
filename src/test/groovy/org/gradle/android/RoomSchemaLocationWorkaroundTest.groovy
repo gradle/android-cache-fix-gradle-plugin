@@ -4,6 +4,7 @@ import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Assume
+import spock.lang.Issue
 import spock.lang.Unroll
 
 import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
@@ -455,6 +456,59 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         where:
         //noinspection GroovyAssignabilityCheck
         androidVersion << TestVersions.latestAndroidVersions
+    }
+
+    @Issue("https://github.com/gradle/android-cache-fix-gradle-plugin/issues/353")
+    @Unroll
+    def "does not error when tasks are eagerly created (Android #androidVersion) (Kotlin #kotlinVersion)"() {
+        def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
+        // There are kotlin module version errors when using older versions of kotlin with AGP 7.2.0+ in this configuration
+        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.2.0-alpha01") && kotlinVersionNumber < VersionNumber.parse("1.5.0"))
+
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .build()
+            .writeProject()
+
+        file('app/build.gradle') << eagerlyCreateJavaCompileTasks
+        file('library/build.gradle') << eagerlyCreateJavaCompileTasks
+
+        cacheDir.deleteDir()
+        cacheDir.mkdirs()
+
+        when:
+        BuildResult buildResult = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(androidVersion).version)
+            .forwardOutput()
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(CLEAN_BUILD)
+            .build()
+
+        then:
+        assertCompileTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertCompileUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptAndroidTestTasksHaveOutcome(buildResult, SUCCESS)
+        assertKaptUnitTestTasksHaveOutcome(buildResult, SUCCESS)
+        buildResult.task(':app:mergeRoomSchemaLocations').outcome == SUCCESS
+        buildResult.task(':library:mergeRoomSchemaLocations').outcome == SUCCESS
+
+        and:
+        assertKaptSchemaOutputsExist()
+
+        and:
+        assertMergedSchemaOutputsExist()
+
+        where:
+        //noinspection GroovyAssignabilityCheck
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions].combinations()
+    }
+
+    private static String getEagerlyCreateJavaCompileTasks() {
+        """
+            tasks.withType(JavaCompile) { println it.path }
+        """
     }
 
     void assertNotExecuted(buildResult, String taskPath) {

@@ -1,2 +1,0 @@
-- [NEW] - Support AGP `7.3.1`, `7.4.0-beta02` and `8.0.0-alpha03`
-- [NEW] - Support new variant API on AGP `7.4.0` and up

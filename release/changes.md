@@ -1,0 +1,1 @@
+- [NEW] - Support AGP `8.0.0-alpha04`

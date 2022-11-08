@@ -1,1 +1,1 @@
-- [NEW] - Support AGP `7.4.0-beta04` and `8.0.0-alpha07`
+- [NEW] - Support AGP `7.4.0-beta05` and `8.0.0-alpha08`

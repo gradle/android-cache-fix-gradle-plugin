@@ -9,8 +9,6 @@ jobs:
   upgrade_wrapper:
     name: Execution
     runs-on: ubuntu-latest
-    env:
-      GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
     steps:
       - name: Set up Git configuration
         env:
@@ -37,3 +35,4 @@ jobs:
         run: ./gradlew clean upgradeGradleWrapperAll --continue
         env:
           WRAPPER_UPGRADE_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}

@@ -34,7 +34,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                     ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "assemble",
+                "clean", "testDebug", "testRelease", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -46,6 +46,11 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
         when:
         buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
@@ -54,7 +59,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                     ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "assemble",
+                "clean", "testDebug", "testRelease", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -65,6 +70,11 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
     }
 
     def "jdkImage is normalized across same vendor similar JDK versions"() {
@@ -91,7 +101,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                 ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "assemble",
+                "clean", "testDebug", "testRelease", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -103,6 +113,11 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
         when:
         buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
@@ -111,7 +126,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                 ["JDK": zuluAltPath]
             )
             .withArguments(
-                "clean", "assemble",
+                "clean", "testDebug", "testRelease", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -122,6 +137,11 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
     }
 
     def "workaround can be disabled via system property"() {

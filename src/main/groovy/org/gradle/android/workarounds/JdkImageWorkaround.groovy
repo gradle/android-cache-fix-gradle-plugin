@@ -3,6 +3,8 @@ package org.gradle.android.workarounds
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
+import org.gradle.android.VersionNumber
+import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
 import org.gradle.api.artifacts.transform.InputArtifact
@@ -62,17 +64,31 @@ class JdkImageWorkaround implements Workaround {
     }
 
     private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
+        if (Versions.CURRENT_ANDROID_VERSION <= VersionNumber.parse("7.4.0-alpha01")) {
+            applyToAllAndroidVariantsWithOldVariantApi(project, configureVariant)
+        } else {
+            applyToAllAndroidVariantsWithNewVariantApi(project, configureVariant)
+        }
+    }
+
+    private static void applyToAllAndroidVariantsWithOldVariantApi(Project project, Closure<?> configureVariant) {
         project.plugins.withId("com.android.application") {
             def android = project.extensions.findByName("android")
-
+            android.unitTestVariants.all(configureVariant)
             android.applicationVariants.all(configureVariant)
         }
 
         project.plugins.withId("com.android.library") {
             def android = project.extensions.findByName("android")
-
+            android.unitTestVariants.all(configureVariant)
             android.libraryVariants.all(configureVariant)
         }
+    }
+
+    private static void applyToAllAndroidVariantsWithNewVariantApi(Project project, Closure<?> configureVariant) {
+        def androidComponents = project.extensions.findByName("androidComponents")
+        def selector = androidComponents.selector()
+        androidComponents.onVariants(selector.all(), configureVariant)
     }
 
     static def applyRuntimeClasspathNormalization(Project project) {

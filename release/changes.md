@@ -1,1 +1,2 @@
 - [NEW] - Support AGP `7.4.0-beta05` and `8.0.0-alpha08`
+- [FIX] - Apply jdkImage workaround to all variants

@@ -297,6 +297,13 @@ class SimpleAndroidApp {
                 }
             """.stripIndent()
 
+        file("${basedir}/src/androidTest/java/${packageName.replaceAll('\\.', '/')}/JavaUserAndroidTest.java") << """
+                package ${packageName};
+
+                public class JavaUserAndroidTest {
+                }
+            """.stripIndent()
+
         file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:orientation="vertical"

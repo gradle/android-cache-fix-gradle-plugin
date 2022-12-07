@@ -63,15 +63,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
-      - name: Patch api-versions
-        run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
-      - name: List Android Packages
-        run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 17
-          distribution: 'zulu'
+          java-version: 11
+          distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run integration tests

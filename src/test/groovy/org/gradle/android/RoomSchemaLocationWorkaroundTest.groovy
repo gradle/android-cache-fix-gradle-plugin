@@ -33,6 +33,9 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         cacheDir.mkdirs()
 
         when:
+        println("inaki")
+        println(TestVersions.latestSupportedGradleVersionFor(androidVersion).version)
+        println("inaki")
         BuildResult buildResult = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(androidVersion).version)
             .forwardOutput()
             .withProjectDir(temporaryFolder.root)

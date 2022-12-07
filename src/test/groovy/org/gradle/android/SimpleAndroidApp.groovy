@@ -44,6 +44,19 @@ class SimpleAndroidApp {
         def libraryActivity = 'LibraryActivity'
 
         file("settings.gradle") << """
+plugins {
+    id("com.gradle.enterprise") version "3.11.3"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "1.7.2"
+}
+gradleEnterprise {
+    server = "https://ge.solutions-team.gradle.com/"
+    accessKey = "${System.getenv("GRADLE_ENTERPRISE_ACCESS_KEY")}"
+    allowUntrustedServer = true
+    buildScan {
+        publishAlways()
+    }
+}
+
                 buildCache {
                     local {
                         directory = "${cacheDir.absolutePath.replace(File.separatorChar, '/' as char)}"

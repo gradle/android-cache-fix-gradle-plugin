@@ -51,7 +51,6 @@ plugins {
 gradleEnterprise {
     server = "https://ge.solutions-team.gradle.com/"
     accessKey = "${System.getenv("GRADLE_ENTERPRISE_ACCESS_KEY")}"
-    allowUntrustedServer = true
     buildScan {
         publishAlways()
     }

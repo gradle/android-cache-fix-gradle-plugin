@@ -70,6 +70,8 @@ jobs:
           distribution: temurin
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
+      - name: Update
+        run: sudo apt update && sudo apt-get install libncurses5
       - name: Run integration tests
         run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
         env:

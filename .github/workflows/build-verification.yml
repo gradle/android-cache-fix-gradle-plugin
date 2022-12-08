@@ -60,7 +60,7 @@ jobs:
       fail-fast: false
       matrix:
         versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
-        javas: [ { version: 11 }, { version: 17 } ]
+        javas: [ { version: 11, jdkImageIssue: 11.0.12 ,jdkImageIssueAlt:  11.0.13 }, { version: 17,  jdkImageIssue:  17.0.3+7 ,jdkImageIssueAlt: 17.0.5+8} ]
 
     steps:
       - uses: actions/checkout@v3
@@ -72,7 +72,7 @@ jobs:
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17.0.5+8
+          java-version: ${{ matrix.javas.jdkImageIssue }}
           distribution: 'zulu'
       - name: Set ZULU_JDK environment variable
         run: |
@@ -80,7 +80,7 @@ jobs:
       - name: Setup ZULU_ALT_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17.0.3+7
+          java-version: ${{ matrix.javas.jdkImageIssueAlt }}
           distribution: 'zulu'
       - name: Set ZULU_ALT_JDK environment variable
         run: |

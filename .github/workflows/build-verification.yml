@@ -74,7 +74,7 @@ jobs:
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17.0.7
+          java-version: 17.0.5+8
           distribution: 'zulu'
       - name: Set ZULU_JDK environment variable
         run: |
@@ -82,7 +82,7 @@ jobs:
       - name: Setup ZULU_ALT_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17.0.3
+          java-version: 17.0.3+7
           distribution: 'zulu'
       - name: Set ZULU_ALT_JDK environment variable
         run: |

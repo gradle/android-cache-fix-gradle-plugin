@@ -8,10 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  java_matrix:
-    strategy:
-      matrix:
-        javas: [11, 17]
   generate_versions:
     name: Generate versions
     runs-on: ubuntu-latest
@@ -64,6 +60,8 @@ jobs:
       fail-fast: false
       matrix:
         versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
+        javas: [ 11, 17 ]
+
     steps:
       - uses: actions/checkout@v3
       # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)

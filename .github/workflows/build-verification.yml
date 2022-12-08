@@ -8,10 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  java_matrix:
-    strategy:
-      matrix:
-        version: [ { jdk: 11, jdkImageIssue: 11.0.12 ,jdkImageIssueAlt:  11.0.13 }, { jdk: 17,  jdkImageIssue:  17.0.3+7 ,jdkImageIssueAlt: 17.0.5+8} ]
   generate_versions:
     name: Generate versions
     runs-on: ubuntu-latest
@@ -27,11 +23,14 @@ jobs:
   sanity_check:
     name: Sanity check
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            jdk: [ 11, 17 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.version.jdk }}
+          java-version: ${{ matrix.jdk }}
           distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -43,11 +42,14 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            jdk: [ 11, 17 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.version.jdk }}
+          java-version: ${{ matrix.jdk }}
           distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -64,6 +66,7 @@ jobs:
       fail-fast: false
       matrix:
         versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
+        java: [ { jdk: 11, jdkImageIssue: 11.0.12 ,jdkImageIssueAlt:  11.0.13 }, { jdk: 17,  jdkImageIssue:  17.0.3+7 ,jdkImageIssueAlt: 17.0.5+8} ]
 
     steps:
       - uses: actions/checkout@v3
@@ -75,7 +78,7 @@ jobs:
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v3
         with:
-          java-version:  ${{ matrix.version.jdkImageIssue }}
+          java-version:  ${{ matrix.java.jdkImageIssue }}
           distribution: 'zulu'
       - name: Set ZULU_JDK environment variable
         run: |
@@ -83,7 +86,7 @@ jobs:
       - name: Setup ZULU_ALT_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.version.jdkImageIssueAlt }}
+          java-version: ${{ matrix.java.jdkImageIssueAlt }}
           distribution: 'zulu'
       - name: Set ZULU_ALT_JDK environment variable
         run: |
@@ -91,7 +94,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.version.jdk }}
+          java-version: ${{ matrix.java.jdk }}
           distribution: adopt
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2

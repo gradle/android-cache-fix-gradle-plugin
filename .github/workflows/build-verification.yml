@@ -8,6 +8,10 @@ on:
   workflow_dispatch:
 
 jobs:
+  java_matrix:
+    strategy:
+      matrix:
+        javas: [11, 17]
   generate_versions:
     name: Generate versions
     runs-on: ubuntu-latest
@@ -27,7 +31,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: ${{ matrix.javas }}
           distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -43,7 +47,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: ${{ matrix.javas }}
           distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -86,7 +90,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: ${{ matrix.javas }}
           distribution: adopt
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2

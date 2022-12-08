@@ -23,11 +23,14 @@ jobs:
   sanity_check:
     name: Sanity check
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            jdk: [11, 17]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: ${{ matrix.jdk }}
           distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -39,11 +42,14 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            jdk: [11, 17]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: ${{ matrix.jdk }}
           distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -60,6 +66,8 @@ jobs:
       fail-fast: false
       matrix:
         versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
+        java: [ { jdk: 11, jdkImageIssue: 11.0.12 ,jdkImageIssueAlt:  11.0.13 }, { jdk: 17,  jdkImageIssue:  17.0.3+7 ,jdkImageIssueAlt: 17.0.5+8} ]
+
     steps:
       - uses: actions/checkout@v3
       # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
@@ -70,7 +78,7 @@ jobs:
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 11.0.12
+          java-version:  ${{ matrix.java.jdkImageIssue }}
           distribution: 'zulu'
       - name: Set ZULU_JDK environment variable
         run: |
@@ -78,7 +86,7 @@ jobs:
       - name: Setup ZULU_ALT_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 11.0.13
+          java-version: ${{ matrix.java.jdkImageIssueAlt }}
           distribution: 'zulu'
       - name: Set ZULU_ALT_JDK environment variable
         run: |
@@ -86,7 +94,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: ${{ matrix.java.jdk }}
           distribution: 'adopt'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2

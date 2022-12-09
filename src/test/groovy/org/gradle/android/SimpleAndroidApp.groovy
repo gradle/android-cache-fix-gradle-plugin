@@ -124,6 +124,7 @@ class SimpleAndroidApp {
                 kapt.use.worker.api=${kaptWorkersEnabled}
                 android.experimental.enableSourceSetPathsMap=true
                 android.experimental.cacheCompileLibResources=true
+                android.defaults.buildfeatures.renderscript=false
             """.stripIndent()
 
         configureAndroidSdkHome()

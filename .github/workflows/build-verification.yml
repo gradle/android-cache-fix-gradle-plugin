@@ -78,7 +78,7 @@ jobs:
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v3
         with:
-          java-version:  ${{ matrix.java.jdkImageIssue }}
+          java-version:  11.0.12
           distribution: 'zulu'
       - name: Set ZULU_JDK environment variable
         run: |
@@ -86,7 +86,7 @@ jobs:
       - name: Setup ZULU_ALT_JDK
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java.jdkImageIssueAlt }}
+          java-version: 11.0.13
           distribution: 'zulu'
       - name: Set ZULU_ALT_JDK environment variable
         run: |

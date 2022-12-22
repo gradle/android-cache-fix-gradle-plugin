@@ -115,7 +115,8 @@ tasks.withType(Test).configureEach {
 
 // Generate a test task for each Android version and run the tests annotated with the MultiVersionTest category
 def supportedVersions = new JsonSlurper().parse(file('src/main/resources/versions.json')).supportedVersions
-supportedVersions.keySet().each { androidVersion ->
+def supportedVersionsJdk17 = new JsonSlurper().parse(file('src/main/resources/versions17.json')).supportedVersions
+(supportedVersions + supportedVersionsJdk17).keySet().each { androidVersion ->
     def versionSpecificTest = tasks.register(androidTestTaskName(androidVersion), Test) {
         description = "Runs the multi-version tests for AGP ${androidVersion}"
         group = "verification"

@@ -26,14 +26,14 @@ jobs:
       - id: debug4
         run: echo ${{ steps.setup-matrix.outputs }}
       - name: debug
-        run: echo ${{ steps.setup-matrix.outputs.matrixqq }}
+        run: echo ${{ steps.setup-matrix-java-17.outputs.matrixqq }}
       - id: setup-matrix
         run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug
         run: echo ${{ steps.setup-matrix.outputs.matrix }}
     outputs:
       matrix: ${{ steps.setup-matrix.outputs.matrix }}
-      matrix_java17: ${{ steps.setup-matrix.outputs.matrixqq }}
+      matrix_java17: ${{ steps.setup-matrix-java-17.outputs.matrixqq }}
 
   sanity_check:
     name: Sanity check

@@ -1,39 +1,29 @@
 name: Verify Build
 
 on:
-  push:
-    branches: [ main, citest ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    push:
+        branches: [ main, citest ]
+    pull_request:
+        branches: [ main ]
+    workflow_dispatch:
 
 jobs:
-  generate_versions:
-    name: Generate versions
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - id: test
-        run: cat src/main/resources/versionsjava17.json
-      - id: test1
-        run:  jq -cM '.supportedVersions | keys' src/main/resources/versionsjava17.json | sed -e 's/\./_/g' -e 's/-/_/g'
-      - id: setup-matrix-java-17
-        run: echo "matrixqq=$(jq -cM '.supportedVersions | keys' src/main/resources/versionsjava17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
-      - id: xxxxx
-        run: echo "ser=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
-      - id: debug3
-        run: echo ${{ steps.setup-matrix.ser }}
-      - id: debug4
-        run: echo ${{ steps.setup-matrix.outputs }}
-      - name: debug
-        run: echo ${{ steps.setup-matrix-java-17.outputs.matrixqq }}
-      - id: setup-matrix
-        run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
-      - name: debug
-        run: echo ${{ steps.setup-matrix.outputs.matrix }}
-    outputs:
-      matrix: ${{ steps.setup-matrix.outputs.matrix }}
-      matrix_java17: ${{ steps.setup-matrix-java-17.outputs.matrixqq }}
+    generate_versions:
+        name: Generate versions
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v3
+          - id: setup-matrix
+            run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
+          - name: debug
+            run: echo ${{ steps.setup-matrix.outputs.matrix }}
+          - id: setup-matrix-17
+            run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
+          - name: debug java 17
+            run: echo ${{ steps.setup-matrix-17.outputs.matrix }}
+        outputs:
+          matrix: ${{ steps.setup-matrix.outputs.matrix }}
+          matrix17: ${{ steps.setup-matrix-17.outputs.matrix }}
 
   sanity_check:
     name: Sanity check
@@ -67,3 +57,72 @@ jobs:
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
+  android_version_tests:
+    name: Android version tests
+    needs: [ generate_versions, sanity_check ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
+      - name: Patch api-versions
+        run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
+      - name: List Android Packages
+        run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
+      - name: Setup ZULU_JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11.0.12
+          distribution: 'zulu'
+      - name: Set ZULU_JDK environment variable
+        run: |
+             echo "ZULU_JDK=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Setup ZULU_ALT_JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11.0.13
+          distribution: 'zulu'
+      - name: Set ZULU_ALT_JDK environment variable
+        run: |
+             echo "ZULU_ALT_JDK=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'adopt'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Run integration tests
+        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+        env:
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
+
+  android_version_tests_java_17:
+    name: Android version tests
+    needs: [ generate_versions, sanity_check ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        versions: ${{ fromJson(needs.generate_versions.outputs.matrix17 }}
+    steps:
+      - uses: actions/checkout@v3
+        # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
+      - name: Patch api-versions
+        run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
+      - name: List Android Packages
+        run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Run integration tests Java17
+        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+        env:
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}

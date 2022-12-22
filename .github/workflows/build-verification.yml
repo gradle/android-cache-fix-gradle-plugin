@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: test
-        run: cat src/main/resources/versions_java17.json
+        run: cat src/main/resources/versionsjava17.json
       - id: test1
         run:  jq -cM '.supportedVersions | keys' src/main/resources/versionsjava17.json | sed -e 's/\./_/g' -e 's/-/_/g'
       - id: setup-matrix-java-17

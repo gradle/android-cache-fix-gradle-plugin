@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - id: test
+        run: cat src/main/resources/versions_java17.json
       - id: setup-matrix-java-17
         run: echo "matrix_java17=$(jq -cM '.supportedVersions | keys' src/main/resources/versions_java17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug

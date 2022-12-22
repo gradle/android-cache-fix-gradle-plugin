@@ -16,9 +16,9 @@ jobs:
       - id: test
         run: cat src/main/resources/versions_java17.json
       - id: setup-matrix-java-17
-        run: echo "matrix_java17=$(jq -cM '.supportedVersions | keys' src/main/resources/versions_java17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
+        run: echo "matrixqq=$(jq -cM '.supportedVersions | keys' src/main/resources/versions_java17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug
-        run: echo ${{ steps.setup-matrix.outputs.matrix_java17 }}
+        run: echo ${{ steps.setup-matrix.outputs.matrixqq }}
       - id: setup-matrix
         run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug

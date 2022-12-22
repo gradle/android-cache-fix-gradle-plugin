@@ -20,10 +20,10 @@ jobs:
       - id: setup-matrix-java-17
         run: echo "matrix-java17=$(jq -cM '.supportedVersions | keys' src/main/resources/versions_java17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug
-        run: echo ${{ steps.setup-matrix.outputs.matrix-java17 }}
+        run: echo ${{ steps.setup-matrix.outputs.matrix_java17 }}
     outputs:
       matrix: ${{ steps.setup-matrix.outputs.matrix }}
-      matrix_java17: ${{ steps.setup-matrix.outputs.matrix-java17 }}
+      matrix_java17: ${{ steps.setup-matrix.outputs.matrix_java17 }}
 
   sanity_check:
     name: Sanity check

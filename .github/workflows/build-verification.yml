@@ -18,12 +18,12 @@ jobs:
       - name: debug
         run: echo ${{ steps.setup-matrix.outputs.matrix }}
       - id: setup-matrix-17
-        run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
+        run: echo "matrix17=$(jq -cM '.supportedVersions | keys' src/main/resources/versions17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug java 17
-        run: echo ${{ steps.setup-matrix-17.outputs.matrix }}
+        run: echo ${{ steps.setup-matrix-17.outputs.matrix17 }}
     outputs:
       matrix: ${{ steps.setup-matrix.outputs.matrix }}
-      matrix17: ${{ steps.setup-matrix-17.outputs.matrix }}
+      matrix17: ${{ steps.setup-matrix-17.outputs.matrix17 }}
 
   sanity_check:
     name: Sanity check

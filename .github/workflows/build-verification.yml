@@ -101,7 +101,7 @@ jobs:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
   android_version_tests_java_17:
-    name: Android version tests
+    name: Android version tests java 17
     needs: [ generate_versions, sanity_check ]
     runs-on: ubuntu-latest
     strategy:

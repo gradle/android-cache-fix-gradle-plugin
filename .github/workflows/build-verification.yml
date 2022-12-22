@@ -23,7 +23,7 @@ jobs:
         run: echo ${{ steps.setup-matrix.outputs.matrix-java17 }}
     outputs:
       matrix: ${{ steps.setup-matrix.outputs.matrix }}
-      matrix-java17: ${{ steps.setup-matrix.outputs.matrix-java17 }}
+      matrix_java17: ${{ steps.setup-matrix.outputs.matrix-java17 }}
 
   sanity_check:
     name: Sanity check
@@ -107,7 +107,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        versions: ${{ fromJson(needs.generate_versions.outputs.matrix-java17) }}
+        versions: ${{ fromJson(needs.generate_versions.outputs.matrix_java17) }}
     steps:
       - uses: actions/checkout@v3
       # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)

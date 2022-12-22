@@ -17,8 +17,13 @@ jobs:
         run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug
         run: echo ${{ steps.setup-matrix.outputs.matrix }}
+      - id: setup-matrix-java-17
+        run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions_java17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
+      - name: debug
+        run: echo ${{ steps.setup-matrix.outputs.matrix-java17 }}
     outputs:
       matrix: ${{ steps.setup-matrix.outputs.matrix }}
+      matrix-java17: ${{ steps.setup-matrix.outputs.matrix-java17 }}
 
   sanity_check:
     name: Sanity check
@@ -94,3 +99,15 @@ jobs:
         run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Run integration tests Java 17
+        run: ./gradlew testAndroid${{ matrix.versions-java17 }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+        env:
+           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
+

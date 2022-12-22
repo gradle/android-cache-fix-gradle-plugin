@@ -102,7 +102,7 @@ jobs:
 
   android_version_tests_java_17:
     name: Android version tests Java 17
-    needs: [ generate_versions, sanity_check ]
+    needs: [ android_version_tests ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

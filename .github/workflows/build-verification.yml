@@ -8,22 +8,22 @@ on:
     workflow_dispatch:
 
 jobs:
-    generate_versions:
-        name: Generate versions
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v3
-          - id: setup-matrix
-            run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
-          - name: debug
-            run: echo ${{ steps.setup-matrix.outputs.matrix }}
-          - id: setup-matrix-17
-            run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
-          - name: debug java 17
-            run: echo ${{ steps.setup-matrix-17.outputs.matrix }}
-        outputs:
-          matrix: ${{ steps.setup-matrix.outputs.matrix }}
-          matrix17: ${{ steps.setup-matrix-17.outputs.matrix }}
+  generate_versions:
+    name: Generate versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: setup-matrix
+        run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
+      - name: debug
+        run: echo ${{ steps.setup-matrix.outputs.matrix }}
+      - id: setup-matrix-17
+        run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions17.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
+      - name: debug java 17
+        run: echo ${{ steps.setup-matrix-17.outputs.matrix }}
+    outputs:
+      matrix: ${{ steps.setup-matrix.outputs.matrix }}
+      matrix17: ${{ steps.setup-matrix-17.outputs.matrix }}
 
   sanity_check:
     name: Sanity check

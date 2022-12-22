@@ -105,9 +105,9 @@ jobs:
     needs: [ generate_versions, sanity_check ]
     runs-on: ubuntu-latest
     strategy:
-        fail-fast: false
-        matrix:
-            versions: ${{ fromJson(needs.generate_versions.outputs.matrix-java17) }}
+      fail-fast: false
+      matrix:
+        versions: ${{ fromJson(needs.generate_versions.outputs.matrix-java17) }}
     steps:
       - uses: actions/checkout@v3
       # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)

@@ -99,6 +99,7 @@ jobs:
         run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
+
   android_version_tests_java_17:
       name: Android version tests Java 17
       needs: [ generate_versions, sanity_check ]
@@ -122,7 +123,7 @@ jobs:
           - name: Set up Gradle
             uses: gradle/gradle-build-action@v2
           - name: Run integration tests Java 17
-            run: ./gradlew testAndroid${{ matrix.versions-java17 }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+            run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
             env:
                 GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 

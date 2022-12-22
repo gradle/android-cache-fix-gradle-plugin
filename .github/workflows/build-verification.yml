@@ -101,29 +101,28 @@ jobs:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
   android_version_tests_java_17:
-      name: Android version tests Java 17
-      needs: [ generate_versions, sanity_check ]
-      runs-on: ubuntu-latest
-      strategy:
-          fail-fast: false
-          matrix:
-              versions: ${{ fromJson(needs.generate_versions.outputs.matrix-java17) }}
-      steps:
-          - uses: actions/checkout@v3
-          # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
-          - name: Patch api-versions
-            run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
-          - name: List Android Packages
-            run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
-          - name: Set up Java
-            uses: actions/setup-java@v3
-            with:
-                java-version: 17
-                distribution: 'temurin'
-          - name: Set up Gradle
-            uses: gradle/gradle-build-action@v2
-          - name: Run integration tests Java 17
-            run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
-            env:
-                GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
-
+    name: Android version tests Java 17
+    needs: [ generate_versions, sanity_check ]
+    runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+        matrix:
+            versions: ${{ fromJson(needs.generate_versions.outputs.matrix-java17) }}
+    steps:
+      - uses: actions/checkout@v3
+      # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
+      - name: Patch api-versions
+        run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
+      - name: List Android Packages
+        run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Run integration tests Java 17
+        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+        env:
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}

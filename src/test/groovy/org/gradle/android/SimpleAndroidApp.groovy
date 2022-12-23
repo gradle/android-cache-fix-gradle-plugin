@@ -142,7 +142,7 @@ plugins {
 
         file("gradle.properties") << """
                 android.useAndroidX=true
-                org.gradle.jvmargs=-Xmx5G
+                org.gradle.jvmargs=-Xmx2G
                 kapt.use.worker.api=${kaptWorkersEnabled}
                 android.experimental.enableSourceSetPathsMap=true
                 android.experimental.cacheCompileLibResources=true

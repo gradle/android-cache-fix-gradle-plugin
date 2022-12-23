@@ -57,6 +57,7 @@ jobs:
     needs: [ generate_versions, sanity_check ]
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
     steps:

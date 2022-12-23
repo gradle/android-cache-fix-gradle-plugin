@@ -83,9 +83,7 @@ gradleEnterprise {
                         ${kotlinPluginDependencyIfEnabled}
                     }
                 }
-plugins {
-  id "io.github.cdsap.kotlinprocess" version "0.1"
-}
+
             """.stripIndent()
         if (kotlinEnabled) {
             writeKotlinClass(library, libPackage, libraryActivity)
@@ -142,7 +140,7 @@ plugins {
 
         file("gradle.properties") << """
                 android.useAndroidX=true
-                org.gradle.jvmargs=-Xmx2G
+                org.gradle.jvmargs=-Xmx2048m -Dkotlin.daemon.jvm.options=-Xmx1500m
                 kapt.use.worker.api=${kaptWorkersEnabled}
                 android.experimental.enableSourceSetPathsMap=true
                 android.experimental.cacheCompileLibResources=true

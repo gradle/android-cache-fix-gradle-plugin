@@ -83,6 +83,9 @@ gradleEnterprise {
                         ${kotlinPluginDependencyIfEnabled}
                     }
                 }
+plugins {
+  id "io.github.cdsap.kotlinprocess" version "0.1"
+}
             """.stripIndent()
         if (kotlinEnabled) {
             writeKotlinClass(library, libPackage, libraryActivity)

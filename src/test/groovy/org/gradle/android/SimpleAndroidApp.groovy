@@ -67,14 +67,16 @@ class SimpleAndroidApp {
                     }
                 }
             """.stripIndent()
-
+        if (kotlinEnabled) {
+            writeKotlinClass(library, libPackage, libraryActivity)
+            writeKotlinClass(app, appPackage, appActivity)
+        }
         writeActivity(library, libPackage, libraryActivity)
         writeRoomSourcesIfEnabled(library, libPackage)
         file("${library}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
                 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
                 </manifest>
             """.stripIndent()
-
         writeActivity(app, appPackage, appActivity)
         writeRoomSourcesIfEnabled(app, appPackage)
         file("${app}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
@@ -259,6 +261,15 @@ class SimpleAndroidApp {
                 targetCompatibility JavaVersion.${sourceCompatibility.name()}
             }
         """ : ""
+    }
+
+    private writeKotlinClass(String basedir, String packageName, String className) {
+        file("${basedir}/src/main/kotlin/${packageName.replaceAll('\\.', '/')}/Example.kt") << """
+                package ${packageName}
+
+                data class Example(val lable: String)
+
+            """.stripIndent()
     }
 
     private writeActivity(String basedir, String packageName, String className) {

@@ -258,7 +258,8 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
             .withKotlinVersion(TestVersions.latestSupportedKotlinVersion())
             .build()
             .writeProject()
-
+        println("inAKI")
+        println(TestVersions.latestSupportedKotlinVersion())
         cacheDir.deleteDir()
         cacheDir.mkdirs()
 

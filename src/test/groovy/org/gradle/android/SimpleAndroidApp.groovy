@@ -268,7 +268,7 @@ class SimpleAndroidApp {
         file("${basedir}/src/main/kotlin/${packageName.replaceAll('\\.', '/')}/Foo.kt") << """
                 package ${packageName}
 
-                data class Foo(val lable: String)
+                data class Foo(val label: String)
 
             """.stripIndent()
     }

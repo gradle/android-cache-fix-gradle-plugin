@@ -67,7 +67,10 @@ class SimpleAndroidApp {
                     }
                 }
             """.stripIndent()
-
+        if (kotlinEnabled) {
+            writeKotlinClass(library, libPackage, libraryActivity)
+            writeKotlinClass(app, appPackage, appActivity)
+        }
         writeActivity(library, libPackage, libraryActivity)
         writeRoomSourcesIfEnabled(library, libPackage)
         file("${library}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
@@ -120,7 +123,7 @@ class SimpleAndroidApp {
 
         file("gradle.properties") << """
                 android.useAndroidX=true
-                org.gradle.jvmargs=-Xmx2048m
+                org.gradle.jvmargs=-Xmx2048m -Dkotlin.daemon.jvm.options=-Xmx1500m
                 kapt.use.worker.api=${kaptWorkersEnabled}
                 android.experimental.enableSourceSetPathsMap=true
                 android.experimental.cacheCompileLibResources=true
@@ -259,6 +262,15 @@ class SimpleAndroidApp {
                 targetCompatibility JavaVersion.${sourceCompatibility.name()}
             }
         """ : ""
+    }
+
+    private writeKotlinClass(String basedir, String packageName, String className) {
+        file("${basedir}/src/main/kotlin/${packageName.replaceAll('\\.', '/')}/Foo.kt") << """
+                package ${packageName}
+
+                data class Foo(val label: String)
+
+            """.stripIndent()
     }
 
     private writeActivity(String basedir, String packageName, String className) {

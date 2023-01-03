@@ -19,10 +19,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
-        def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
-        // There are kotlin module version errors when using older versions of kotlin with AGP 7.2.0+ in this configuration
-        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.2.0-alpha01") && kotlinVersionNumber < VersionNumber.parse("1.6.0"))
-
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))
@@ -85,14 +81,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers disabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
-        def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
-        // There are kotlin module version errors when using older versions of kotlin with AGP 7.2.0+ in this configuration
-        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.2.0-alpha01") && kotlinVersionNumber < VersionNumber.parse("1.5.0"))
-        // Since 7.4.0-alpha09, some AGP libraries are compiled with a newer Kotlin Compiler.
-        // Builds using KGP < 1.6.0 and AGP 7.4.0-alpha09+ cause metadata incompatibilities.
-        // https://issuetracker.google.com/issues/241287607
-        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.4.0-alpha09") && kotlinVersionNumber < VersionNumber.parse("1.6.0"))
-
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))
@@ -211,9 +199,9 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     @Unroll
     def "workaround is not applied with older Kotlin plugin version (Kotlin #kotlinVersion)"() {
-        Assume.assumeTrue(TestVersions.getLatestVersionForAndroid("3.6") != null)
+        Assume.assumeTrue(TestVersions.getLatestVersionForAndroid("7.3.1") != null)
 
-        def androidVersion = TestVersions.getLatestVersionForAndroid("3.6")
+        def androidVersion = TestVersions.getLatestVersionForAndroid("7.3.1")
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(kotlinVersion)
@@ -245,10 +233,10 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         and:
-        buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.3.70 or higher (found ${kotlinVersion}).")
+        buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.6.10 or higher (found ${kotlinVersion}).")
 
         where:
-        kotlinVersion << [ "1.3.61", "1.3.50" ].collect { VersionNumber.parse(it) }
+        kotlinVersion << [ "1.5.32" ].collect { VersionNumber.parse(it) }
     }
 
     @Unroll
@@ -461,9 +449,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
     @Issue("https://github.com/gradle/android-cache-fix-gradle-plugin/issues/353")
     @Unroll
     def "does not error when tasks are eagerly created (Android #androidVersion) (Kotlin #kotlinVersion)"() {
-        def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
-        // There are kotlin module version errors when using older versions of kotlin with AGP 7.2.0+ in this configuration
-        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.2.0-alpha01") && kotlinVersionNumber < VersionNumber.parse("1.6.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)

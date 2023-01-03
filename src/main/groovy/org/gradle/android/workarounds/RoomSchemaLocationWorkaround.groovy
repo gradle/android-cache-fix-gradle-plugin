@@ -215,7 +215,9 @@ class RoomSchemaLocationWorkaround implements Workaround {
             }
 
             project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach(configureKaptTask)
-            project.tasks.withType(kaptWithKotlincTaskClass).configureEach(configureKaptTask)
+            if (KOTLIN_VERSION < VersionNumber.parse("1.8.0")) {
+                project.tasks.withType(kaptWithKotlincTaskClass).configureEach(configureKaptTask)
+            }
 
             // Since we've added a new kapt-specific provider to the variant, disable the provider
             // used for the JavaCompile task.  This is not great, but there

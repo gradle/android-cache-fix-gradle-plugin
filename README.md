@@ -193,7 +193,7 @@ Use Android Cache Fix Plugin 2.4.6 when using an older Android Gradle Plugin ver
 
 ### Older Kotlin Gradle Plugin Versions
 Use Android Cache Fix Plugin 2.6.0 when using an older Kotlin Gradle Plugin version.
-* Supported Kotlin versions: 1.3.70+
+* Supported Kotlin versions: 1.3.72, 1.4.32, 1.5.32
 
 ## License
 

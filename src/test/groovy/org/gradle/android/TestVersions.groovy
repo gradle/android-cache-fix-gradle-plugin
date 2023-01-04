@@ -40,7 +40,7 @@ class TestVersions {
         return minorVersions.collect { getLatestVersionForAndroid(it) }
     }
 
-    static List<String> supportedKotlinVersions = ["1.6.10"]
+    static List<String> supportedKotlinVersions = ["1.6.21"]
 
     static VersionNumber oldestSupportedKotlinVersion() {
         return VersionNumber.parse(supportedKotlinVersions.first())

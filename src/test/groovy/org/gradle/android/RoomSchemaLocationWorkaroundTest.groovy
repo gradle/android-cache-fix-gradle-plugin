@@ -233,7 +233,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertMergedSchemaOutputsExist()
 
         and:
-        buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.6.10 or higher (found ${kotlinVersion}).")
+        buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.6.0 or higher (found ${kotlinVersion}).")
 
         where:
         kotlinVersion << [ "1.5.32" ].collect { VersionNumber.parse(it) }

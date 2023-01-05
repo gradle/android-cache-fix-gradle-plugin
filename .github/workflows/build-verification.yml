@@ -122,8 +122,8 @@ jobs:
           java-version: 17
           distribution: 'temurin'
       # Container is configured with Java17, however the Gradle Runner is inheriting the JAVA_HOME from
-      # the JAVA_HOME from the project Java configuration(11), in order to ensure the correct configuration
-      # of the build tests under the Gradle runner we are setting an env JAVA_HOME_AGENT with the JDK of the agent.
+      # the project Java configuration(11), in order to ensure the correct configuration of the build tests
+      # under the Gradle runner we are setting an env JAVA_HOME_AGENT with the JDK of the agent.
       # This variable is only used in the Java17 jobs and sets the java_home property in gradle.properties
       - name: Set java_home for Java17
         run: |

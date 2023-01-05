@@ -128,6 +128,7 @@ class SimpleAndroidApp {
                 android.experimental.enableSourceSetPathsMap=true
                 android.experimental.cacheCompileLibResources=true
                 android.defaults.buildfeatures.renderscript=false
+                ${setJava17IfEnabled()}
             """.stripIndent()
 
         configureAndroidSdkHome()
@@ -496,6 +497,12 @@ class SimpleAndroidApp {
                 implementation 'joda-time:joda-time:2.7'
             }
         """.stripIndent()
+    }
+
+    private static String setJava17IfEnabled() {
+        return System.getenv("JAVA_HOME_AGENT") != null ? """
+               org.gradle.java.home=${System.getenv("JAVA_HOME_AGENT")}
+         """ : ""
     }
 
     private void configureAndroidSdkHome() {

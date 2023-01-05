@@ -21,11 +21,11 @@ class Versions {
 
     static {
         def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
+        def versions17 = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions_17.json"))
 
         def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
-        versions.supportedVersions.each { String androidVersion, List<String> gradleVersions ->
-            builder.putAll(android(androidVersion), gradleVersions.collect { gradle(it) })
-        }
+        parseSupportedVersions(versions, builder)
+        parseSupportedVersions(versions17, builder)
         def matrix = builder.build()
 
         SUPPORTED_VERSIONS_MATRIX = matrix
@@ -33,6 +33,12 @@ class Versions {
         SUPPORTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
 
         CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
+    }
+
+    private static Object parseSupportedVersions(versions, builder) {
+        versions.supportedVersions.each { String androidVersion, List<String> gradleVersions ->
+            builder.putAll(android(androidVersion), gradleVersions.collect { gradle(it) })
+        }
     }
 
     static VersionNumber android(String version) {

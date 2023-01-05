@@ -171,12 +171,14 @@ githubRelease {
    targetCommitish = "main"
 }
 
-tasks.register('createReleaseTag', CreateGitTag) {
+def createReleaseTag = tasks.register('createReleaseTag', CreateGitTag) {
+    // Ensure tag is created only after successful publishing
+    mustRunAfter('publishPlugins')
     tagName = gitReleaseTag()
 }
 
 tasks.named("githubRelease").configure {
-    dependsOn("createReleaseTag")
+    dependsOn(createReleaseTag)
 }
 
 tasks.withType(Sign).configureEach {

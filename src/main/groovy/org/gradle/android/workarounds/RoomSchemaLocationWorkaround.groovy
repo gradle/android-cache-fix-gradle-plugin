@@ -48,13 +48,13 @@ import java.lang.reflect.Field
 class RoomSchemaLocationWorkaround implements Workaround {
     public static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.RoomSchemaLocationWorkaround.enabled"
     public static final String ROOM_SCHEMA_LOCATION = "room.schemaLocation"
-    private static final VersionNumber MINIMUM_KOTLIN_VERSION = VersionNumber.parse("1.4.32")
+    private static final VersionNumber MINIMUM_KOTLIN_VERSION = VersionNumber.parse("1.6.0")
     private static final VersionNumber KOTLIN_VERSION = getKotlinVersion()
 
     @Override
     boolean canBeApplied(Project project) {
         if (KOTLIN_VERSION != VersionNumber.UNKNOWN && KOTLIN_VERSION < MINIMUM_KOTLIN_VERSION) {
-            project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.4.32 or higher (found ${KOTLIN_VERSION.toString()}).")
+            project.logger.info("${this.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.6.0 or higher (found ${KOTLIN_VERSION.toString()}).")
             return false
         } else {
             return SystemPropertiesCompat.getBoolean(WORKAROUND_ENABLED_PROPERTY, project, true)
@@ -209,7 +209,11 @@ class RoomSchemaLocationWorkaround implements Workaround {
             }
 
             project.tasks.withType(kaptWithoutKotlincTaskClass).configureEach(configureKaptTask)
-            project.tasks.withType(kaptWithKotlincTaskClass).configureEach(configureKaptTask)
+            // Task KaptWithKotlincTask was removed in 1.8 because Kapt is always run via Gradle workers.
+            // https://github.com/JetBrains/kotlin/commit/b8b0b279ee2195ccbdce61e2365f123ee928532b
+            if (KOTLIN_VERSION < VersionNumber.parse("1.8.0")) {
+                project.tasks.withType(kaptWithKotlincTaskClass).configureEach(configureKaptTask)
+            }
 
             // Since we've added a new kapt-specific provider to the variant, disable the provider
             // used for the JavaCompile task.  This is not great, but there

@@ -1,5 +1,6 @@
 package org.gradle.android.workarounds.room.task
 
+import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.internal.file.FileOperations
@@ -18,6 +19,7 @@ import javax.inject.Inject
  * of those tasks if only a single variant is being assembled.
  */
 @DisableCachingByDefault(because = 'This is a disk bound copy/merge task.')
+@CompileStatic
 abstract class RoomSchemaLocationMergeTask extends DefaultTask {
 
     // Using older internal API to maintain compatibility with Gradle 5.x

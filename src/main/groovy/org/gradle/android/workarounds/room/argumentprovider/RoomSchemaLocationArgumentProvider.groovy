@@ -1,5 +1,6 @@
 package org.gradle.android.workarounds.room.argumentprovider
 
+import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
@@ -8,6 +9,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.process.CommandLineArgumentProvider
 
+@CompileStatic
 abstract class RoomSchemaLocationArgumentProvider implements CommandLineArgumentProvider {
     @Internal
     final Provider<Directory> configuredSchemaLocationDir

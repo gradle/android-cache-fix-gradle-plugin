@@ -1,5 +1,6 @@
 package org.gradle.android.workarounds.room
 
+import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.room.task.MergeAssociations
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
@@ -8,6 +9,7 @@ import org.gradle.api.provider.Provider
 
 import javax.inject.Inject
 
+@CompileStatic
 abstract class RoomExtension {
     DirectoryProperty schemaLocationDir
     MergeAssociations roomSchemaMergeLocations

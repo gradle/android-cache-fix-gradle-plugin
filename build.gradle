@@ -126,7 +126,7 @@ supportedVersions.keySet().each { androidVersion ->
 
         if (androidVersion >= "8.0.0-alpha10") {
             javaLauncher = javaToolchains.launcherFor {
-                languageVersion = JavaLanguageVersion.of(19)
+                languageVersion = JavaLanguageVersion.of(17)
             }
         }
     }

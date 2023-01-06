@@ -68,7 +68,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         def roomExtension = project.extensions.create("room", RoomExtension)
 
         // Grab fileOperations so we can do copy/sync operations
-        def fileOperations = new FileSchemaOperations(project.fileOperations)
+        def fileOperations = new FileSchemaOperations(project)
         def androidVariants = new ApplyAndroidVariants()
 
         // Create a task that will be used to merge the task-specific schema locations to the directory (or directories)

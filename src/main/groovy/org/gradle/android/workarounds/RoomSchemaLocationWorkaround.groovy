@@ -8,12 +8,12 @@ import org.gradle.android.workarounds.room.androidvariants.ConfigureVariants
 import org.gradle.android.workarounds.room.argumentprovider.JavaCompilerRoomSchemaLocationArgumentProvider
 import org.gradle.android.workarounds.room.argumentprovider.KaptRoomSchemaLocationArgumentProvider
 import org.gradle.android.workarounds.room.argumentprovider.RoomSchemaLocationArgumentProvider
-import org.gradle.android.workarounds.room.operations.FileSchemaOperations
 import org.gradle.android.workarounds.room.task.RoomSchemaLocationMergeTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.file.Directory
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
@@ -68,7 +68,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         def roomExtension = project.extensions.create("room", RoomExtension)
 
         // Grab fileOperations so we can do copy/sync operations
-        def fileOperations = new FileSchemaOperations(project)
+        def fileOperations = project.fileOperations
         def androidVariants = new ApplyAndroidVariants()
 
         // Create a task that will be used to merge the task-specific schema locations to the directory (or directories)
@@ -252,14 +252,20 @@ class RoomSchemaLocationWorkaround implements Workaround {
         }
     }
 
-    private static void copyExistingSchemasToTaskSpecificTmpDir(FileSchemaOperations fileOperations, Provider<Directory> existingSchemaDir, Provider<Directory> taskSpecificTmpDir) {
+    private static void copyExistingSchemasToTaskSpecificTmpDir(FileOperations fileOperations, Provider<Directory> existingSchemaDir, Provider<Directory> taskSpecificTmpDir) {
         // populate the task-specific tmp dir with any existing (non-generated) schemas
         // this allows other annotation processors that might operate on these schemas
         // to find them via the schema location argument
-        fileOperations.sync(existingSchemaDir,taskSpecificTmpDir)
+        if (existingSchemaDir.isPresent()) {
+
+            fileOperations.sync {
+                it.from(existingSchemaDir)
+                it.into(taskSpecificTmpDir)
+            }
+        }
     }
 
-    private static void copyExistingSchemasToTaskSpecificDirForJavaCompile(FileSchemaOperations fileOperations, Provider<Directory> existingSchemaDir, JavaCompilerRoomSchemaLocationArgumentProvider provider) {
+    private static void copyExistingSchemasToTaskSpecificDirForJavaCompile(FileOperations fileOperations, Provider<Directory> existingSchemaDir, JavaCompilerRoomSchemaLocationArgumentProvider provider) {
         // Derive the variant directory from the command line provider it is configured with
         def variantSpecificSchemaDir = provider.schemaLocationDir
 
@@ -267,7 +273,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         copyExistingSchemasToTaskSpecificTmpDir(fileOperations, existingSchemaDir, variantSpecificSchemaDir)
     }
 
-    private static void copyExistingSchemasToTaskSpecificTmpDirForKapt(FileSchemaOperations fileOperations, Provider<Directory> existingSchemaDir, KaptRoomSchemaLocationArgumentProvider provider) {
+    private static void copyExistingSchemasToTaskSpecificTmpDirForKapt(FileOperations fileOperations, Provider<Directory> existingSchemaDir, KaptRoomSchemaLocationArgumentProvider provider) {
         // Derive the variant directory from the command line provider it is configured with
         def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
 
@@ -275,7 +281,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
         copyExistingSchemasToTaskSpecificTmpDir(fileOperations, existingSchemaDir, temporaryVariantSpecificSchemaDir)
     }
 
-    private static void copyGeneratedSchemasToOutputDirForKapt(FileSchemaOperations fileOperations, KaptRoomSchemaLocationArgumentProvider provider) {
+    private static void copyGeneratedSchemasToOutputDirForKapt(FileOperations fileOperations, KaptRoomSchemaLocationArgumentProvider provider) {
         // Copy the generated generated schemas from the task-specific tmp dir to the
         // task-specific output dir.  This dance prevents the kapt task from clearing out
         // the existing schemas before the annotation processors run
@@ -283,7 +289,10 @@ class RoomSchemaLocationWorkaround implements Workaround {
         def variantSpecificSchemaDir = provider.schemaLocationDir
         def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
 
-        fileOperations.sync(temporaryVariantSpecificSchemaDir,variantSpecificSchemaDir)
+        fileOperations.sync {
+            it.from temporaryVariantSpecificSchemaDir
+            it.into variantSpecificSchemaDir
+        }
     }
 
     private static Field getAccessibleField(Class<?> clazz, String fieldName) {

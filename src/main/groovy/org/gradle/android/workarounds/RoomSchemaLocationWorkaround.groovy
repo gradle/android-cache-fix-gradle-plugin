@@ -3,28 +3,22 @@ package org.gradle.android.workarounds
 import org.gradle.android.AndroidIssue
 import org.gradle.android.VersionNumber
 import org.gradle.android.Versions
-import org.gradle.api.DefaultTask
+import org.gradle.android.workarounds.room.RoomExtension
+import org.gradle.android.workarounds.room.argumentprovider.JavaCompilerRoomSchemaLocationArgumentProvider
+import org.gradle.android.workarounds.room.argumentprovider.KaptRoomSchemaLocationArgumentProvider
+import org.gradle.android.workarounds.room.argumentprovider.RoomSchemaLocationArgumentProvider
+import org.gradle.android.workarounds.room.task.RoomSchemaLocationMergeTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.internal.file.FileOperations
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.process.CommandLineArgumentProvider
-import org.gradle.work.DisableCachingByDefault
 
-import javax.inject.Inject
 import java.lang.reflect.Field
 
 /**
@@ -366,122 +360,6 @@ class RoomSchemaLocationWorkaround implements Workaround {
         }
 
         return VersionNumber.UNKNOWN
-    }
-
-    static abstract class RoomExtension {
-        DirectoryProperty schemaLocationDir
-        MergeAssociations roomSchemaMergeLocations
-
-        @Inject
-        RoomExtension(ObjectFactory objectFactory) {
-            schemaLocationDir = objectFactory.directoryProperty()
-            roomSchemaMergeLocations = objectFactory.newInstance(MergeAssociations)
-        }
-
-        void registerOutputDirectory(Provider<Directory> outputDir) {
-            roomSchemaMergeLocations.registerMerge(schemaLocationDir, outputDir)
-        }
-    }
-
-    static abstract class RoomSchemaLocationArgumentProvider implements CommandLineArgumentProvider {
-        @Internal
-        final Provider<Directory> configuredSchemaLocationDir
-
-        @Internal
-        final Provider<Directory> schemaLocationDir
-
-        RoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
-            this.configuredSchemaLocationDir = configuredSchemaLocationDir
-            this.schemaLocationDir = schemaLocationDir
-        }
-
-        @Internal
-        protected String getSchemaLocationPath() {
-            return schemaLocationDir.get().asFile.absolutePath
-        }
-
-        @Override
-        Iterable<String> asArguments() {
-            if (configuredSchemaLocationDir.isPresent()) {
-                return ["-A${ROOM_SCHEMA_LOCATION}=${schemaLocationPath}" as String]
-            } else {
-                return []
-            }
-        }
-
-        @OutputDirectory
-        @Optional
-        Provider<Directory> getEffectiveSchemaLocationDir() {
-            return schemaLocationDir
-        }
-    }
-
-    static class JavaCompilerRoomSchemaLocationArgumentProvider extends RoomSchemaLocationArgumentProvider {
-        JavaCompilerRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
-            super(configuredSchemaLocationDir, schemaLocationDir)
-        }
-    }
-
-    static class KaptRoomSchemaLocationArgumentProvider extends RoomSchemaLocationArgumentProvider {
-        private Provider<Directory> temporarySchemaLocationDir
-
-        KaptRoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
-            super(configuredSchemaLocationDir, schemaLocationDir)
-            this.temporarySchemaLocationDir = schemaLocationDir.map {it.dir("../${it.asFile.name}Temp") }
-        }
-
-        @Override
-        protected String getSchemaLocationPath() {
-            return temporarySchemaLocationDir.get().asFile.absolutePath
-        }
-    }
-
-    static class MergeAssociations {
-        final ObjectFactory objectFactory
-        final Map<Provider<Directory>, ConfigurableFileCollection> mergeAssociations = [:]
-
-        @Inject
-        MergeAssociations(ObjectFactory objectFactory) {
-            this.objectFactory = objectFactory
-        }
-
-        void registerMerge(Provider<Directory> destination, Provider<Directory> source) {
-            if (!mergeAssociations.containsKey(destination)) {
-                mergeAssociations.put(destination, objectFactory.fileCollection())
-            }
-
-            mergeAssociations.get(destination).from(source)
-        }
-    }
-
-    /**
-     * This task is intentionally not incremental.  The intention here is to duplicate the behavior the user
-     * experiences when the workaround is not applied, which is to only write whatever schemas that were generated
-     * during this execution, even if they are incomplete (they really shouldn't be, though).
-     *
-     * We don't want to create task dependencies on the compile/kapt tasks because we don't want to force execution
-     * of those tasks if only a single variant is being assembled.
-     */
-    @DisableCachingByDefault(because = 'This is a disk bound copy/merge task.')
-    static abstract class RoomSchemaLocationMergeTask extends DefaultTask {
-
-        // Using older internal API to maintain compatibility with Gradle 5.x
-        @Inject abstract FileOperations getFileOperations()
-
-        @Internal
-        MergeAssociations roomSchemaMergeLocations
-
-        @TaskAction
-        void mergeSourcesToDestinations() {
-            roomSchemaMergeLocations.mergeAssociations.each { destination, source ->
-                logger.info("Merging schemas to ${destination.get().asFile}")
-                fileOperations.copy {
-                    it.duplicatesStrategy = DuplicatesStrategy.INCLUDE
-                    it.into(destination)
-                    it.from(source)
-                }
-            }
-        }
     }
 
     /**

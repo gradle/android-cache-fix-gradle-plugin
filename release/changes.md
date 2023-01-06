@@ -1,3 +1,0 @@
-- [NEW] - Support AGP `7.4.0-rc03` and `8.0.0-alpha11`
-- [FIX] - Error with Kotlin 1.8 : ClassNotFoundException: KaptWithKotlincTask
-- [FIX] - Apply jdkImage workaround to all variants

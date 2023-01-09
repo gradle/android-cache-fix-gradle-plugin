@@ -167,7 +167,8 @@ class SimpleAndroidApp {
             }
 
             dependencies {
-                ${roomLibraryIfEnabled}
+                ${roomRuntimeLibraryIfEnabled}
+                ${roomProcessorsIfEnabled}
                 ${kotlinDependenciesIfEnabled}
             }
 
@@ -195,10 +196,9 @@ class SimpleAndroidApp {
         """.stripIndent()
     }
 
-    private String getRoomLibraryIfEnabled() {
+    private String getRoomRuntimeLibraryIfEnabled() {
         return (roomConfiguration != RoomConfiguration.NO_LIBRARY) ? """
                 implementation "androidx.room:room-runtime:${ROOM_LIBRARY_VERSION}"
-                annotationProcessor "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
         """ : ""
     }
 
@@ -230,15 +230,15 @@ class SimpleAndroidApp {
 
     private String getKotlinDependenciesIfEnabled() {
         return kotlinEnabled ? """
-            ${kaptRoomDependencyIfEnabled}
             implementation "org.jetbrains.kotlin:kotlin-stdlib"
         """ : ""
     }
 
-    private String getKaptRoomDependencyIfEnabled() {
-        return (roomConfiguration != RoomConfiguration.NO_LIBRARY) ? """
-            kapt "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
-        """ : ""
+    private String getRoomProcessorsIfEnabled() {
+        return roomConfiguration != RoomConfiguration.NO_LIBRARY ?
+            kotlinEnabled ? """ kapt "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}" """
+                : """ annotationProcessor "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}" """
+            : """ """
     }
 
     private String getToolchainConfigurationIfEnabled() {

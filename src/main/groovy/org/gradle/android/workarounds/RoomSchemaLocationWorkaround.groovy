@@ -2,8 +2,9 @@ package org.gradle.android.workarounds
 
 import org.gradle.android.AndroidIssue
 import org.gradle.android.VersionNumber
-import org.gradle.android.Versions
 import org.gradle.android.workarounds.room.RoomExtension
+import org.gradle.android.workarounds.room.androidvariants.ApplyAndroidVariants
+import org.gradle.android.workarounds.room.androidvariants.ConfigureVariants
 import org.gradle.android.workarounds.room.argumentprovider.JavaCompilerRoomSchemaLocationArgumentProvider
 import org.gradle.android.workarounds.room.argumentprovider.KaptRoomSchemaLocationArgumentProvider
 import org.gradle.android.workarounds.room.argumentprovider.RoomSchemaLocationArgumentProvider
@@ -68,6 +69,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
         // Grab fileOperations so we can do copy/sync operations
         def fileOperations = project.fileOperations
+        def androidVariants = new ApplyAndroidVariants()
 
         // Create a task that will be used to merge the task-specific schema locations to the directory (or directories)
         // originally specified.  This allows us to fan out the generated output and keep good cacheability for the
@@ -78,7 +80,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
 
         boolean javaCompileSchemaGenerationEnabled = true
 
-        applyToAllAndroidVariants(project, new ConfigureVariants() {
+        androidVariants.applyToAllAndroidVariants(project, new ConfigureVariants() {
             @Override
             Closure<?> getOldVariantConfiguration() {
                 return { variant ->
@@ -88,7 +90,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                     errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet())
 
                     def variantSpecificSchemaDir = project.objects.directoryProperty()
-                    variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
+                    variantSpecificSchemaDir.set(androidVariants.getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
 
                     // Add a command line argument provider to the compile task argument providers
                     variant.javaCompileProvider.configure { JavaCompile task ->
@@ -108,7 +110,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                     errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet().get())
 
                     def variantSpecificSchemaDir = project.objects.directoryProperty()
-                    variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
+                    variantSpecificSchemaDir.set(androidVariants.getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
 
                     // Add a command line argument provider to the variant list of providers
                     variant.javaCompilation.annotationProcessor.argumentProviders.add(
@@ -158,12 +160,12 @@ class RoomSchemaLocationWorkaround implements Workaround {
             // The kapt task has a list of annotation processor providers which _is_ the list of providers
             // in the Android variant, so we can't just add a task-specific provider.  To handle kapt tasks,
             // we _have_ to add the task-specific provider to the variant.
-            applyToAllAndroidVariants(project, new ConfigureVariants() {
+            androidVariants.applyToAllAndroidVariants(project, new ConfigureVariants() {
                 @Override
                 Closure<?> getOldVariantConfiguration() {
                     return { variant ->
                         def variantSpecificSchemaDir = project.objects.directoryProperty()
-                        variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
+                        variantSpecificSchemaDir.set(androidVariants.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
                         variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
                     }
                 }
@@ -172,7 +174,7 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 Closure<?> getNewVariantConfiguration() {
                     return { variant ->
                         def variantSpecificSchemaDir = project.objects.directoryProperty()
-                        variantSpecificSchemaDir.set(getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
+                        variantSpecificSchemaDir.set(androidVariants.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
                         variant.javaCompilation.annotationProcessor.argumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
                     }
                 }
@@ -248,39 +250,6 @@ class RoomSchemaLocationWorkaround implements Workaround {
                 action.call(provider)
             }
         }
-    }
-
-    private static void applyToAllAndroidVariants(Project project, ConfigureVariants configureVariants) {
-        if (Versions.CURRENT_ANDROID_VERSION <= VersionNumber.parse("7.4.0-alpha01")) {
-            applyToAllAndroidVariantsWithOldVariantApi(project, configureVariants)
-        } else {
-            applyToAllAndroidVariantsWithNewVariantApi(project, configureVariants)
-        }
-    }
-
-    private static void applyToAllAndroidVariantsWithOldVariantApi(Project project, ConfigureVariants configureVariants) {
-        project.plugins.withId("com.android.application") {
-            def android = project.extensions.findByName("android")
-
-            android.applicationVariants.all(configureVariants.oldVariantConfiguration)
-        }
-
-        project.plugins.withId("com.android.library") {
-            def android = project.extensions.findByName("android")
-
-            android.libraryVariants.all(configureVariants.oldVariantConfiguration)
-        }
-    }
-
-    private static void applyToAllAndroidVariantsWithNewVariantApi(Project project, ConfigureVariants configureVariants) {
-        def androidComponents = project.extensions.findByName("androidComponents")
-        def selector = androidComponents.selector()
-        androidComponents.onVariants(selector.all(), configureVariants.newVariantConfiguration)
-    }
-
-    static File getVariantSpecificSchemaDir(Project project, String variantName) {
-        def schemaBaseDir = project.layout.buildDirectory.dir("roomSchemas").get().asFile
-        return new File(schemaBaseDir, variantName)
     }
 
     private static void copyExistingSchemasToTaskSpecificTmpDir(FileOperations fileOperations, Provider<Directory> existingSchemaDir, Provider<Directory> taskSpecificTmpDir) {
@@ -360,21 +329,5 @@ class RoomSchemaLocationWorkaround implements Workaround {
         }
 
         return VersionNumber.UNKNOWN
-    }
-
-    /**
-     * Represents equivalent configurations for AGP versions that support either the old or new variant APIs.
-     */
-    private interface ConfigureVariants {
-        /**
-         * The equivalent configuration for the old variant API.  Closure will receive a {@link com.android.build.gradle.api.BaseVariant}
-         * as the argument.
-         */
-        Closure<?> getOldVariantConfiguration();
-        /**
-         * The equivalient configuration for the new variant API.  Closure will receive a {@link com.android.build.api.variant.Variant}
-         * as the argument.
-         */
-        Closure<?> getNewVariantConfiguration();
     }
 }

@@ -1,0 +1,1 @@
+- [FIX] - Separating the processor dependency from the runtime dependency in Gradle Runner builds

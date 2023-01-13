@@ -149,13 +149,11 @@ class SimpleAndroidApp {
     }
 
     private String getPluginBlockConfiguration() {
-        if (pluginsBlockEnabled) {
-            return """
-                plugins{
-                    id 'org.gradle.android.cache-fix' version '$pluginVersion' $applyPluginInBlock
-                }
-            """.stripIndent()
-        } else ""
+        return pluginsBlockEnabled ? """
+                    plugins{
+                        id 'org.gradle.android.cache-fix' version '$pluginVersion' $applyPluginInBlock
+                    }
+                """.stripIndent() : ""
     }
 
     private String getApplyPluginInBlock() {
@@ -163,12 +161,9 @@ class SimpleAndroidApp {
     }
 
     private String getPluginBuildScriptClasspathConfiguration() {
-        if (!pluginsBlockEnabled) {
-            return """
+        return pluginsBlockEnabled ? "" : """
                 classpath "${pluginGroupId}:android-cache-fix-gradle-plugin:${pluginVersion}"
-
             """.stripIndent()
-        } else ""
     }
 
     static String getPluginVersion() {

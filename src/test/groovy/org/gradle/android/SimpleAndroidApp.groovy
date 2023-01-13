@@ -20,8 +20,10 @@ class SimpleAndroidApp {
     private final RoomConfiguration roomConfiguration
     private final String toolchainVersion
     private final JavaVersion sourceCompatibility
+    private final boolean pluginsBlockEnabled
+    private final boolean pluginAppliedInPluginBlock
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -32,6 +34,8 @@ class SimpleAndroidApp {
         this.roomConfiguration = roomConfiguration
         this.toolchainVersion = toolchainVersion
         this.sourceCompatibility = sourceCompatibility
+        this.pluginsBlockEnabled = pluginsBlockEnabled
+        this.pluginAppliedInPluginBlock = pluginAppliedInPluginBlock
     }
 
     def writeProject() {
@@ -44,6 +48,16 @@ class SimpleAndroidApp {
         def libraryActivity = 'LibraryActivity'
 
         file("settings.gradle") << """
+                pluginManagement {
+                    repositories {
+                        mavenCentral()
+                        gradlePluginPortal()
+                        google()
+                        maven {
+                            url = "${localRepo}"
+                        }
+                    }
+                }
                 buildCache {
                     local {
                         directory = "${cacheDir.absolutePath.replace(File.separatorChar, '/' as char)}"
@@ -62,10 +76,11 @@ class SimpleAndroidApp {
                     }
                     dependencies {
                         classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
-                        classpath "${pluginGroupId}:android-cache-fix-gradle-plugin:${pluginVersion}"
+                        ${pluginBuildScriptClasspathConfiguration}
                         ${kotlinPluginDependencyIfEnabled}
                     }
                 }
+                ${pluginBlockConfiguration}
             """.stripIndent()
         if (kotlinEnabled) {
             writeKotlinClass(library, libPackage, libraryActivity)
@@ -131,6 +146,24 @@ class SimpleAndroidApp {
             """.stripIndent()
 
         configureAndroidSdkHome()
+    }
+
+    private String getPluginBlockConfiguration() {
+        return pluginsBlockEnabled ? """
+                    plugins{
+                        id 'org.gradle.android.cache-fix' version '$pluginVersion' $applyPluginInBlock
+                    }
+                """.stripIndent() : ""
+    }
+
+    private String getApplyPluginInBlock() {
+        return pluginAppliedInPluginBlock ? "" : " apply false "
+    }
+
+    private String getPluginBuildScriptClasspathConfiguration() {
+        return pluginsBlockEnabled ? "" : """
+                classpath "${pluginGroupId}:android-cache-fix-gradle-plugin:${pluginVersion}"
+            """.stripIndent()
     }
 
     static String getPluginVersion() {
@@ -524,6 +557,8 @@ class SimpleAndroidApp {
         boolean dataBindingEnabled = true
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
+        boolean pluginsBlockEnabled = false
+        boolean pluginAppliedInPluginBlock = false
         RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
 
         VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
@@ -604,8 +639,19 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withPluginsBlockEnabled() {
+            this.pluginsBlockEnabled = true
+            return this
+        }
+
+        Builder withPluginsBlockEnabledApplyingThePlugin() {
+            this.pluginsBlockEnabled = true
+            this.pluginAppliedInPluginBlock = true
+            return this
+        }
+
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock)
         }
     }
 }

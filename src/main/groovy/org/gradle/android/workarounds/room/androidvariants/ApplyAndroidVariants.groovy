@@ -34,6 +34,16 @@ class ApplyAndroidVariants {
     }
 
     private static void applyToAllAndroidVariantsWithNewVariantApi(Project project, ConfigureVariants configureVariants) {
+        project.plugins.withId("com.android.application") {
+            configureNewVariants(project, configureVariants)
+        }
+
+        project.plugins.withId("com.android.library") {
+            configureNewVariants(project, configureVariants)
+        }
+    }
+
+    private static configureNewVariants(Project project, ConfigureVariants configureVariants){
         def androidComponents = project.extensions.findByName("androidComponents")
         def selector = androidComponents.selector()
         androidComponents.onVariants(selector.all(), configureVariants.newVariantConfiguration)

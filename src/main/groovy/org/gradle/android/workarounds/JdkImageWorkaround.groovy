@@ -98,9 +98,11 @@ class JdkImageWorkaround implements Workaround {
     }
 
     private static void applyToAllAndroidVariantsWithNewVariantApi(Project project, Closure<?> configureVariant) {
-        def androidComponents = project.extensions.findByName("androidComponents")
-        def selector = androidComponents.selector()
-        androidComponents.onVariants(selector.all(), configureVariant)
+        project.plugins.withId("com.android.base") {
+            def androidComponents = project.extensions.findByName("androidComponents")
+            def selector = androidComponents.selector()
+            androidComponents.onVariants(selector.all(), configureVariant)
+        }
     }
 
     static def applyRuntimeClasspathNormalization(Project project) {

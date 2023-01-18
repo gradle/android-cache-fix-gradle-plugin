@@ -19,7 +19,8 @@ class SimpleAndroidApp {
     private final boolean kaptWorkersEnabled
     private final RoomConfiguration roomConfiguration
     private final String toolchainVersion
-    private final JavaVersion sourceCompatibility
+    // TODO fix this in builder
+    private JavaVersion sourceCompatibility
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
 
@@ -75,7 +76,7 @@ class SimpleAndroidApp {
                         }
                     }
                     dependencies {
-                        classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
+                        classpath ('com.android.tools.build:gradle') { version { strictly '$androidVersion' } }
                         ${pluginBuildScriptClasspathConfiguration}
                         ${kotlinPluginDependencyIfEnabled}
                     }
@@ -289,6 +290,11 @@ class SimpleAndroidApp {
     }
 
     private String getSourceCompatibilityIfEnabled() {
+        // We need to set the source compatibility when the kotlin plugin is applied:
+        // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
+        if (kotlinEnabled && sourceCompatibility == null)  {
+            sourceCompatibility = JavaVersion.current()
+        }
         return (sourceCompatibility != null) ? """
             compileOptions {
                 sourceCompatibility JavaVersion.${sourceCompatibility.name()}

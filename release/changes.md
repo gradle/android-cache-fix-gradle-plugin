@@ -1,0 +1,1 @@
+ - [NEW] - Support AGP 8.1.0-alpha01 and 8.0.0-beta01

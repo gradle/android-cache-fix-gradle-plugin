@@ -36,7 +36,7 @@ import java.util.stream.Stream
  * than Java 9.  This normalizes out minor inconsequential differences between JDKs used to generate the
  * custom runtime and improve cache hits between environments.
  */
-@AndroidIssue(introducedIn = "7.1.0", fixedIn = ['7.4.0-alpha07'], link = "https://issuetracker.google.com/u/1/issues/234820480")
+@AndroidIssue(introducedIn = "7.1.0", link = "https://issuetracker.google.com/u/1/issues/234820480")
 class JdkImageWorkaround implements Workaround {
     static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.enabled"
 
@@ -53,13 +53,25 @@ class JdkImageWorkaround implements Workaround {
         applyRuntimeClasspathNormalization(project)
 
         applyToAllAndroidVariants(project) { variant ->
-            variant.javaCompileProvider.configure { JavaCompile task ->
-                def jdkImageInput = getJdkImageInput(task)
-                if (jdkImageInput != null) {
-                    setupExtractedJdkImageInputTransform(project, getJvmHome(task))
-                    replaceCommandLineProvider(task, jdkImageInput)
+            if (Versions.CURRENT_ANDROID_VERSION <= VersionNumber.parse("7.4.0-alpha01")) {
+                variant.javaCompileProvider.configure { JavaCompile task ->
+                    jdkTransform(project, task)
+                }
+            } else {
+                project.afterEvaluate {
+                    project.tasks.withType(JavaCompile).configureEach { task ->
+                        jdkTransform(project, task)
+                    }
                 }
             }
+        }
+    }
+
+    private static void jdkTransform(Project project, JavaCompile task) {
+        def jdkImageInput = getJdkImageInput(task)
+        if (jdkImageInput != null) {
+            setupExtractedJdkImageInputTransform(project, getJvmHome(task))
+            replaceCommandLineProvider(task, jdkImageInput)
         }
     }
 
@@ -94,6 +106,7 @@ class JdkImageWorkaround implements Workaround {
     static def applyRuntimeClasspathNormalization(Project project) {
         project.normalization { handler ->
             handler.runtimeClasspath {
+                it.ignore '**/java/lang/invoke/**'
                 it.metaInf { metaInfNormalization ->
                     metaInfNormalization.ignoreAttribute('Implementation-Version')
                     metaInfNormalization.ignoreAttribute('Implementation-Vendor')

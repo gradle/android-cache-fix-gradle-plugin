@@ -108,7 +108,6 @@ class JdkImageWorkaround implements Workaround {
     static def applyRuntimeClasspathNormalization(Project project) {
         project.normalization { handler ->
             handler.runtimeClasspath {
-                it.ignore '**/java/lang/invoke/**'
                 it.metaInf { metaInfNormalization ->
                     metaInfNormalization.ignoreAttribute('Implementation-Version')
                     metaInfNormalization.ignoreAttribute('Implementation-Vendor')

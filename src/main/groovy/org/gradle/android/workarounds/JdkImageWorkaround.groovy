@@ -53,16 +53,8 @@ class JdkImageWorkaround implements Workaround {
         applyRuntimeClasspathNormalization(project)
 
         applyToAllAndroidVariants(project) { variant ->
-            if (Versions.CURRENT_ANDROID_VERSION <= VersionNumber.parse("7.4.0-alpha01")) {
-                variant.javaCompileProvider.configure { JavaCompile task ->
-                    jdkTransform(project, task)
-                }
-            } else {
-                project.afterEvaluate {
-                    project.tasks.withType(JavaCompile).configureEach { task ->
-                        jdkTransform(project, task)
-                    }
-                }
+            variant.javaCompileProvider.configure { JavaCompile task ->
+                jdkTransform(project, task)
             }
         }
     }
@@ -75,15 +67,9 @@ class JdkImageWorkaround implements Workaround {
         }
     }
 
+    // Configuration for Old Variant API will drop in AGP 9. We will need to use a different
+    // approach to retrieve the variants using the new Variant API.
     private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
-        if (Versions.CURRENT_ANDROID_VERSION <= VersionNumber.parse("7.4.0-alpha01")) {
-            applyToAllAndroidVariantsWithOldVariantApi(project, configureVariant)
-        } else {
-            applyToAllAndroidVariantsWithNewVariantApi(project, configureVariant)
-        }
-    }
-
-    private static void applyToAllAndroidVariantsWithOldVariantApi(Project project, Closure<?> configureVariant) {
         project.plugins.withId("com.android.application") {
             def android = project.extensions.findByName("android")
             android.unitTestVariants.all(configureVariant)
@@ -94,14 +80,6 @@ class JdkImageWorkaround implements Workaround {
             def android = project.extensions.findByName("android")
             android.unitTestVariants.all(configureVariant)
             android.libraryVariants.all(configureVariant)
-        }
-    }
-
-    private static void applyToAllAndroidVariantsWithNewVariantApi(Project project, Closure<?> configureVariant) {
-        project.plugins.withId("com.android.base") {
-            def androidComponents = project.extensions.findByName("androidComponents")
-            def selector = androidComponents.selector()
-            androidComponents.onVariants(selector.all(), configureVariant)
         }
     }
 
@@ -188,6 +166,7 @@ class JdkImageWorkaround implements Workaround {
         interface Parameters extends TransformParameters {
             @Internal
             Provider<Directory> getJavaHome()
+
             void setJavaHome(Provider<Directory> javaHome)
         }
 
@@ -254,7 +233,7 @@ class JdkImageWorkaround implements Workaround {
 
         private static String serializeRequires(ModuleDescriptor.Requires requires) {
             String requireString
-            if (! requires.compiledVersion().empty) {
+            if (!requires.compiledVersion().empty) {
                 requireString = requires.name() + " (@" + requires.compiledVersion() + ")"
             } else {
                 requireString = requires.name()

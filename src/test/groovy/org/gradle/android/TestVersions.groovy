@@ -42,10 +42,6 @@ class TestVersions {
 
     static List<String> supportedKotlinVersions = ["1.6.21", "1.7.21", "1.8.0"]
 
-    static VersionNumber oldestSupportedKotlinVersion() {
-        return VersionNumber.parse(supportedKotlinVersions.first())
-    }
-
     static VersionNumber latestSupportedKotlinVersion() {
         return VersionNumber.parse(supportedKotlinVersions.last())
     }

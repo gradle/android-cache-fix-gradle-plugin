@@ -54,16 +54,12 @@ class JdkImageWorkaround implements Workaround {
 
         applyToAllAndroidVariants(project) { variant ->
             variant.javaCompileProvider.configure { JavaCompile task ->
-                jdkTransform(project, task)
+                def jdkImageInput = getJdkImageInput(task)
+                if (jdkImageInput != null) {
+                    setupExtractedJdkImageInputTransform(project, getJvmHome(task))
+                    replaceCommandLineProvider(task, jdkImageInput)
+                }
             }
-        }
-    }
-
-    private static void jdkTransform(Project project, JavaCompile task) {
-        def jdkImageInput = getJdkImageInput(task)
-        if (jdkImageInput != null) {
-            setupExtractedJdkImageInputTransform(project, getJvmHome(task))
-            replaceCommandLineProvider(task, jdkImageInput)
         }
     }
 

@@ -73,7 +73,6 @@ gradlePlugin {
 pluginBundle {
     website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
     vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
-
     tags = ['android', 'cache', 'fix']
 }
 

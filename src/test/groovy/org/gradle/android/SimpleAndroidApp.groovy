@@ -75,7 +75,7 @@ class SimpleAndroidApp {
                         }
                     }
                     dependencies {
-                        classpath ('com.android.tools.build:gradle:$androidVersion') { force = true }
+                        classpath ('com.android.tools.build:gradle') { version { strictly '$androidVersion' } }
                         ${pluginBuildScriptClasspathConfiguration}
                         ${kotlinPluginDependencyIfEnabled}
                     }
@@ -289,10 +289,16 @@ class SimpleAndroidApp {
     }
 
     private String getSourceCompatibilityIfEnabled() {
-        return (sourceCompatibility != null) ? """
+        def currentSourceCompatibility = sourceCompatibility
+        // We need to set the source compatibility when the Kotlin plugin is applied and using AGP 7.4+
+        // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
+        if (kotlinEnabled && currentSourceCompatibility == null)  {
+            currentSourceCompatibility = JavaVersion.current()
+        }
+        return (currentSourceCompatibility != null) ? """
             compileOptions {
-                sourceCompatibility JavaVersion.${sourceCompatibility.name()}
-                targetCompatibility JavaVersion.${sourceCompatibility.name()}
+                sourceCompatibility JavaVersion.${currentSourceCompatibility.name()}
+                targetCompatibility JavaVersion.${currentSourceCompatibility.name()}
             }
         """ : ""
     }
@@ -575,11 +581,6 @@ class SimpleAndroidApp {
             this.cacheDir = cacheDir
         }
 
-        Builder withDataBindingDisabled() {
-            this.dataBindingEnabled = false
-            return this
-        }
-
         Builder withKotlinDisabled() {
             this.kotlinEnabled = false
             return this
@@ -621,11 +622,6 @@ class SimpleAndroidApp {
 
         Builder withProjectDir(File projectDir) {
             this.projectDir = projectDir
-            return this
-        }
-
-        Builder withCacheDir(File cacheDir) {
-            this.cacheDir = cacheDir
             return this
         }
 

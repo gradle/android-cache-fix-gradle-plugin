@@ -34,11 +34,7 @@ class ApplyAndroidVariants {
     }
 
     private static void applyToAllAndroidVariantsWithNewVariantApi(Project project, ConfigureVariants configureVariants) {
-        project.plugins.withId("com.android.application") {
-            configureNewVariants(project, configureVariants)
-        }
-
-        project.plugins.withId("com.android.library") {
+        project.plugins.withId("com.android.base") {
             configureNewVariants(project, configureVariants)
         }
     }

@@ -36,7 +36,7 @@ import java.util.stream.Stream
  * than Java 9.  This normalizes out minor inconsequential differences between JDKs used to generate the
  * custom runtime and improve cache hits between environments.
  */
-@AndroidIssue(introducedIn = "7.1.0", fixedIn = ['7.4.0-alpha07'], link = "https://issuetracker.google.com/u/1/issues/234820480")
+@AndroidIssue(introducedIn = "7.1.0", link = "https://issuetracker.google.com/u/1/issues/234820480")
 class JdkImageWorkaround implements Workaround {
     static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.enabled"
 
@@ -63,15 +63,9 @@ class JdkImageWorkaround implements Workaround {
         }
     }
 
+    // Configuration for Old Variant API will drop in AGP 9. We will need to use a different
+    // approach to retrieve the variants using the new Variant API.
     private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
-        if (Versions.CURRENT_ANDROID_VERSION <= VersionNumber.parse("7.4.0-alpha01")) {
-            applyToAllAndroidVariantsWithOldVariantApi(project, configureVariant)
-        } else {
-            applyToAllAndroidVariantsWithNewVariantApi(project, configureVariant)
-        }
-    }
-
-    private static void applyToAllAndroidVariantsWithOldVariantApi(Project project, Closure<?> configureVariant) {
         project.plugins.withId("com.android.application") {
             def android = project.extensions.findByName("android")
             android.unitTestVariants.all(configureVariant)
@@ -83,12 +77,6 @@ class JdkImageWorkaround implements Workaround {
             android.unitTestVariants.all(configureVariant)
             android.libraryVariants.all(configureVariant)
         }
-    }
-
-    private static void applyToAllAndroidVariantsWithNewVariantApi(Project project, Closure<?> configureVariant) {
-        def androidComponents = project.extensions.findByName("androidComponents")
-        def selector = androidComponents.selector()
-        androidComponents.onVariants(selector.all(), configureVariant)
     }
 
     static def applyRuntimeClasspathNormalization(Project project) {
@@ -174,6 +162,7 @@ class JdkImageWorkaround implements Workaround {
         interface Parameters extends TransformParameters {
             @Internal
             Provider<Directory> getJavaHome()
+
             void setJavaHome(Provider<Directory> javaHome)
         }
 
@@ -240,7 +229,7 @@ class JdkImageWorkaround implements Workaround {
 
         private static String serializeRequires(ModuleDescriptor.Requires requires) {
             String requireString
-            if (! requires.compiledVersion().empty) {
+            if (!requires.compiledVersion().empty) {
                 requireString = requires.name() + " (@" + requires.compiledVersion() + ")"
             } else {
                 requireString = requires.name()

@@ -53,18 +53,20 @@ class JdkImageWorkaround implements Workaround {
         applyRuntimeClasspathNormalization(project)
 
         applyToAllAndroidVariants(project) { variant ->
-            variant.javaCompileProvider.configure { JavaCompile task ->
-                def jdkImageInput = getJdkImageInput(task)
-                if (jdkImageInput != null) {
-                    setupExtractedJdkImageInputTransform(project, getJvmHome(task))
-                    replaceCommandLineProvider(task, jdkImageInput)
+            if (Versions.CURRENT_ANDROID_VERSION <= VersionNumber.parse("7.4.0-alpha01")) {
+                variant.javaCompileProvider.configure { JavaCompile task ->
+                    jdkTransform(project, task)
+                }
+            } else {
+                project.afterEvaluate {
+                    project.tasks.withType(JavaCompile).configureEach { task ->
+                        jdkTransform(project, task)
+                    }
                 }
             }
         }
     }
 
-    // Configuration for Old Variant API will drop in AGP 9. We will need to use a different
-    // approach to retrieve the variants using the new Variant API.
     private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
         project.plugins.withId("com.android.application") {
             def android = project.extensions.findByName("android")
@@ -82,6 +84,7 @@ class JdkImageWorkaround implements Workaround {
     static def applyRuntimeClasspathNormalization(Project project) {
         project.normalization { handler ->
             handler.runtimeClasspath {
+                it.ignore '**/java/lang/invoke/**'
                 it.metaInf { metaInfNormalization ->
                     metaInfNormalization.ignoreAttribute('Implementation-Version')
                     metaInfNormalization.ignoreAttribute('Implementation-Vendor')

@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     def versions = [
-        'agp': '7.0.4',
+        'agp': '7.4.0',
         'sdkBuildTools': '30.0.4',
         'spock': '2.2-M1-groovy-3.0',
     ]

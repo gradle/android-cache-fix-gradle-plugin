@@ -1,2 +1,1 @@
- - [NEW] - Support AGP 8.1.0-alpha02 and 8.0.0-beta01
- - [FIX] - Cache miss with AGP 7.4 (#416)
+

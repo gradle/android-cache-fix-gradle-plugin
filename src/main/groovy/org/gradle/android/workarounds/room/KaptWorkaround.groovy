@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.file.Directory
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 
@@ -70,16 +71,17 @@ class KaptWorkaround extends AnnotationProcessorWorkaround<KaptRoomSchemaLocatio
     @Override
     void configureWorkaroundTask(Task task) {
         def annotationProcessorOptionProviders = getAccessibleField(task.class, "annotationProcessorOptionProviders").get(task)
-
+        def fileOperations = project.fileOperations
+        def schemaLocationDir = roomExtension.schemaLocationDir
         task.doFirst onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
-            copyExistingSchemasToTaskSpecificTmpDir(roomExtension.schemaLocationDir, provider)
+            KaptWorkaround.copyExistingSchemasToTaskSpecificTmpDir(fileOperations, schemaLocationDir, provider)
         }
 
         task.doLast onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
-            copyGeneratedSchemasToOutput(provider)
+            KaptWorkaround.copyGeneratedSchemasToOutput(fileOperations, provider)
         }
 
-        task.finalizedBy onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { roomExtension.schemaLocationDir.isPresent() ? mergeTask : null }
+        task.finalizedBy onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { schemaLocationDir.isPresent() ? mergeTask : null }
 
         TaskExecutionGraph taskGraph = task.project.gradle.taskGraph
         taskGraph.whenReady onlyIfAnnotationProcessorConfiguredForKapt(annotationProcessorOptionProviders) { KaptRoomSchemaLocationArgumentProvider provider ->
@@ -89,22 +91,20 @@ class KaptWorkaround extends AnnotationProcessorWorkaround<KaptRoomSchemaLocatio
         }
     }
 
-    @Override
-    void copyExistingSchemasToTaskSpecificTmpDir(Provider<Directory> existingSchemaDir, KaptRoomSchemaLocationArgumentProvider provider) {
+    static void copyExistingSchemasToTaskSpecificTmpDir(FileOperations fileOperations, Provider<Directory> existingSchemaDir, KaptRoomSchemaLocationArgumentProvider provider) {
         if (existingSchemaDir.isPresent()) {
             def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
-            project.fileOperations.sync {
+            fileOperations.sync {
                 it.from existingSchemaDir
                 it.into temporaryVariantSpecificSchemaDir
             }
         }
     }
 
-    @Override
-    void copyGeneratedSchemasToOutput(KaptRoomSchemaLocationArgumentProvider provider) {
+    static void copyGeneratedSchemasToOutput(FileOperations fileOperations, KaptRoomSchemaLocationArgumentProvider provider) {
         def variantSpecificSchemaDir = provider.schemaLocationDir
         def temporaryVariantSpecificSchemaDir = provider.temporarySchemaLocationDir
-        project.fileOperations.sync {
+        fileOperations.sync {
             it.from temporaryVariantSpecificSchemaDir
             it.into variantSpecificSchemaDir
         }

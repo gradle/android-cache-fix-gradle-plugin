@@ -9,6 +9,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.file.Directory
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
@@ -79,13 +80,14 @@ class JavaCompileWorkaround extends AnnotationProcessorWorkaround<JavaCompilerRo
     @Override
     void configureWorkaroundTask(Task task) {
         TaskExecutionGraph taskGraph = task.project.gradle.taskGraph
-
+        def fileOperations = project.fileOperations
+        def schemaLocationDir = roomExtension.schemaLocationDir
         taskGraph.whenReady {
             if (taskGraph.hasTask(task)) {
                 if (javaCompileSchemaGenerationEnabled) {
                     // Seed the task-specific generated schema dir with the existing schemas
                     task.doFirst onlyIfAnnotationProcessorConfiguredForJavaCompile(task.options.compilerArgumentProviders) { JavaCompilerRoomSchemaLocationArgumentProvider provider ->
-                        copyExistingSchemasToTaskSpecificTmpDir(roomExtension.schemaLocationDir, provider)
+                        JavaCompileWorkaround.copyExistingSchemasToTaskSpecificTmpDir(fileOperations, schemaLocationDir, provider)
                     }
 
                     // Register the generated schemas to be merged back to the original specified schema directory
@@ -113,20 +115,15 @@ class JavaCompileWorkaround extends AnnotationProcessorWorkaround<JavaCompilerRo
         }
     }
 
-    @Override
-    void copyExistingSchemasToTaskSpecificTmpDir(Provider<Directory> existingSchemaDir, JavaCompilerRoomSchemaLocationArgumentProvider provider) {
+    static void copyExistingSchemasToTaskSpecificTmpDir(FileOperations fileOperations, Provider<Directory> existingSchemaDir, JavaCompilerRoomSchemaLocationArgumentProvider provider) {
         // Derive the variant directory from the command line provider it is configured with
         def variantSpecificSchemaDir = provider.schemaLocationDir
 
         // Populate the variant-specific temporary schema dir with the existing schemas
-        project.fileOperations.sync {
+        fileOperations.sync {
             it.from existingSchemaDir
             it.into variantSpecificSchemaDir
         }
-    }
-
-    @Override
-    void copyGeneratedSchemasToOutput(JavaCompilerRoomSchemaLocationArgumentProvider provider) {
     }
 
     private static Closure onlyIfAnnotationProcessorConfiguredForJavaCompile(def argumentProviders, Closure<?> action) {

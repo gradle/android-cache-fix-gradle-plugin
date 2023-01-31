@@ -26,8 +26,4 @@ abstract class AnnotationProcessorWorkaround<T> {
     abstract void initWorkaround()
 
     abstract void configureWorkaroundTask(Task task)
-
-    abstract void copyExistingSchemasToTaskSpecificTmpDir(Provider<Directory> existingSchemaDir, T provider)
-
-    abstract void copyGeneratedSchemasToOutput(T provider)
 }

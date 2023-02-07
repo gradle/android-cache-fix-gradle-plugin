@@ -39,18 +39,22 @@ class KaptWorkaround extends AnnotationProcessorWorkaround<KaptRoomSchemaLocatio
             @Override
             Closure<?> getOldVariantConfiguration() {
                 return { variant ->
-                    def variantSpecificSchemaDir = project.objects.directoryProperty()
-                    variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
-                    variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+                    if (!kspIsAppliedWithRoom()) {
+                        def variantSpecificSchemaDir = project.objects.directoryProperty()
+                        variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
+                        variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+                    }
                 }
             }
 
             @Override
             Closure<?> getNewVariantConfiguration() {
                 return { variant ->
-                    def variantSpecificSchemaDir = project.objects.directoryProperty()
-                    variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
-                    variant.javaCompilation.annotationProcessor.argumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+                    if (!kspIsAppliedWithRoom()) {
+                        def variantSpecificSchemaDir = project.objects.directoryProperty()
+                        variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
+                        variant.javaCompilation.annotationProcessor.argumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+                    }
                 }
             }
         })

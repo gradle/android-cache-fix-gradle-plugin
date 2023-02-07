@@ -26,4 +26,18 @@ abstract class AnnotationProcessorWorkaround<T> {
     abstract void initWorkaround()
 
     abstract void configureWorkaroundTask(Task task)
+
+    boolean kspIsAppliedWithRoom() {
+        if (project.configurations.find { it.name == "ksp" } != null) {
+            boolean found = false
+            project.configurations.findByName("ksp").dependencies.forEach {
+                if (it.name == "room-compiler") {
+                    found = true
+                }
+            }
+            return found
+        } else {
+            return false
+        }
+    }
 }

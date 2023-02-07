@@ -30,7 +30,11 @@ abstract class RoomSchemaLocationArgumentProvider implements CommandLineArgument
     @Override
     Iterable<String> asArguments() {
         if (configuredSchemaLocationDir.isPresent()) {
-            return ["-A${RoomSchemaLocationWorkaround.ROOM_SCHEMA_LOCATION}=${schemaLocationPath}" as String]
+            if (this instanceof KspRoomSchemaLocationArgumentProvider) {
+                return ["${RoomSchemaLocationWorkaround.ROOM_SCHEMA_LOCATION}=${schemaLocationPath}" as String]
+            } else {
+                return ["-A${RoomSchemaLocationWorkaround.ROOM_SCHEMA_LOCATION}=${schemaLocationPath}" as String]
+            }
         } else {
             return []
         }

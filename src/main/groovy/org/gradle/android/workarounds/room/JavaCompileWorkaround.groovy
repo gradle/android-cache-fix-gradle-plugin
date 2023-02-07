@@ -36,38 +36,41 @@ class JavaCompileWorkaround extends AnnotationProcessorWorkaround<JavaCompilerRo
             @Override
             Closure<?> getOldVariantConfiguration() {
                 return { variant ->
-                    // Make sure that the annotation processor argument has not been explicitly configured in the Android
-                    // configuration (i.e. we only want this configured through the room extension)
-                    Map<String, String> arguments = variant.javaCompileOptions.annotationProcessorOptions.arguments
-                    errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet())
+                    if (!kspIsAppliedWithRoom()) {
+                        // Make sure that the annotation processor argument has not been explicitly configured in the Android
+                        // configuration (i.e. we only want this configured through the room extension)
+                        Map<String, String> arguments = variant.javaCompileOptions.annotationProcessorOptions.arguments
+                        errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet())
 
-                    def variantSpecificSchemaDir = project.objects.directoryProperty()
-                    variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
+                        def variantSpecificSchemaDir = project.objects.directoryProperty()
+                        variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
 
-                    // Add a command line argument provider to the compile task argument providers
-                    variant.javaCompileProvider.configure { JavaCompile task ->
-                        task.options.compilerArgumentProviders.add(
-                            new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
-                        )
+                        // Add a command line argument provider to the compile task argument providers
+                        variant.javaCompileProvider.configure { JavaCompile task ->
+                            task.options.compilerArgumentProviders.add(
+                                new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
+                            )
+                        }
                     }
-
                 }
             }
 
             @Override
             Closure<?> getNewVariantConfiguration() {
                 return { variant ->
-                    // Make sure that the annotation processor argument has not been explicitly configured in the Android
-                    // configuration (i.e. we only want this configured through the room extension
-                    MapProperty<String, String> arguments = variant.javaCompilation.annotationProcessor.arguments
-                    errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet().get())
+                    if (!kspIsAppliedWithRoom()) {
+                        // Make sure that the annotation processor argument has not been explicitly configured in the Android
+                        // configuration (i.e. we only want this configured through the room extension
+                        MapProperty<String, String> arguments = variant.javaCompilation.annotationProcessor.arguments
+                        errorIfRoomSchemaAnnotationArgumentSet(arguments.keySet().get())
 
-                    def variantSpecificSchemaDir = project.objects.directoryProperty()
-                    variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
+                        def variantSpecificSchemaDir = project.objects.directoryProperty()
+                        variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
 
-                    variant.javaCompilation.annotationProcessor.argumentProviders.add(
-                        new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
-                    )
+                        variant.javaCompilation.annotationProcessor.argumentProviders.add(
+                            new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
+                        )
+                    }
                 }
             }
         })

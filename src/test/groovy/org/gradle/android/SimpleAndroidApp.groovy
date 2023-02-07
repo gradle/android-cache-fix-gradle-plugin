@@ -22,8 +22,10 @@ class SimpleAndroidApp {
     private final JavaVersion sourceCompatibility
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
+    private final boolean kspEnabled
+    private final String kspVersion
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock, boolean kspEnabled, String kspVersion) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -36,6 +38,8 @@ class SimpleAndroidApp {
         this.sourceCompatibility = sourceCompatibility
         this.pluginsBlockEnabled = pluginsBlockEnabled
         this.pluginAppliedInPluginBlock = pluginAppliedInPluginBlock
+        this.kspEnabled = kspEnabled
+        this.kspVersion = kspVersion
     }
 
     def writeProject() {
@@ -81,6 +85,7 @@ class SimpleAndroidApp {
                     }
                 }
                 ${pluginBlockConfiguration}
+                ${pluginKspIfEnabled}
             """.stripIndent()
         if (kotlinEnabled) {
             writeKotlinClass(library, libPackage, libraryActivity)
@@ -152,6 +157,7 @@ class SimpleAndroidApp {
         return pluginsBlockEnabled ? """
                     plugins{
                         id 'org.gradle.android.cache-fix' version '$pluginVersion' $applyPluginInBlock
+                        $pluginKspIfEnabled
                     }
                 """.stripIndent() : ""
     }
@@ -185,7 +191,24 @@ class SimpleAndroidApp {
     private String getKotlinPluginDependencyIfEnabled() {
         return kotlinEnabled ? """
             classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
-        """ : ""
+        """.stripIndent() : ""
+    }
+
+    private String getPluginKspIfEnabled() {
+        return kspEnabled ?
+            pluginAppliedInPluginBlock ? """
+                ${kspPlugin}
+            """.stripIndent()
+                : """
+            plugins {
+                ${kspPlugin}
+             }
+            """.stripIndent()
+            : ""
+    }
+
+    private String getKspPlugin() {
+        return "id 'com.google.devtools.ksp' version '${kspVersion}'"
     }
 
     private subprojectConfiguration(String androidPlugin, String namespace) {
@@ -257,21 +280,36 @@ class SimpleAndroidApp {
     private String getKotlinPluginsIfEnabled() {
         return kotlinEnabled ? """
             apply plugin: "kotlin-android"
-            apply plugin: "kotlin-kapt"
+            ${processor}
         """ : ""
+    }
+
+    private String getProcessor() {
+        return kspEnabled ? """
+          apply plugin: "com.google.devtools.ksp"
+        """.stripIndent() : """
+          apply plugin: "kotlin-kapt"
+        """.stripIndent()
     }
 
     private String getKotlinDependenciesIfEnabled() {
         return kotlinEnabled ? """
             implementation "org.jetbrains.kotlin:kotlin-stdlib"
-        """ : ""
+        """.stripIndent() : ""
     }
 
     private String getRoomProcessorsIfEnabled() {
         return roomConfiguration != RoomConfiguration.NO_LIBRARY ?
-            kotlinEnabled ? """ kapt "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}" """
-                : """ annotationProcessor "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}" """
-            : """ """
+            kotlinEnabled ?
+                kspEnabled ?
+                    """ ksp ${roomProcessorLib} """
+                    : """ kapt ${roomProcessorLib} """
+                : """ annotationProcessor ${roomProcessorLib} """
+            : ""
+    }
+
+    private static String getRoomProcessorLib() {
+        return "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
     }
 
     private String getToolchainConfigurationIfEnabled() {
@@ -292,7 +330,7 @@ class SimpleAndroidApp {
         def currentSourceCompatibility = sourceCompatibility
         // We need to set the source compatibility when the Kotlin plugin is applied and using AGP 7.4+
         // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-        if (kotlinEnabled && currentSourceCompatibility == null)  {
+        if (kotlinEnabled && currentSourceCompatibility == null) {
             currentSourceCompatibility = JavaVersion.current()
         }
         return (currentSourceCompatibility != null) ? """
@@ -565,6 +603,8 @@ class SimpleAndroidApp {
         boolean kaptWorkersEnabled = true
         boolean pluginsBlockEnabled = false
         boolean pluginAppliedInPluginBlock = false
+        boolean kspEnabled = false
+        String kspVersion = ""
         RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
 
         VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
@@ -646,8 +686,14 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withKspVersion(String kspVersion) {
+            this.kspEnabled = true
+            this.kspVersion = kspVersion
+            return this
+        }
+
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock, kspEnabled, kspVersion)
         }
     }
 }

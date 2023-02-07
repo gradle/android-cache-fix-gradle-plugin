@@ -11,11 +11,7 @@ import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 @MultiVersionTest
-class RoomSchemaLocationWorkaroundTest extends AbstractTest {
-    private static final String[] CLEAN_BUILD = ["clean", "testDebug", "testRelease", "assembleAndroidTest", "--build-cache", "--stacktrace"]
-    private static final String[] INCREMENTAL_DEBUG_BUILD = ["assembleDebug", "--build-cache", "--stacktrace"]
-    private static final List<String> ALL_PROJECTS = ["app", "library"]
-    private static final List<String> ALL_VARIANTS = ["debug", "release"]
+class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
 
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
@@ -236,7 +232,7 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         buildResult.output.contains("${RoomSchemaLocationWorkaround.class.simpleName} is only compatible with Kotlin Gradle plugin version 1.6.0 or higher (found ${kotlinVersion}).")
 
         where:
-        kotlinVersion << [ "1.5.32" ].collect { VersionNumber.parse(it) }
+        kotlinVersion << ["1.5.32"].collect { VersionNumber.parse(it) }
     }
 
     @Unroll
@@ -496,22 +492,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         """
     }
 
-    void assertNotExecuted(buildResult, String taskPath) {
-        assert !buildResult.tasks.collect {it.path }.contains(taskPath)
-    }
-
-    void assertCompileTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome, List<String> variants = ALL_VARIANTS) {
-        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, variants) { project, variant -> ":${project}:compile${variant.capitalize()}JavaWithJavac" }
-    }
-
-    void assertCompileAndroidTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
-        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, ["debug"]) { project, variant -> ":${project}:compile${variant.capitalize()}AndroidTestJavaWithJavac" }
-    }
-
-    void assertCompileUnitTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome, List<String> variants = ALL_VARIANTS) {
-        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, variants) { project, variant -> ":${project}:compile${variant.capitalize()}UnitTestJavaWithJavac" }
-    }
-
     void assertKaptTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome, List<String> variants = ALL_VARIANTS) {
         assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, variants) { project, variant -> ":${project}:kapt${variant.capitalize()}Kotlin" }
     }
@@ -522,14 +502,6 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
 
     void assertKaptUnitTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome, List<String> variants = ALL_VARIANTS) {
         assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, variants) { project, variant -> ":${project}:kapt${variant.capitalize()}UnitTestKotlin" }
-    }
-
-    void assertAllVariantTasksHaveOutcome(BuildResult buildResult, TaskOutcome taskOutcome, List<String> projects, List<String> variants, Closure<String> taskPathTransform) {
-        projects.each { project ->
-            variants.each { variant ->
-                assert buildResult.task(taskPathTransform.call(project, variant)).outcome == taskOutcome
-            }
-        }
     }
 
     void assertKaptSchemaOutputsExist() {
@@ -554,52 +526,8 @@ class RoomSchemaLocationWorkaroundTest extends AbstractTest {
         assertSchemasExist("library", "build/roomSchemas/compile${variant.capitalize()}JavaWithJavac")
     }
 
-    void assertMergedSchemaOutputsExist() {
-        // Merged schemas
-        assertSchemasExist("app", "schemas")
-        assertSchemasExist("library", "schemas")
-    }
-
-    void assertSchemasExist(String project, String baseDirPath) {
-        assert file("${roomSchemaDirPath(project, baseDirPath)}/1.json").exists()
-        assert file("${roomSchemaDirPath(project, baseDirPath)}/2.json").exists()
-        assertLegacySchemaUnchanged(file("${roomSchemaDirPath(project, baseDirPath)}/1.json"))
-    }
-
-    static String roomSchemaDirPath(String project, String baseDirPath) {
-        return "${project}/${baseDirPath}/org.gradle.android.example.${project}.AppDatabase"
-    }
-
-    void modifyRoomColumnName(String oldColumnName, String newColumnName) {
-        modifyRoomColumnName("app", oldColumnName, newColumnName)
-        modifyRoomColumnName("library", oldColumnName, newColumnName)
-    }
-
     void assertKaptSchemaContainsColumnFor(String columnName, String variant) {
         assertRoomSchemaContainsColumn("app", "build/roomSchemas/kapt${variant.capitalize()}Kotlin", columnName)
         assertRoomSchemaContainsColumn("library", "build/roomSchemas/kapt${variant.capitalize()}Kotlin", columnName)
-    }
-
-    void assertMergedRoomSchemaContainsColumn(String columnName) {
-        assertRoomSchemaContainsColumn("app", 'schemas', columnName)
-        assertRoomSchemaContainsColumn("library", 'schemas', columnName)
-    }
-
-    void assertRoomSchemaContainsColumn(String project, String baseDirPath, String columnName) {
-        assert file("${roomSchemaDirPath(project, 'schemas')}/2.json").text.contains("\"columnName\": \"${columnName}\",")
-    }
-
-    void modifyRoomColumnName(String project, String oldColumnName, String newColumnName) {
-        def migrationSourceFile = file("${project}/src/main/java/org/gradle/android/example/${project}/AppDatabase.java")
-        migrationSourceFile.text = migrationSourceFile.text.replaceAll("ADD COLUMN ${oldColumnName}", "ADD COLUMN ${newColumnName}")
-        assert migrationSourceFile.text.contains("ADD COLUMN ${newColumnName}")
-
-        def schemaSourceFile = file("${project}/src/main/java/org/gradle/android/example/${project}/JavaUser.java")
-        schemaSourceFile.text = schemaSourceFile.text.replaceAll("ColumnInfo\\(name = .${oldColumnName}.\\)", "ColumnInfo(name = \"${newColumnName}\")")
-        assert schemaSourceFile.text.contains("@ColumnInfo(name = \"${newColumnName}\")")
-    }
-
-    static void assertLegacySchemaUnchanged(File legacySchemaFile) {
-        assert legacySchemaFile.text == SimpleAndroidApp.legacySchemaContents
     }
 }

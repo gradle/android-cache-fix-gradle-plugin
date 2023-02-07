@@ -302,9 +302,9 @@ class SimpleAndroidApp {
         return roomConfiguration != RoomConfiguration.NO_LIBRARY ?
             kotlinEnabled ?
                 kspEnabled ?
-                    """ ksp ${roomProcessorLib} """
-                    : """ kapt ${roomProcessorLib} """
-                : """ annotationProcessor ${roomProcessorLib} """
+                    """ ksp "${roomProcessorLib}" """
+                    : """ kapt "${roomProcessorLib}" """
+                : """ annotationProcessor "${roomProcessorLib}" """
             : ""
     }
 

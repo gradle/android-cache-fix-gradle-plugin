@@ -36,20 +36,20 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
         variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "${task.name}"))
         task.commandLineArgumentProviders.add(new KspRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
 
-        task.doFirst onlyIfSymbolProcessorConfiguredForKsp(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
+        task.doFirst onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
             KspWorkaround.copyExistingSchemasToTaskSpecificTmpDir(fileOperations, roomExtension.schemaLocationDir, provider)
         }
 
-        task.doLast onlyIfSymbolProcessorConfiguredForKsp(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
+        task.doLast onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
             KspWorkaround.copyGeneratedSchemasToOutput(fileOperations, provider)
         }
 
-        task.finalizedBy onlyIfSymbolProcessorConfiguredForKsp(task.commandLineArgumentProviders) {
+        task.finalizedBy onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) {
             roomExtension.schemaLocationDir.isPresent() ? mergeTask : null
         }
 
         TaskExecutionGraph taskGraph = project.gradle.taskGraph
-        taskGraph.whenReady onlyIfSymbolProcessorConfiguredForKsp(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
+        taskGraph.whenReady onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
             if (taskGraph.hasTask(task)) {
                 roomExtension.registerOutputDirectory(provider.schemaLocationDir)
             }
@@ -79,7 +79,7 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
         return Class.forName("com.google.devtools.ksp.gradle.KspTaskJvm")
     }
 
-    private static Closure onlyIfSymbolProcessorConfiguredForKsp(def commandLineArgumentProviders, Closure<?> action) {
+    private static Closure onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(def commandLineArgumentProviders, Closure<?> action) {
         return {
             def provider = commandLineArgumentProviders.get().find { it instanceof KspRoomSchemaLocationArgumentProvider }
             if (provider != null) {

@@ -15,8 +15,6 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
     def "schemas are generated with Ksp into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion) (Ksp #kspVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
         def kspVersionNumber = VersionNumber.parse(kspVersion)
-        // There are kotlin module version errors when using older versions of kotlin with AGP 7.2.0+ in this configuration
-        Assume.assumeFalse(androidVersion >= VersionNumber.parse("7.2.0-alpha01") && kotlinVersionNumber < VersionNumber.parse("1.5.0"))
         // Using Kotlin 1.8.0 with Ksp 1.7.22 throws java.lang.NoClassDefFoundError: org/jetbrains/kotlin/gradle/dsl/KotlinJvmOptionsImpl
         Assume.assumeFalse(kotlinVersionNumber >= VersionNumber.parse("1.8.0") && kspVersionNumber == VersionNumber.parse("1.7.22-1.0.8"))
 

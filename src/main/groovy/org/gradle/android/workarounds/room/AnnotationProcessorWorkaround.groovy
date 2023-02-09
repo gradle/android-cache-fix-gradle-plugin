@@ -30,7 +30,7 @@ abstract class AnnotationProcessorWorkaround<T> {
     boolean kspIsAppliedWithRoom() {
         if (project.configurations.find { it.name == "ksp" } != null) {
             boolean found = false
-            project.configurations.findByName("ksp").dependencies.forEach {
+            project.configurations.named("ksp").get().dependencies.forEach {
                 if (it.name == "room-compiler") {
                     found = true
                 }

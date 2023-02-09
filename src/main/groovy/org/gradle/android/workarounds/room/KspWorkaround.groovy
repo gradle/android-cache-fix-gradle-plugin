@@ -22,9 +22,11 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
 
     @Override
     void initWorkaround() {
-        project.tasks.withType(kspTaskClass).configureEach {
-            if (kspIsAppliedWithRoom()) {
-                configureWorkaroundTask(it)
+        project.afterEvaluate {
+            project.tasks.withType(kspTaskClass).configureEach {
+                if (kspIsAppliedWithRoom()) {
+                    configureWorkaroundTask(it)
+                }
             }
         }
     }

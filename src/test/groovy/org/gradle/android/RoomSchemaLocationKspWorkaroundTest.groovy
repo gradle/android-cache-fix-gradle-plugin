@@ -12,16 +12,16 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
 
     @Unroll
-    def "schemas are generated with Ksp into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion) (Ksp #kspVersion)"() {
+    def "schemas are generated with Ksp into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
-        def kspVersionNumber = VersionNumber.parse(kspVersion)
-        // Using Kotlin 1.8.0 with Ksp 1.7.22 throws java.lang.NoClassDefFoundError: org/jetbrains/kotlin/gradle/dsl/KotlinJvmOptionsImpl
-        Assume.assumeFalse(kotlinVersionNumber >= VersionNumber.parse("1.8.0") && kspVersionNumber == VersionNumber.parse("1.7.22-1.0.8"))
+
+        // Kotlin supported versions doesn't include the Ksp 1.6 version
+        Assume.assumeFalse(kotlinVersionNumber <= VersionNumber.parse("1.7.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))
-            .withKspVersion(kspVersion)
+            .withKspEnabled()
             .build()
             .writeProject()
 
@@ -76,22 +76,20 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, kotlinVersion, kspVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions, TestVersions.supportedKspVersions].combinations()
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions.keySet()].combinations()
     }
 
     @Unroll
-    def "schemas are correctly generated with Ksp when only one variant is built incrementally  (Android #androidVersion) (Kotlin #kotlinVersion) (Ksp #kspVersion)"() {
-
+    def "schemas are correctly generated with Ksp when only one variant is built incrementally  (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
-        def kspVersionNumber = VersionNumber.parse(kspVersion)
 
-        // Using Kotlin 1.8.0 with Ksp 1.7.22 throws java.lang.NoClassDefFoundError: org/jetbrains/kotlin/gradle/dsl/KotlinJvmOptionsImpl
-        Assume.assumeFalse(kotlinVersionNumber >= VersionNumber.parse("1.8.0") && kspVersionNumber == VersionNumber.parse("1.7.22-1.0.8"))
+        // Kotlin supported versions doesn't include the Ksp 1.6 version
+        Assume.assumeFalse(kotlinVersionNumber <= VersionNumber.parse("1.7.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))
-            .withKspVersion(kspVersion)
+            .withKspEnabled()
             .build()
             .writeProject()
 
@@ -156,7 +154,7 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, kotlinVersion, kspVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions, TestVersions.supportedKspVersions].combinations()
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions.keySet()].combinations()
 
     }
 

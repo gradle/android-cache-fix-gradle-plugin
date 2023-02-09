@@ -72,7 +72,7 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions].combinations()
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions.keySet()].combinations()
     }
 
     @Unroll
@@ -135,7 +135,7 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions].combinations()
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions.keySet()].combinations()
     }
 
     @Unroll
@@ -483,7 +483,7 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
 
         where:
         //noinspection GroovyAssignabilityCheck
-        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions].combinations()
+        [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions.keySet()].combinations()
     }
 
     private static String getEagerlyCreateJavaCompileTasks() {

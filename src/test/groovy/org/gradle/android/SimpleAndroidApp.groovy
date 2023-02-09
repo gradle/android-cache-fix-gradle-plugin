@@ -23,9 +23,8 @@ class SimpleAndroidApp {
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
     private final boolean kspEnabled
-    private final String kspVersion
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock, boolean kspEnabled, String kspVersion) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock, boolean kspEnabled) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -39,7 +38,6 @@ class SimpleAndroidApp {
         this.pluginsBlockEnabled = pluginsBlockEnabled
         this.pluginAppliedInPluginBlock = pluginAppliedInPluginBlock
         this.kspEnabled = kspEnabled
-        this.kspVersion = kspVersion
     }
 
     def writeProject() {
@@ -208,7 +206,7 @@ class SimpleAndroidApp {
     }
 
     private String getKspPlugin() {
-        return "id 'com.google.devtools.ksp' version '${kspVersion}'"
+        return "id 'com.google.devtools.ksp' version '${TestVersions.supportedKotlinVersions[kotlinVersion.toString()]}'"
     }
 
     private subprojectConfiguration(String androidPlugin, String namespace) {
@@ -604,7 +602,6 @@ class SimpleAndroidApp {
         boolean pluginsBlockEnabled = false
         boolean pluginAppliedInPluginBlock = false
         boolean kspEnabled = false
-        String kspVersion = ""
         RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
 
         VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
@@ -686,14 +683,13 @@ class SimpleAndroidApp {
             return this
         }
 
-        Builder withKspVersion(String kspVersion) {
+        Builder withKspEnabled() {
             this.kspEnabled = true
-            this.kspVersion = kspVersion
             return this
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock, kspEnabled, kspVersion)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock, kspEnabled)
         }
     }
 }

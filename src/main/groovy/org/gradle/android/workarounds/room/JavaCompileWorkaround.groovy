@@ -116,13 +116,15 @@ class JavaCompileWorkaround extends AnnotationProcessorWorkaround<JavaCompilerRo
     }
 
     static void copyExistingSchemasToTaskSpecificTmpDir(FileOperations fileOperations, Provider<Directory> existingSchemaDir, JavaCompilerRoomSchemaLocationArgumentProvider provider) {
-        // Derive the variant directory from the command line provider it is configured with
-        def variantSpecificSchemaDir = provider.schemaLocationDir
+        if (existingSchemaDir.isPresent()) {
+            // Derive the variant directory from the command line provider it is configured with
+            def variantSpecificSchemaDir = provider.schemaLocationDir
 
-        // Populate the variant-specific temporary schema dir with the existing schemas
-        fileOperations.sync {
-            it.from existingSchemaDir
-            it.into variantSpecificSchemaDir
+            // Populate the variant-specific temporary schema dir with the existing schemas
+            fileOperations.sync {
+                it.from existingSchemaDir
+                it.into variantSpecificSchemaDir
+            }
         }
     }
 

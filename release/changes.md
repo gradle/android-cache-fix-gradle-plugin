@@ -1,1 +1,0 @@
-- [FIX] - JavaCompileWorkaround throws 'Cannot query the value of this property because it has no value available' (#432)

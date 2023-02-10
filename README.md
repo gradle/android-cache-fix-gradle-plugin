@@ -18,7 +18,7 @@
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions. For other versions, please see [older versions.](#older-android-gradle-plugin-versions)
 
 * Supported Gradle versions: 7.0+
-* Supported Android Gradle Plugin versions: 7.0.4, 7.1.3, 7.2.2, 7.3.1, 7.4.1, 8.0.0-beta01, and 8.1.0-alpha02
+* Supported Android Gradle Plugin versions: 7.0.4, 7.1.3, 7.2.2, 7.3.1, 7.4.1, 8.0.0-beta02, and 8.1.0-alpha04
 * Supported Kotlin versions: 1.6.0+
 
 We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 7.0.1), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.
@@ -44,7 +44,7 @@ This plugin should be applied anywhere the `com.android.application` or `com.and
 // in build.grade for convention plugin build
 dependencies {
     // ...
-    implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.6.3")
+    implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.6.4")
     // ...
 }
 
@@ -65,7 +65,7 @@ plugins {
 // in build.grade.kts for convention plugin build
 dependencies {
   // ...
-  implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.6.3")
+  implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.6.4")
   // ...
 }
 
@@ -78,7 +78,7 @@ plugins {
 ```
 </details>
 
-If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '2.6.3' to the latest version of the cache fix plugin
+If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '2.6.4' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)). We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#sec:convention_plugins_vs_cross_configuration).
 
 <details open>
@@ -87,7 +87,7 @@ If you are not using convention plugins and would like a quick way of testing th
 
 ```groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "2.6.3" apply false
+    id "org.gradle.android.cache-fix" version "2.6.4" apply false
 }
 
 subprojects {
@@ -103,7 +103,7 @@ subprojects {
 
 ```kotlin
 plugins {
-    id("org.gradle.android.cache-fix") version "2.6.3" apply false
+    id("org.gradle.android.cache-fix") version "2.6.4" apply false
 }
 
 subprojects {

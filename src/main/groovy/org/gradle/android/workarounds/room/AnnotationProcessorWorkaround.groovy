@@ -26,23 +26,4 @@ abstract class AnnotationProcessorWorkaround<T> {
     abstract void initWorkaround()
 
     abstract void configureWorkaroundTask(Task task)
-
-    /**
-     * We favor ksp over kapt and apt in projects with multiple processors configured. If Ksp is applied and using
-     * the room-compiler, kapt and apt workarounds won't be applied.
-     * @return true if the project is applying Ksp with the room-compiler, false if not
-     */
-    boolean kspIsAppliedWithRoom() {
-        if (project.configurations.find { it.name == "ksp" } != null) {
-            boolean found = false
-            project.configurations.named("ksp").get().dependencies.forEach {
-                if (it.name == "room-compiler") {
-                    found = true
-                }
-            }
-            return found
-        } else {
-            return false
-        }
-    }
 }

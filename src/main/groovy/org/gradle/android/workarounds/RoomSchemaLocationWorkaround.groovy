@@ -63,15 +63,21 @@ class RoomSchemaLocationWorkaround implements Workaround {
             roomSchemaMergeLocations = roomExtension.roomSchemaMergeLocations
         }
 
-        JavaCompileWorkaround javaCompileRoomTask = JavaCompileWorkaround.create(project, roomExtension, mergeTask)
 
-        project.plugins.withId("kotlin-kapt") {
-            KaptWorkaround.create(project, roomExtension, mergeTask)
-            javaCompileRoomTask.javaCompileSchemaGenerationEnabled = false
-        }
-
-        project.plugins.withId("com.google.devtools.ksp") {
-            KspWorkaround.create(project, roomExtension, mergeTask)
+        // We favor ksp over kapt and apt in projects with multiple processors configured. If Ksp is applied and using
+        // the room-compiler, kapt and apt workarounds won't be applied.
+        if (project.configurations.find { it.name == "ksp" } != null) {
+            project.configurations.named("ksp").get().withDependencies {
+                if (it.name.contains("room-compiler")) {
+                    KspWorkaround.create(project, roomExtension, mergeTask)
+                }
+            }
+        } else {
+            JavaCompileWorkaround javaCompileRoomTask = JavaCompileWorkaround.create(project, roomExtension, mergeTask)
+            project.plugins.withId("kotlin-kapt") {
+                KaptWorkaround.create(project, roomExtension, mergeTask)
+                javaCompileRoomTask.javaCompileSchemaGenerationEnabled = false
+            }
         }
     }
 }

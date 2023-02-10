@@ -143,7 +143,6 @@ class SimpleAndroidApp {
                 android.useAndroidX=true
                 org.gradle.jvmargs=-Xmx2048m -Dkotlin.daemon.jvm.options=-Xmx1500m
                 kapt.use.worker.api=${kaptWorkersEnabled}
-                org.gradle.daemon=false
                 android.experimental.enableSourceSetPathsMap=true
                 android.experimental.cacheCompileLibResources=true
                 android.defaults.buildfeatures.renderscript=false
@@ -329,7 +328,7 @@ class SimpleAndroidApp {
         def currentSourceCompatibility = sourceCompatibility
         // We need to set the source compatibility when the Kotlin plugin is applied and using AGP 7.4+
         // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-        if (kotlinEnabled && currentSourceCompatibility == null) {
+        if (kotlinEnabled && currentSourceCompatibility == null)  {
             currentSourceCompatibility = JavaVersion.current()
         }
         return (currentSourceCompatibility != null) ? """

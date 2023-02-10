@@ -11,6 +11,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 
 class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationArgumentProvider> {
+    public static final String KSP_TASK = "com.google.devtools.ksp.gradle.KspTaskJvm_Decorated"
 
     KspWorkaround(Project project, RoomExtension extension, TaskProvider<RoomSchemaLocationMergeTask> mergeTask) {
         super(project, extension, mergeTask)
@@ -22,12 +23,8 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
 
     @Override
     void initWorkaround() {
-        project.afterEvaluate {
-            project.tasks.withType(kspTaskClass).configureEach {
-                if (kspIsAppliedWithRoom()) {
-                    configureWorkaroundTask(it)
-                }
-            }
+        project.tasks.matching({ it.class.name == KSP_TASK }).configureEach {
+            configureWorkaroundTask(it)
         }
     }
 
@@ -77,10 +74,6 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
         }
     }
 
-    private static Class<?> getKspTaskClass() {
-        return Class.forName("com.google.devtools.ksp.gradle.KspTaskJvm")
-    }
-
     private static Closure onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(def commandLineArgumentProviders, Closure<?> action) {
         return {
             def provider = commandLineArgumentProviders.get().find { it instanceof KspRoomSchemaLocationArgumentProvider }
@@ -89,4 +82,5 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
             }
         }
     }
+
 }

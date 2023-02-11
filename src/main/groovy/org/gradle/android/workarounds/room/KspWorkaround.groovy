@@ -82,5 +82,4 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
             }
         }
     }
-
 }

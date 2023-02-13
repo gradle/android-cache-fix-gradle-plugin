@@ -60,6 +60,17 @@ class SimpleAndroidApp {
                         }
                     }
                 }
+                plugins {
+                   id("com.gradle.enterprise") version "3.11.3"
+                   id("com.gradle.common-custom-user-data-gradle-plugin") version "1.7.2"
+                }
+                gradleEnterprise {
+                   server = "https://ge.solutions-team.gradle.com/"
+                   accessKey = "${System.getenv("GRADLE_ENTERPRISE_ACCESS_KEY").toString().split("=")[1]}
+                   buildScan {
+                       publishAlways()
+                   }
+                }
                 buildCache {
                     local {
                         directory = "${cacheDir.absolutePath.replace(File.separatorChar, '/' as char)}"
@@ -82,8 +93,12 @@ class SimpleAndroidApp {
                         ${kotlinPluginDependencyIfEnabled}
                     }
                 }
-                ${pluginBlockConfiguration}
-                ${pluginKspIfEnabled}
+                plugins{
+                       id 'org.gradle.android.cache-fix' version '$pluginVersion' $applyPluginInBlock
+                       $pluginKspIfEnabled
+                       id "io.github.cdsap.testprocess" version "0.1"
+                       id "io.github.cdsap.kotlinprocess" version "0.1.1"
+                }
             """.stripIndent()
         if (kotlinEnabled) {
             writeKotlinClass(library, libPackage, libraryActivity)
@@ -194,13 +209,8 @@ class SimpleAndroidApp {
 
     private String getPluginKspIfEnabled() {
         return kspEnabled ?
-            pluginAppliedInPluginBlock ? """
+             """
                 ${kspPlugin}
-            """.stripIndent()
-                : """
-            plugins {
-                ${kspPlugin}
-             }
             """.stripIndent()
             : ""
     }

@@ -25,7 +25,7 @@ dependencies {
     def versions = [
         'agp': '7.0.4',
         'sdkBuildTools': '30.0.4',
-        'spock': '2.2-M1-groovy-3.0',
+        'spock': '2.3-groovy-3.0',
     ]
 
     compileOnly gradleApi()

@@ -69,6 +69,7 @@ class SimpleAndroidApp {
                    accessKey = "${System.getenv("GRADLE_ENTERPRISE_ACCESS_KEY").toString().split("=")[1]}"
                    buildScan {
                        publishAlways()
+                       tag "${System.getenv("AGPVERSION")}"
                    }
                 }
                 buildCache {

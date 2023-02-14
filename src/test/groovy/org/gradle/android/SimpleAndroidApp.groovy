@@ -158,7 +158,7 @@ class SimpleAndroidApp {
 
         file("gradle.properties") << """
                 android.useAndroidX=true
-                org.gradle.jvmargs=-Xmx2048m -XX:+UseParallelGC -Dkotlin.daemon.jvm.options=-Xmx1024m,-Xms256m,-XX:MaxMetaspaceSize=1g
+                org.gradle.jvmargs=-Xmx2048m -XX:+UseParallelGC -Dkotlin.daemon.jvm.options=-Xmx1536m,-Xms256m,-XX:MaxMetaspaceSize=1g
                 kapt.use.worker.api=${kaptWorkersEnabled}
                 org.gradle.daemon=false
                 android.experimental.enableSourceSetPathsMap=true

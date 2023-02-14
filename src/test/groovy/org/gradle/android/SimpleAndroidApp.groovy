@@ -77,6 +77,7 @@ class SimpleAndroidApp {
                         directory = "${cacheDir.absolutePath.replace(File.separatorChar, '/' as char)}"
                     }
                 }
+                rootProject.name = 'testst-android-cache-fix-gradle'
             """.stripIndent()
 
         file("build.gradle") << """

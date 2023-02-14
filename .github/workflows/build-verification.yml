@@ -96,7 +96,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run integration tests
-        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+        run: ./gradlew testAndroid${{ matrix.versions }} -Dscan.tag.${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
           AGPVERSION: ${{ matrix.versions }}

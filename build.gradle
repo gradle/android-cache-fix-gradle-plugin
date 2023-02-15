@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     def versions = [
-        'agp': '7.0.4',
+        'agp': '7.3.1',
         'sdkBuildTools': '30.0.4',
         'spock': '2.3-groovy-3.0',
     ]
@@ -60,22 +60,19 @@ java {
 
 // Main plugin publishing metadata
 gradlePlugin {
+    website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+    vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
+
     plugins {
         androidCacheFixPlugin {
             id = 'org.gradle.android.cache-fix'
             displayName = 'Gradle Android cache fix plugin'
             description = 'Gradle plugin to fix Android caching problems'
             implementationClass = 'org.gradle.android.AndroidCacheFixPlugin'
+            tags.addAll('android', 'cache', 'fix')
         }
     }
 }
-
-pluginBundle {
-    website = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
-    vcsUrl = 'https://github.com/gradle/android-cache-fix-gradle-plugin'
-    tags = ['android', 'cache', 'fix']
-}
-
 
 // A local repo we publish our library to for testing in order to workaround limitations
 // in the TestKit plugin classpath.

@@ -3,8 +3,6 @@ package org.gradle.android.workarounds
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
-import org.gradle.android.VersionNumber
-import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
 import org.gradle.api.artifacts.transform.InputArtifact
@@ -209,17 +207,22 @@ class JdkImageWorkaround implements Workaround {
         static String serializeDescriptor(ModuleDescriptor descriptor) {
             StringBuilder sb = new StringBuilder()
 
-            if (descriptor.isOpen())
+            if (descriptor.isOpen()) {
                 sb.append("open ")
+            }
             sb.append("module { name: ").append(descriptor.name())
-            if (!descriptor.requires().isEmpty())
+            if (!descriptor.requires().isEmpty()) {
                 sb.append(", ").append(descriptor.requires().sort().collect { serializeRequires(it) })
-            if (!descriptor.uses().isEmpty())
+            }
+            if (!descriptor.uses().isEmpty()) {
                 sb.append(", uses: ").append(descriptor.uses().sort())
-            if (!descriptor.exports().isEmpty())
+            }
+            if (!descriptor.exports().isEmpty()) {
                 sb.append(", exports: ").append(descriptor.exports().sort().collect { serializeExports(it) })
-            if (!descriptor.opens().isEmpty())
+            }
+            if (!descriptor.opens().isEmpty()) {
                 sb.append(", opens: ").append(descriptor.opens().sort().collect { serializeOpens(it) })
+            }
             if (!descriptor.provides().isEmpty()) {
                 sb.append(", provides: ").append(descriptor.provides().sort().collect { serializeProvides(it) })
             }
@@ -239,18 +242,20 @@ class JdkImageWorkaround implements Workaround {
 
         private static String serializeExports(ModuleDescriptor.Exports exports) {
             String s = withSerializedMods(exports.modifiers(), exports.source())
-            if (exports.targets().isEmpty())
+            if (exports.targets().isEmpty()) {
                 return s;
-            else
+            } else {
                 return s + " to " + exports.targets().sort()
+            }
         }
 
         private static String serializeOpens(ModuleDescriptor.Opens opens) {
             String s = withSerializedMods(opens.modifiers(), opens.source())
-            if (opens.targets().isEmpty())
+            if (opens.targets().isEmpty()) {
                 return s;
-            else
+            } else {
                 return s + " to " + opens.targets().sort()
+            }
         }
 
         private static String serializeProvides(ModuleDescriptor.Provides provides) {

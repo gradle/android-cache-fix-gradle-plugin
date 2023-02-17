@@ -30,10 +30,10 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
 
     @Override
     void configureWorkaroundTask(Task task) {
+
         def fileOperations = project.fileOperations
-        def variantSpecificSchemaDir = project.objects.directoryProperty()
-        variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "${task.name}"))
-        task.commandLineArgumentProviders.add(new KspRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+
+        addArgumentProvider(task)
 
         task.doFirst onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
             KspWorkaround.copyExistingSchemasToTaskSpecificTmpDir(fileOperations, roomExtension.schemaLocationDir, provider)
@@ -52,6 +52,14 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
             if (taskGraph.hasTask(task)) {
                 roomExtension.registerOutputDirectory(provider.schemaLocationDir)
             }
+        }
+    }
+
+    private void addArgumentProvider(Task task) {
+        if (roomExtension.schemaLocationDir.isPresent()) {
+            def variantSpecificSchemaDir = project.objects.directoryProperty()
+            variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "${task.name}"))
+            task.commandLineArgumentProviders.add(new KspRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
         }
     }
 

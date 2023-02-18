@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           java-version: 11
-          distribution: 'adopt'
+          distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run sanityCheck
@@ -44,7 +44,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           java-version: 11
-          distribution: 'adopt'
+          distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run unit tests
@@ -87,12 +87,12 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 11
-          distribution: 'adopt'
+          distribution: 'temurin'
       - name: Set up Java 17
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'adopt'
+          distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run integration tests

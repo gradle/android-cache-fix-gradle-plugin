@@ -20,7 +20,7 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
-            .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .withKotlinVersion(kotlinVersionNumber)
             .withKspEnabled()
             .build()
             .writeProject()

@@ -15,7 +15,7 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
     def "schemas are generated with Ksp into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
 
-        // Kotlin supported versions doesn't include the Ksp 1.6 version
+        // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
         Assume.assumeFalse(kotlinVersionNumber <= VersionNumber.parse("1.7.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)

@@ -24,7 +24,9 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
     @Override
     void initWorkaround() {
         project.tasks.matching({ it.class.name == KSP_TASK }).configureEach {
-            configureWorkaroundTask(it)
+            if (roomExtension.schemaLocationDir.isPresent()) {
+                configureWorkaroundTask(it)
+            }
         }
     }
 
@@ -32,34 +34,30 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
     void configureWorkaroundTask(Task task) {
 
         def fileOperations = project.fileOperations
+        def schemaLocationDir = roomExtension.schemaLocationDir
 
-        addArgumentProvider(task)
+        def variantSpecificSchemaDir = project.objects.directoryProperty()
+        KspRoomSchemaLocationArgumentProvider provider = new KspRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
+        variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "${task.name}"))
+        task.commandLineArgumentProviders.add(provider)
 
-        task.doFirst onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
-            KspWorkaround.copyExistingSchemasToTaskSpecificTmpDir(fileOperations, roomExtension.schemaLocationDir, provider)
+        task.doFirst {
+            KspWorkaround.copyExistingSchemasToTaskSpecificTmpDir(fileOperations, schemaLocationDir, provider)
         }
 
-        task.doLast onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
+        task.doLast {
             KspWorkaround.copyGeneratedSchemasToOutput(fileOperations, provider)
         }
 
-        task.finalizedBy onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) {
+        task.finalizedBy {
             roomExtension.schemaLocationDir.isPresent() ? mergeTask : null
         }
 
         TaskExecutionGraph taskGraph = project.gradle.taskGraph
-        taskGraph.whenReady onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(task.commandLineArgumentProviders) { KspRoomSchemaLocationArgumentProvider provider ->
+        taskGraph.whenReady {
             if (taskGraph.hasTask(task)) {
                 roomExtension.registerOutputDirectory(provider.schemaLocationDir)
             }
-        }
-    }
-
-    private void addArgumentProvider(Task task) {
-        if (roomExtension.schemaLocationDir.isPresent()) {
-            def variantSpecificSchemaDir = project.objects.directoryProperty()
-            variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "${task.name}"))
-            task.commandLineArgumentProviders.add(new KspRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
         }
     }
 
@@ -82,12 +80,4 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
         }
     }
 
-    private static Closure onlyIfKspRoomSchemaLocationArgumentProviderIsConfigured(def commandLineArgumentProviders, Closure<?> action) {
-        return {
-            def provider = commandLineArgumentProviders.get().find { it instanceof KspRoomSchemaLocationArgumentProvider }
-            if (provider != null) {
-                action.call(provider)
-            }
-        }
-    }
 }

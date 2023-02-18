@@ -16,7 +16,7 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
 
         // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
-        Assume.assumeFalse(kotlinVersionNumber <= VersionNumber.parse("1.7.0"))
+        Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.7.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)

@@ -50,7 +50,7 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
         }
 
         task.finalizedBy {
-            roomExtension.schemaLocationDir.isPresent() ? mergeTask : null
+            mergeTask
         }
 
         TaskExecutionGraph taskGraph = project.gradle.taskGraph

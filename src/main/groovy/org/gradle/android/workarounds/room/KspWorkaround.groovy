@@ -11,7 +11,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 
 class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationArgumentProvider> {
-    public static final String KSP_TASK = "com.google.devtools.ksp.gradle.KspTaskJvm_Decorated"
+    private static final String KSP_TASK = "com.google.devtools.ksp.gradle.KspTaskJvm_Decorated"
 
     KspWorkaround(Project project, RoomExtension extension, TaskProvider<RoomSchemaLocationMergeTask> mergeTask) {
         super(project, extension, mergeTask)

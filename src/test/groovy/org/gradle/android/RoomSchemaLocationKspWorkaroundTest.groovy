@@ -12,7 +12,7 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
 
     @Unroll
-    def "schemas are generated with Ksp into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
+    def "schemas are generated with Ksp into task-specific directory and are cacheable (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
 
         // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
@@ -74,17 +74,20 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
         and:
         assertMergedSchemaOutputsExist()
 
+        and:
+        assertKspSchemaContainsColumnFor('last_update', 'debug')
+
         where:
         //noinspection GroovyAssignabilityCheck
         [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions.keySet()].combinations()
     }
 
     @Unroll
-    def "schemas are correctly generated with Ksp when only one variant is built incrementally  (Android #androidVersion) (Kotlin #kotlinVersion)"() {
+    def "schemas are correctly generated with Ksp when only one variant is built incrementally (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
 
         // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
-        Assume.assumeFalse(kotlinVersionNumber <= VersionNumber.parse("1.7.0"))
+        Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.7.0"))
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
@@ -156,22 +159,6 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
         //noinspection GroovyAssignabilityCheck
         [androidVersion, kotlinVersion] << [TestVersions.latestAndroidVersions, TestVersions.supportedKotlinVersions.keySet()].combinations()
 
-    }
-
-    void assertNotExecuted(buildResult, String taskPath) {
-        assert !buildResult.tasks.collect { it.path }.contains(taskPath)
-    }
-
-    void assertCompileTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome, List<String> variants = ALL_VARIANTS) {
-        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, variants) { project, variant -> ":${project}:compile${variant.capitalize()}JavaWithJavac" }
-    }
-
-    void assertCompileAndroidTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {
-        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, ["debug"]) { project, variant -> ":${project}:compile${variant.capitalize()}AndroidTestJavaWithJavac" }
-    }
-
-    void assertCompileUnitTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome, List<String> variants = ALL_VARIANTS) {
-        assertAllVariantTasksHaveOutcome(buildResult, outcome, ALL_PROJECTS, variants) { project, variant -> ":${project}:compile${variant.capitalize()}UnitTestJavaWithJavac" }
     }
 
     void assertKspAndroidTestTasksHaveOutcome(BuildResult buildResult, TaskOutcome outcome) {

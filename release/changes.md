@@ -1,0 +1,1 @@
+- [NEW] - `RoomSchemaLocationWorkaround` supports Ksp(#429)

@@ -1,0 +1,1 @@
+- [NEW] - Run tests against AGP 7.4.2

@@ -181,10 +181,10 @@ room {
 directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.
 
 #### Ksp
-Since version 2.6.6, `RoomSchemaLocationWorkaround` supports Kotlin Symbol Processing(KSP). Like KAPT, applying the Room
+Since version 2.7.0, `RoomSchemaLocationWorkaround` supports Kotlin Symbol Processing(KSP). Like KAPT, applying the Room
 processor with Ksp was causing cache misses. The workaround allows you to specify an output directory for Room schema
-exports without breaking caching. The schema export directory must be configured via the "room" project extension instead
-of the ksp configuration:
+exports. The schema export directory must be configured via the "room" project extension instead of the ksp
+configuration:
 <details open>
 <summary>Groovy</summary>
 <br>

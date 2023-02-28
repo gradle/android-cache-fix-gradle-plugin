@@ -180,6 +180,34 @@ room {
 * There can only be a single schema export directory for the project - you cannot configure variant-specific export
 directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.
 
+#### Ksp
+Since version 2.7.0, `RoomSchemaLocationWorkaround` supports Kotlin Symbol Processing(KSP). Like KAPT, applying the Room
+processor with Ksp was causing cache misses. The workaround allows you to specify an output directory for Room schema
+exports. The schema export directory must be configured via the "room" project extension instead of the ksp
+configuration:
+<details open>
+<summary>Groovy</summary>
+<br>
+
+```groovy
+room {
+    schemaLocationDir = file("roomSchemas")
+}
+```
+</details>
+<details>
+<summary>Kotlin</summary>
+<br>
+
+```kotlin
+room {
+    schemaLocationDir.set(file("roomSchemas"))
+}
+```
+</details>
+
+Supported Ksp versions: 1.7.20-1.0.8+
+
 ### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, MergeSourceSetFolders, BundleLibraryClassesJar, DataBindingMergeDependencyArtifacts, LibraryJniLibs and ZipMerging Workarounds
 
 It has been observed that caching the `MergeNativeLibsTask`, `StripDebugSymbols`, `MergeSourceSetFolders`, `BundleLibraryClassesJar`, `DataBindingMergeDependencyArtifacts`, `LibraryJniLibs` and  `ZipMergingTask` tasks rarely provide any significant positive avoidance savings.  In fact, they frequently provide negative savings, especially when fetched from a remote cache node.  As such, these workarounds disable caching for these tasks.

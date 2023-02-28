@@ -1,2 +1,0 @@
-- [NEW] - `RoomSchemaLocationWorkaround` supports Ksp(#429)
-- [NEW] - Run tests against AGP 7.4.2 and 8.1.0-alpha07

@@ -12,7 +12,9 @@ updates:
       - gradle-plugin-portal
     schedule:
       interval: "daily"
- - package-ecosystem: "github-actions"
+      time: "02:00"
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+      time: "02:00"

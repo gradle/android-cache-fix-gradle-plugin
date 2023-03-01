@@ -99,9 +99,6 @@ publishing {
 tasks.withType(Test).configureEach {
     dependsOn publish
     workingDir projectDir
-    systemProperty "local.repo", projectDir.toPath().relativize(localRepo.toPath()).toString()
-    systemProperty "pluginGroupId", pluginGroupId
-    systemProperty "org.gradle.android.cache-fix.version", version
     useJUnitPlatform()
     retry {
         maxRetries = isCI ? 1 : 0

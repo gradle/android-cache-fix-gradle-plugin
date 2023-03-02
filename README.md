@@ -91,7 +91,7 @@ plugins {
 }
 
 subprojects {
-    plugins.withType(com.android.build.gradle.api.AndroidBasePlugin) {
+    plugins.withType(com.android.build.gradle.api.AndroidBasePlugin).configureEach {
         project.apply plugin: "org.gradle.android.cache-fix"
     }
 }
@@ -107,7 +107,7 @@ plugins {
 }
 
 subprojects {
-    plugins.withType<com.android.build.gradle.api.AndroidBasePlugin>() {
+    plugins.withType<com.android.build.gradle.api.AndroidBasePlugin>().configureEach {
         apply(plugin = "org.gradle.android.cache-fix")
     }
 }

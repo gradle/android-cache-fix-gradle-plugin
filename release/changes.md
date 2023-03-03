@@ -1,0 +1,1 @@
+- [NEW] - Run tests against AGP 8.0.0-beta04

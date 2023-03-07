@@ -107,6 +107,9 @@ tasks.withType(Test).configureEach {
         maxRetries = isCI ? 1 : 0
         maxFailures = 20
     }
+    predictiveSelection {
+        enabled = providers.gradleProperty("isPTSEnabled").map { it != 'false' } .orElse(false)
+    }
 }
 
 // Generate a test task for each Android version and run the tests annotated with the MultiVersionTest category

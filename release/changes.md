@@ -1,1 +1,2 @@
-- [NEW] - Run tests against AGP 8.0.0-beta04
+- [NEW] - Run tests against AGP 8.0.0-beta05
+- [NEW] - Run tests against AGP 8.1.0-alpha08

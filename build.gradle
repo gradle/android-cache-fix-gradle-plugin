@@ -1,10 +1,11 @@
 import groovy.json.JsonSlurper
 
+
 plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'signing-covention-plugin'
+    id 'org.gradle.android.signing'
     id 'codenarc'
     id 'com.gradle.plugin-publish' version '1.1.0'
     id 'com.github.breadmoirai.github-release' version '2.4.1'

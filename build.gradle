@@ -4,7 +4,7 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'signing'
+    id 'signing-covention-plugin'
     id 'codenarc'
     id 'com.gradle.plugin-publish' version '1.1.0'
     id 'com.github.breadmoirai.github-release' version '2.4.1'
@@ -151,16 +151,6 @@ tasks.register("sanityCheck") {
 tasks.withType(ValidatePlugins).configureEach {
     failOnWarning = true
     enableStricterValidation = true
-}
-
-signing {
-    // Require publications to be signed on CI. Otherwise, publication will be signed only if keys are provided.
-    required isCI
-
-    useInMemoryPgpKeys(
-        providers.environmentVariable("PGP_SIGNING_KEY").orNull,
-        providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").orNull
-    )
 }
 
 githubRelease {

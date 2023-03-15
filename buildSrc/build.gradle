@@ -5,7 +5,7 @@ plugins {
 gradlePlugin {
     plugins {
         signingPlugin {
-            id = 'org.gradle.android.signing'
+            id = 'org.gradle.android.cache-fix.signing'
             implementationClass = 'SigningPlugin'
         }
     }

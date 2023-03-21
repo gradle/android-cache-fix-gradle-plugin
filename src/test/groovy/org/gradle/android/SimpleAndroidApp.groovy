@@ -1,5 +1,11 @@
 package org.gradle.android
 
+import org.gradle.android.writer.JavaAndroid
+import org.gradle.android.writer.JavaRoom
+import org.gradle.android.writer.JavaTest
+import org.gradle.android.writer.Kotlin
+import org.gradle.android.writer.RenderScript
+import org.gradle.android.writer.XmlResources
 import org.gradle.api.JavaVersion
 
 import java.nio.file.Paths
@@ -91,37 +97,13 @@ class SimpleAndroidApp {
         }
         writeActivity(library, libPackage, libraryActivity)
         writeRoomSourcesIfEnabled(library, libPackage)
-        file("${library}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
-                <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-                </manifest>
-            """.stripIndent()
+        file("${library}/src/main/AndroidManifest.xml") << XmlResources.emptyManifest()
 
         writeActivity(app, appPackage, appActivity)
         writeRoomSourcesIfEnabled(app, appPackage)
-        file("${app}/src/main/AndroidManifest.xml") << """<?xml version="1.0" encoding="utf-8"?>
-                <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+        file("${app}/src/main/AndroidManifest.xml") << XmlResources.manifest(appActivity, libPackage, libraryActivity)
 
-                    <application android:label="@string/app_name" >
-                        <activity
-                            android:name=".${appActivity}"
-                            android:label="@string/app_name"
-                            android:exported="false">
-                            <intent-filter>
-                                <action android:name="android.intent.action.MAIN" />
-                                <category android:name="android.intent.category.LAUNCHER" />
-                            </intent-filter>
-                        </activity>
-                        <activity
-                            android:name="${libPackage}.${libraryActivity}">
-                        </activity>
-                    </application>
-
-                </manifest>
-            """.stripIndent()
-        file("${app}/src/main/res/values/strings.xml") << '''<?xml version="1.0" encoding="utf-8"?>
-                <resources>
-                    <string name="app_name">Android Gradle</string>
-                </resources>'''.stripIndent()
+        file("${app}/src/main/res/values/strings.xml") << XmlResources.strings()
 
         file('settings.gradle') << """
                 include ':${app}'
@@ -328,7 +310,7 @@ class SimpleAndroidApp {
         def currentSourceCompatibility = sourceCompatibility
         // We need to set the source compatibility when the Kotlin plugin is applied and using AGP 7.4+
         // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-        if (kotlinEnabled && currentSourceCompatibility == null)  {
+        if (kotlinEnabled && currentSourceCompatibility == null) {
             currentSourceCompatibility = JavaVersion.current()
         }
         return (currentSourceCompatibility != null) ? """
@@ -340,229 +322,40 @@ class SimpleAndroidApp {
     }
 
     private writeKotlinClass(String basedir, String packageName, String className) {
-        file("${basedir}/src/main/kotlin/${packageName.replaceAll('\\.', '/')}/Foo.kt") << """
-                package ${packageName}
-
-                data class Foo(val lable: String)
-
-            """.stripIndent()
+        file("${basedir}/src/main/kotlin/${packageName.replaceAll('\\.', '/')}/Foo.kt") <<
+            Kotlin.simpleDataClass(packageName)
     }
 
     private writeActivity(String basedir, String packageName, String className) {
         String resourceName = className.toLowerCase()
 
-        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/HelloActivity.java") << """
-                package ${packageName};
+        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/HelloActivity.java") <<
+            JavaAndroid.activity(packageName, resourceName)
 
-                import org.joda.time.LocalTime;
+        file("${basedir}/src/test/java/${packageName.replaceAll('\\.', '/')}/JavaUserTest.java") <<
+            JavaTest.simpleTest(packageName)
 
-                import android.app.Activity;
-                import android.os.Bundle;
-                import android.widget.TextView;
+        file("${basedir}/src/androidTest/java/${packageName.replaceAll('\\.', '/')}/JavaUserAndroidTest.java") <<
+            JavaAndroid.androidTest(packageName)
 
-                public class HelloActivity extends Activity {
+        file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << XmlResources.genericLayout()
 
-                    @Override
-                    public void onCreate(Bundle savedInstanceState) {
-                        super.onCreate(savedInstanceState);
-                        setContentView(R.layout.${resourceName}_layout);
-                    }
-
-                    @Override
-                    public void onStart() {
-                        super.onStart();
-                        LocalTime currentTime = new LocalTime();
-                        TextView textView = (TextView) findViewById(R.id.text_view);
-                        textView.setText("The current local time is: " + currentTime);
-                    }
-                }
-            """.stripIndent()
-
-        file("${basedir}/src/test/java/${packageName.replaceAll('\\.', '/')}/JavaUserTest.java") << """
-                package ${packageName};
-
-                public class JavaUserTest {
-                }
-            """.stripIndent()
-
-        file("${basedir}/src/androidTest/java/${packageName.replaceAll('\\.', '/')}/JavaUserAndroidTest.java") << """
-                package ${packageName};
-
-                public class JavaUserAndroidTest {
-                }
-            """.stripIndent()
-
-        file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << '''<?xml version="1.0" encoding="utf-8"?>
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:orientation="vertical"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    >
-                <TextView
-                    android:id="@+id/text_view"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    />
-                </LinearLayout>
-            '''.stripIndent()
-
-        file("${basedir}/src/main/rs/${resourceName}.rs") << '''
-                #pragma version(1)
-                #pragma rs java_package_name(com.example.myapplication)
-
-                static void addintAccum(int *accum, int val) {
-                  *accum += val;
-                }
-            '''.stripIndent()
+        file("${basedir}/src/main/rs/${resourceName}.rs") << RenderScript.rs()
     }
 
     private void writeRoomSourcesIfEnabled(String basedir, String packageName) {
         if (roomConfiguration != RoomConfiguration.NO_LIBRARY) {
-            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUser.java") << """
-                package ${packageName};
+            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUser.java") <<
+                JavaRoom.entity(packageName)
 
-                import androidx.room.ColumnInfo;
-                import androidx.room.Entity;
-                import androidx.room.PrimaryKey;
+            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") <<
+                JavaRoom.dao(packageName)
 
-                @Entity(tableName = "user")
-                public class JavaUser {
-                    @PrimaryKey
-                    public int uid;
+            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/AppDatabase.java") <<
+                JavaRoom.database(packageName)
 
-                    @ColumnInfo(name = "first_name")
-                    public String firstName;
-
-                    @ColumnInfo(name = "last_name")
-                    public String lastName;
-
-                    @ColumnInfo(name = "last_update")
-                    public int lastUpdate;
-                }
-            """.stripIndent()
-
-            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") << """
-                package ${packageName};
-
-                import androidx.room.Dao;
-                import androidx.room.Query;
-                import androidx.room.Insert;
-                import androidx.room.Delete;
-
-                import java.util.List;
-
-                @Dao
-                public interface JavaUserDao {
-                    @Query("SELECT * FROM user")
-                    List<JavaUser> getAll();
-
-                    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
-                    List<JavaUser> loadAllByIds(int[] userIds);
-
-                    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
-                           "last_name LIKE :last LIMIT 1")
-                    JavaUser findByName(String first, String last);
-
-                    @Insert
-                    void insertAll(JavaUser... users);
-
-                    @Delete
-                    void delete(JavaUser user);
-                }
-            """.stripIndent()
-
-            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/AppDatabase.java") << """
-                package ${packageName};
-
-                import androidx.room.Database;
-                import androidx.room.Room;
-                import androidx.room.RoomDatabase;
-                import androidx.room.migration.Migration;
-                import androidx.sqlite.db.SupportSQLiteDatabase;
-                import android.content.Context;
-
-                @Database(entities = {JavaUser.class}, version = 2, exportSchema = true)
-                public abstract class AppDatabase extends RoomDatabase {
-                    private static AppDatabase INSTANCE;
-                    private static final Object sLock = new Object();
-
-                    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-                        @Override
-                        public void migrate(SupportSQLiteDatabase database) {
-                            database.execSQL("ALTER TABLE Users "
-                                    + " ADD COLUMN last_update INTEGER");
-                        }
-                    };
-
-                    public abstract JavaUserDao javaUserDao();
-
-                    public static AppDatabase getInstance(Context context) {
-                        synchronized (sLock) {
-                            if (INSTANCE == null) {
-                                INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                        AppDatabase.class, "Sample.db")
-                                        .addMigrations(MIGRATION_1_2)
-                                        .build();
-                            }
-                            return INSTANCE;
-                        }
-                    }
-                }
-            """.stripIndent()
-
-            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << legacySchemaContents
+            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << JavaRoom.legacySchemaJson()
         }
-    }
-
-    static String getLegacySchemaContents() {
-        return '''
-                {
-                  "formatVersion": 1,
-                  "database": {
-                    "version": 1,
-                    "identityHash": "ce7bbbf6ddf39482eddc7248f4f61e8a",
-                    "entities": [
-                      {
-                        "tableName": "user",
-                        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER NOT NULL, `first_name` TEXT, `last_name` TEXT, PRIMARY KEY(`uid`))",
-                        "fields": [
-                          {
-                            "fieldPath": "uid",
-                            "columnName": "uid",
-                            "affinity": "INTEGER",
-                            "notNull": true
-                          },
-                          {
-                            "fieldPath": "firstName",
-                            "columnName": "first_name",
-                            "affinity": "TEXT",
-                            "notNull": false
-                          },
-                          {
-                            "fieldPath": "lastName",
-                            "columnName": "last_name",
-                            "affinity": "TEXT",
-                            "notNull": false
-                          }
-                        ],
-                        "primaryKey": {
-                          "columnNames": [
-                            "uid"
-                          ],
-                          "autoGenerate": false
-                        },
-                        "indices": [],
-                        "foreignKeys": []
-                      }
-                    ],
-                    "views": [],
-                    "setupQueries": [
-                      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-                      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ce7bbbf6ddf39482eddc7248f4f61e8a')"
-                    ]
-                  }
-                }
-            '''.stripIndent()
     }
 
     private static String activityDependency() {

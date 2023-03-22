@@ -26,7 +26,7 @@ buildCache {
     remote(gradleEnterprise.buildCache) {
         enabled = true
         push = isCI
-        path = "/cache/ehaag-exp5-2023-mar22-take1"
+        path = "/cache/ehaag-exp5-2023-mar22-take2"
     }
 }
 

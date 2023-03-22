@@ -2,8 +2,7 @@ package org.gradle.android.writer
 
 class XmlResources {
     static String genericLayout() {
-        return """
-        <?xml version="1.0" encoding="utf-8"?>
+        return '''<?xml version="1.0" encoding="utf-8"?>
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:orientation="vertical"
                     android:layout_width="fill_parent"
@@ -15,7 +14,7 @@ class XmlResources {
                     android:layout_height="wrap_content"
                     />
                 </LinearLayout>
-        """.stripIndent()
+        '''.stripIndent()
     }
 
     static String manifest(String appActivity, String libPackage, String libraryActivity) {
@@ -42,17 +41,17 @@ class XmlResources {
     }
 
     static String emptyManifest() {
-        return """<?xml version="1.0" encoding="utf-8"?>
+        return '''<?xml version="1.0" encoding="utf-8"?>
                 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
                 </manifest>
-        """.stripIndent()
+        '''.stripIndent()
     }
 
     static String strings() {
-        return """<?xml version="1.0" encoding="utf-8"?>
+        return '''<?xml version="1.0" encoding="utf-8"?>
                 <resources>
                     <string name="app_name">Android Gradle</string>
                 </resources>
-        """.stripIndent()
+        '''.stripIndent()
     }
 }

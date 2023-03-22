@@ -1,5 +1,6 @@
 package org.gradle.android
 
+import org.gradle.android.writer.JavaRoom
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 
@@ -58,7 +59,7 @@ class RoomWorkaroundAbstractTest extends AbstractTest {
     }
 
     static void assertLegacySchemaUnchanged(File legacySchemaFile) {
-        assert legacySchemaFile.text == SimpleAndroidApp.legacySchemaContents
+        assert legacySchemaFile.text == JavaRoom.legacySchemaJson()
     }
 
     void assertNotExecuted(buildResult, String taskPath) {

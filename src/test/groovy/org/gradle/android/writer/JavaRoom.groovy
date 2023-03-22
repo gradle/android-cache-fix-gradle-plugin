@@ -101,8 +101,8 @@ class JavaRoom {
     }
 
     static String legacySchemaJson() {
-        return """
-                        {
+        return '''
+                {
                   "formatVersion": 1,
                   "database": {
                     "version": 1,
@@ -148,6 +148,6 @@ class JavaRoom {
                     ]
                   }
                 }
-        """.stripIndent()
+        '''.stripIndent()
     }
 }

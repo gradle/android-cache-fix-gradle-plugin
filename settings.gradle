@@ -20,12 +20,13 @@ gradleEnterprise {
 
 buildCache {
     local {
-        enabled = true
+        enabled = false
     }
 
     remote(gradleEnterprise.buildCache) {
         enabled = true
         push = isCI
+        path = "/cache/ehaag-exp5-2023-mar22-take1"
     }
 }
 

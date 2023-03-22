@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [ main, citest ]
+    branches: [ main, erichaagdev/test-empty-comparison ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:

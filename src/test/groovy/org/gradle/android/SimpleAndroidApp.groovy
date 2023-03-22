@@ -1,11 +1,6 @@
 package org.gradle.android
 
-import org.gradle.android.writer.JavaAndroid
-import org.gradle.android.writer.JavaRoom
-import org.gradle.android.writer.JavaTest
-import org.gradle.android.writer.Kotlin
-import org.gradle.android.writer.RenderScript
-import org.gradle.android.writer.XmlResources
+
 import org.gradle.api.JavaVersion
 
 import java.nio.file.Paths
@@ -97,13 +92,13 @@ class SimpleAndroidApp {
         }
         writeActivity(library, libPackage, libraryActivity)
         writeRoomSourcesIfEnabled(library, libPackage)
-        file("${library}/src/main/AndroidManifest.xml") << XmlResources.emptyManifest()
+        file("${library}/src/main/AndroidManifest.xml") << CodeSnippets.getXmlEmptyManifest()
 
         writeActivity(app, appPackage, appActivity)
         writeRoomSourcesIfEnabled(app, appPackage)
-        file("${app}/src/main/AndroidManifest.xml") << XmlResources.manifest(appActivity, libPackage, libraryActivity)
+        file("${app}/src/main/AndroidManifest.xml") << CodeSnippets.getXmlManifest(appActivity, libPackage, libraryActivity)
 
-        file("${app}/src/main/res/values/strings.xml") << XmlResources.strings()
+        file("${app}/src/main/res/values/strings.xml") << CodeSnippets.getXmlStrings()
 
         file('settings.gradle') << """
                 include ':${app}'
@@ -323,38 +318,38 @@ class SimpleAndroidApp {
 
     private writeKotlinClass(String basedir, String packageName, String className) {
         file("${basedir}/src/main/kotlin/${packageName.replaceAll('\\.', '/')}/Foo.kt") <<
-            Kotlin.simpleDataClass(packageName)
+            CodeSnippets.getKotlinDataClass(packageName)
     }
 
     private writeActivity(String basedir, String packageName, String className) {
         String resourceName = className.toLowerCase()
 
         file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/HelloActivity.java") <<
-            JavaAndroid.activity(packageName, resourceName)
+            CodeSnippets.getJavaActivity(packageName, resourceName)
 
         file("${basedir}/src/test/java/${packageName.replaceAll('\\.', '/')}/JavaUserTest.java") <<
-            JavaTest.simpleTest(packageName)
+            CodeSnippets.getJavaSimpleTest(packageName)
 
         file("${basedir}/src/androidTest/java/${packageName.replaceAll('\\.', '/')}/JavaUserAndroidTest.java") <<
-            JavaAndroid.androidTest(packageName)
+            CodeSnippets.getJavaAndroidTest(packageName)
 
-        file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << XmlResources.genericLayout()
+        file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << CodeSnippets.getXmlGenericLayout()
 
-        file("${basedir}/src/main/rs/${resourceName}.rs") << RenderScript.rs()
+        file("${basedir}/src/main/rs/${resourceName}.rs") << CodeSnippets.getRs()
     }
 
     private void writeRoomSourcesIfEnabled(String basedir, String packageName) {
         if (roomConfiguration != RoomConfiguration.NO_LIBRARY) {
             file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUser.java") <<
-                JavaRoom.entity(packageName)
+                CodeSnippets.getJavaRoomEntity(packageName)
 
             file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") <<
-                JavaRoom.dao(packageName)
+                CodeSnippets.getJavaRoomDao(packageName)
 
             file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/AppDatabase.java") <<
-                JavaRoom.database(packageName)
+                CodeSnippets.getJavaRoomDatabase(packageName)
 
-            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << JavaRoom.legacySchemaJson()
+            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << CodeSnippets.getRoomLegacySchemaJson()
         }
     }
 

@@ -1,6 +1,5 @@
 package org.gradle.android
 
-
 import org.gradle.api.JavaVersion
 
 import java.nio.file.Paths

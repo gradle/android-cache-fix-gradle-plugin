@@ -58,7 +58,7 @@ class RoomWorkaroundAbstractTest extends AbstractTest {
     }
 
     static void assertLegacySchemaUnchanged(File legacySchemaFile) {
-        assert legacySchemaFile.text == SimpleAndroidApp.legacySchemaContents
+        assert legacySchemaFile.text == CodeSnippets.getRoomLegacySchemaJson()
     }
 
     void assertNotExecuted(buildResult, String taskPath) {

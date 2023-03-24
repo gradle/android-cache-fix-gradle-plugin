@@ -154,8 +154,8 @@ tasks.withType(ValidatePlugins).configureEach {
 }
 
 signing {
-    // Require publications to be signed on CI. Otherwise, publication will be signed only if keys are provided.
-    required isCI
+    // Require publications to be signed when :publishPlugins task is included in the TaskGraph
+    required { gradle.taskGraph.hasTask(":publishPlugins") }
 
     useInMemoryPgpKeys(
         providers.environmentVariable("PGP_SIGNING_KEY").orNull,

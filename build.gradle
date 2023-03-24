@@ -23,9 +23,9 @@ repositories {
 
 dependencies {
     def versions = [
-        'agp'          : '7.3.1',
+        'agp': '7.3.1',
         'sdkBuildTools': '30.0.4',
-        'spock'        : '2.3-groovy-3.0',
+        'spock': '2.3-groovy-3.0',
     ]
 
     compileOnly gradleApi()
@@ -108,7 +108,7 @@ tasks.withType(Test).configureEach {
         maxFailures = 20
     }
     predictiveSelection {
-        enabled = providers.gradleProperty("isPTSEnabled").map { it != 'false' }.orElse(false)
+        enabled = providers.gradleProperty("isPTSEnabled").map { it != 'false' } .orElse(false)
     }
 }
 
@@ -154,8 +154,8 @@ tasks.withType(ValidatePlugins).configureEach {
 }
 
 signing {
-    // Require publications to be signed on CI and publishing task included in the TaskGraph
-    required { isCI && gradle.taskGraph.hasTask(":publishPlugins") }
+    // Require publications when :publishPlugins task included in the TaskGraph
+    required { gradle.taskGraph.hasTask(":publishPlugins") }
 
     useInMemoryPgpKeys(
         providers.environmentVariable("PGP_SIGNING_KEY").orNull,

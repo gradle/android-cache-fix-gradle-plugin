@@ -154,7 +154,7 @@ tasks.withType(ValidatePlugins).configureEach {
 }
 
 signing {
-    // Require publications when :publishPlugins task included in the TaskGraph
+    // Require publications to be signed when :publishPlugins task is included in the TaskGraph
     required { gradle.taskGraph.hasTask(":publishPlugins") }
 
     useInMemoryPgpKeys(

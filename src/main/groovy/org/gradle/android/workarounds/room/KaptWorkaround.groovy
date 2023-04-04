@@ -41,7 +41,7 @@ class KaptWorkaround extends AnnotationProcessorWorkaround<KaptRoomSchemaLocatio
                 return { variant ->
                     def variantSpecificSchemaDir = project.objects.directoryProperty()
                     variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
-                    variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+                    variant.javaCompileOptions.annotationProcessorOptions.compilerArgumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(project, roomExtension.schemaLocationDir, variantSpecificSchemaDir))
                 }
             }
 
@@ -50,7 +50,7 @@ class KaptWorkaround extends AnnotationProcessorWorkaround<KaptRoomSchemaLocatio
                 return { variant ->
                     def variantSpecificSchemaDir = project.objects.directoryProperty()
                     variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "kapt${variant.name.capitalize()}Kotlin"))
-                    variant.javaCompilation.annotationProcessor.argumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir))
+                    variant.javaCompilation.annotationProcessor.argumentProviders.add(new KaptRoomSchemaLocationArgumentProvider(project, roomExtension.schemaLocationDir, variantSpecificSchemaDir))
                 }
             }
         })

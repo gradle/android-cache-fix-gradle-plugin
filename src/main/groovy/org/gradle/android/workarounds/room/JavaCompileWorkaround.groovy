@@ -47,7 +47,7 @@ class JavaCompileWorkaround extends AnnotationProcessorWorkaround<JavaCompilerRo
                     // Add a command line argument provider to the compile task argument providers
                     variant.javaCompileProvider.configure { JavaCompile task ->
                         task.options.compilerArgumentProviders.add(
-                            new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
+                            new JavaCompilerRoomSchemaLocationArgumentProvider(project,  roomExtension.schemaLocationDir, variantSpecificSchemaDir)
                         )
                     }
 
@@ -66,7 +66,7 @@ class JavaCompileWorkaround extends AnnotationProcessorWorkaround<JavaCompilerRo
                     variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "compile${variant.name.capitalize()}JavaWithJavac"))
 
                     variant.javaCompilation.annotationProcessor.argumentProviders.add(
-                        new JavaCompilerRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
+                        new JavaCompilerRoomSchemaLocationArgumentProvider(project, roomExtension.schemaLocationDir, variantSpecificSchemaDir)
                     )
                 }
             }

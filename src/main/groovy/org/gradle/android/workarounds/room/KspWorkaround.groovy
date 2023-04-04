@@ -37,7 +37,7 @@ class KspWorkaround extends AnnotationProcessorWorkaround<KspRoomSchemaLocationA
         def schemaLocationDir = roomExtension.schemaLocationDir
 
         def variantSpecificSchemaDir = project.objects.directoryProperty()
-        KspRoomSchemaLocationArgumentProvider provider = new KspRoomSchemaLocationArgumentProvider(roomExtension.schemaLocationDir, variantSpecificSchemaDir)
+        KspRoomSchemaLocationArgumentProvider provider = new KspRoomSchemaLocationArgumentProvider(project, roomExtension.schemaLocationDir, variantSpecificSchemaDir)
         variantSpecificSchemaDir.set(androidVariantProvider.getVariantSpecificSchemaDir(project, "${task.name}"))
         task.commandLineArgumentProviders.add(provider)
 

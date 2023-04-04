@@ -2,6 +2,7 @@ package org.gradle.android.workarounds.room.argumentprovider
 
 import groovy.transform.CompileStatic
 import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
+import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
@@ -11,20 +12,25 @@ import org.gradle.process.CommandLineArgumentProvider
 
 @CompileStatic
 abstract class RoomSchemaLocationArgumentProvider implements CommandLineArgumentProvider {
+
+    @Internal
+    final File projectDir;
+
     @Internal
     final Provider<Directory> configuredSchemaLocationDir
 
     @Internal
     final Provider<Directory> schemaLocationDir
 
-    RoomSchemaLocationArgumentProvider(Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
+    RoomSchemaLocationArgumentProvider(Project project, Provider<Directory> configuredSchemaLocationDir, Provider<Directory> schemaLocationDir) {
+        this.projectDir = project.projectDir
         this.configuredSchemaLocationDir = configuredSchemaLocationDir
         this.schemaLocationDir = schemaLocationDir
     }
 
     @Internal
     protected String getSchemaLocationPath() {
-        return schemaLocationDir.get().asFile.absolutePath
+        return projectDir.relativePath(schemaLocationDir.get().asFile)
     }
 
     @Override

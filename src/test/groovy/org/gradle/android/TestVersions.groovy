@@ -41,7 +41,7 @@ class TestVersions {
     }
 
     // This map represents the Kotlin supported versions associated with Ksp supported versions
-    static Map<String, String> supportedKotlinVersions = ["1.6.21": "", "1.7.21": "1.7.22-1.0.8", "1.8.10": "1.8.10-1.0.9"]
+    static Map<String, String> supportedKotlinVersions = ["1.6.21": "", "1.7.21": "1.7.22-1.0.8", "1.8.20": "1.8.20-1.0.10"]
 
     static VersionNumber latestSupportedKotlinVersion() {
         return VersionNumber.parse(supportedKotlinVersions.keySet().last().toString())

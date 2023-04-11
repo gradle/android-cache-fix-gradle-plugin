@@ -13,8 +13,10 @@ plugins {
 
 group = 'org.gradle.android'
 version = layout.projectDirectory.file("release/version.txt").asFile.text.trim()
+description = 'A Gradle plugin to fix Android caching problems'
 
 def isCI = (System.getenv('CI') ?: 'false').toBoolean()
+def releaseNotes = releaseNotes()
 
 repositories {
     google()
@@ -67,7 +69,7 @@ gradlePlugin {
         androidCacheFixPlugin {
             id = 'org.gradle.android.cache-fix'
             displayName = 'Gradle Android cache fix plugin'
-            description = 'Gradle plugin to fix Android caching problems'
+            description = releaseNotes.get()
             implementationClass = 'org.gradle.android.AndroidCacheFixPlugin'
             tags.addAll('android', 'cache', 'fix')
         }
@@ -172,7 +174,7 @@ githubRelease {
    prerelease = false
    overwrite = false
    generateReleaseNotes = false
-   body = layout.projectDirectory.file("release/changes.md").asFile.text.trim()
+   body = releaseNotes
    targetCommitish = "main"
 }
 
@@ -196,4 +198,9 @@ def gitHubReleaseName() {
 
 def gitReleaseTag() {
     return "v${version}"
+}
+
+def releaseNotes() {
+    def releaseNotesFile = layout.projectDirectory.file('release/changes.md')
+    return providers.fileContents(releaseNotesFile).asText.map { it -> it.trim() }
 }

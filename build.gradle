@@ -11,12 +11,13 @@ plugins {
     id 'org.gradle.wrapper-upgrade' version '0.11.1'
 }
 
-group = 'org.gradle.android'
-version = layout.projectDirectory.file("release/version.txt").asFile.text.trim()
-description = 'A Gradle plugin to fix Android caching problems'
-
-def isCI = (System.getenv('CI') ?: 'false').toBoolean()
+def releaseVersion = releaseVersion()
 def releaseNotes = releaseNotes()
+def isCI = (System.getenv('CI') ?: 'false').toBoolean()
+
+group = 'org.gradle.android'
+version = releaseVersion
+description = 'A Gradle plugin to fix Android caching problems'
 
 repositories {
     google()
@@ -166,22 +167,22 @@ signing {
 }
 
 githubRelease {
-   token = System.getenv("ANDROID_CACHE_FIX_PLUGIN_GIT_TOKEN") ?: ''
-   owner = "gradle"
-   repo = "android-cache-fix-gradle-plugin"
-   releaseName = gitHubReleaseName()
-   tagName = gitReleaseTag()
-   prerelease = false
-   overwrite = false
-   generateReleaseNotes = false
-   body = releaseNotes
-   targetCommitish = "main"
+    token = System.getenv("ANDROID_CACHE_FIX_PLUGIN_GIT_TOKEN") ?: ''
+    owner = "gradle"
+    repo = "android-cache-fix-gradle-plugin"
+    releaseName = releaseVersion
+    tagName = releaseVersion.map { "v$it" }
+    prerelease = false
+    overwrite = false
+    generateReleaseNotes = false
+    body = releaseNotes
+    targetCommitish = "main"
 }
 
 def createReleaseTag = tasks.register('createReleaseTag', CreateGitTag) {
     // Ensure tag is created only after successful publishing
     mustRunAfter('publishPlugins')
-    tagName = gitReleaseTag()
+    tagName = githubRelease.tagName.map { it.toString() }
 }
 
 tasks.named("githubRelease").configure {
@@ -192,12 +193,9 @@ tasks.withType(Sign).configureEach {
     notCompatibleWithConfigurationCache("$name task does not support configuration caching")
 }
 
-def gitHubReleaseName() {
-    return version.toString()
-}
-
-def gitReleaseTag() {
-    return "v${version}"
+def releaseVersion() {
+    def releaseVersionFile = layout.projectDirectory.file('release/version.txt')
+    return providers.fileContents(releaseVersionFile).asText.map { it -> it.trim() }
 }
 
 def releaseNotes() {

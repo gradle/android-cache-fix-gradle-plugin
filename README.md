@@ -36,7 +36,7 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 
 This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied. We recommend adding the plugin to your project's [conventions plugin](https://docs.gradle.org/current/samples/sample_convention_plugins.html).
 
-<details open>
+<details>
 <summary>Groovy</summary>
 <br>
 
@@ -57,7 +57,7 @@ plugins {
 ```
 
 </details>
-<details>
+<details open>
 <summary>Kotlin</summary>
 <br>
 
@@ -81,7 +81,7 @@ plugins {
 If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '2.7.0' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)). We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#sec:convention_plugins_vs_cross_configuration).
 
-<details open>
+<details>
 <summary>Groovy</summary>
 <br>
 
@@ -97,7 +97,7 @@ subprojects {
 }
 ```
 </details>
-<details>
+<details open>
 <summary>Kotlin</summary>
 <br>
 
@@ -156,7 +156,7 @@ do so in a manageable way, it imposes some restrictions:
 processor argument.  If an explicit annotation processor argument is provided, an exception will be thrown, instructing
 the user to configure it via the extension:
 
-<details open>
+<details>
 <summary>Groovy</summary>
 <br>
 
@@ -166,7 +166,7 @@ room {
 }
 ```
 </details>
-<details>
+<details open>
 <summary>Kotlin</summary>
 <br>
 
@@ -185,7 +185,7 @@ Since version 2.7.0, `RoomSchemaLocationWorkaround` supports Kotlin Symbol Proce
 processor with Ksp was causing cache misses. The workaround allows you to specify an output directory for Room schema
 exports. The schema export directory must be configured via the "room" project extension instead of the Ksp
 configuration:
-<details open>
+<details>
 <summary>Groovy</summary>
 <br>
 
@@ -195,7 +195,7 @@ room {
 }
 ```
 </details>
-<details>
+<details open>
 <summary>Kotlin</summary>
 <br>
 

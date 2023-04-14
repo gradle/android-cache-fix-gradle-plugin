@@ -16,7 +16,7 @@ def releaseNotes = releaseNotes()
 def isCI = (System.getenv('CI') ?: 'false').toBoolean()
 
 group = 'org.gradle.android'
-version = releaseVersion
+version = releaseVersion.get()
 description = 'A Gradle plugin to fix Android caching problems'
 
 repositories {

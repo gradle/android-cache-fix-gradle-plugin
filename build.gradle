@@ -126,7 +126,7 @@ supportedVersions.keySet().each { androidVersion ->
         systemProperty 'org.gradle.android.java_zulu_path', project.providers.environmentVariable('ZULU_JDK').getOrNull()
         systemProperty 'org.gradle.android.java_zulu_alt_path', project.providers.environmentVariable('ZULU_ALT_JDK').getOrNull()
 
-        if (androidVersion >= "8.0.0-alpha10") {
+        if (androidVersion >= "8.0.0") {
             javaLauncher = javaToolchains.launcherFor {
                 languageVersion = JavaLanguageVersion.of(17)
             }
@@ -189,7 +189,7 @@ tasks.named("githubRelease").configure {
     dependsOn(createReleaseTag)
 }
 
-tasks.withType(Sign).configureEach {
+tasks.withType(com.gradle.publish.PublishTask).configureEach {
     notCompatibleWithConfigurationCache("$name task does not support configuration caching")
 }
 

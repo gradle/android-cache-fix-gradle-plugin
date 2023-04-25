@@ -1,5 +1,5 @@
-import com.google.gson.Gson
 import com.gradle.enterprise.gradleplugin.testretry.retry
+import groovy.json.JsonSlurper
 
 plugins {
     id("groovy")
@@ -117,7 +117,10 @@ tasks.withType<Test>().configureEach {
     }
 }
 
-val supportedVersions = file("src/main/resources/versions.json").readText().fromJson<Versions>()?.supportedVersions
+@Suppress("UNCHECKED_CAST")
+val supportedVersions = (JsonSlurper()
+    .parse(file("src/main/resources/versions.json")) as Map<String, Map<String, Array<String>>>)["supportedVersions"]
+
 supportedVersions?.keys?.forEach {
     val androidVersion = it
     val versionSpecificTest = tasks.register<Test>(androidTestTaskName(androidVersion)) {
@@ -207,12 +210,4 @@ fun releaseVersion(): Provider<String> {
 fun releaseNotes(): Provider<String> {
     val releaseNotesFile = layout.projectDirectory.file("release/changes.md")
     return providers.fileContents(releaseNotesFile).asText.map { it.trim() }
-}
-
-
-data class Versions(val supportedVersions: Map<String, Array<String>>)
-
-inline fun <reified T : Any> String?.fromJson(): T? = this?.let {
-    val type = object : com.google.gson.reflect.TypeToken<T>() {}.type
-    Gson().fromJson(this, type)
 }

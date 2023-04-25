@@ -117,7 +117,7 @@ tasks.withType<Test>().configureEach {
     }
 }
 
-val supportedVersions = File("src/main/resources/versions.json").readText().fromJson<Versions>()?.supportedVersions
+val supportedVersions = file("src/main/resources/versions.json").readText().fromJson<Versions>()?.supportedVersions
 supportedVersions?.keys?.forEach {
     val androidVersion = it
     val versionSpecificTest = tasks.register<Test>(androidTestTaskName(androidVersion)) {

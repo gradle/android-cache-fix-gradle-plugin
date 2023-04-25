@@ -101,7 +101,7 @@ publishing {
 
 // Configuration common to all test tasks
 tasks.withType<Test>().configureEach {
-    dependsOn(tasks.withType<PublishToMavenRepository>())
+    dependsOn(tasks.publish)
     workingDir = projectDir
     systemProperty("local.repo", projectDir.toPath().relativize(localRepo.toPath()).toString())
     systemProperty("pluginGroupId", pluginGroupId)
@@ -117,12 +117,7 @@ tasks.withType<Test>().configureEach {
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-val supportedVersions = (JsonSlurper()
-    .parse(file("src/main/resources/versions.json")) as Map<String, Map<String, Array<String>>>)["supportedVersions"]
-
-supportedVersions?.keys?.forEach {
-    val androidVersion = it
+getSupportedVersions().keys.forEach { androidVersion ->
     val versionSpecificTest = tasks.register<Test>(androidTestTaskName(androidVersion)) {
         description = "Runs the multi-version tests for AGP $androidVersion"
         group = "verification"
@@ -157,7 +152,7 @@ fun normalizeVersion(version: String): String {
 
 // A basic sanity check to run before running all test tasks
 tasks.register("sanityCheck") {
-    dependsOn(tasks.withType<CodeNarc>(), "validatePlugins")
+    dependsOn(tasks.withType<CodeNarc>(), tasks.validatePlugins)
 }
 
 tasks.withType<ValidatePlugins>().configureEach {
@@ -210,4 +205,10 @@ fun releaseVersion(): Provider<String> {
 fun releaseNotes(): Provider<String> {
     val releaseNotesFile = layout.projectDirectory.file("release/changes.md")
     return providers.fileContents(releaseNotesFile).asText.map { it.trim() }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun getSupportedVersions(): Map<String, Array<String>> {
+    return (JsonSlurper()
+        .parse(file("src/main/resources/versions.json")) as Map<String, Map<String, Array<String>>>)["supportedVersions"]!!
 }

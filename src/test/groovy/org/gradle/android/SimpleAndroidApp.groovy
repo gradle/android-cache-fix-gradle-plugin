@@ -50,6 +50,7 @@ class SimpleAndroidApp {
         def libraryActivity = 'LibraryActivity'
 
         file("settings.gradle") << """
+                import org.gradle.util.GradleVersion                
                 pluginManagement {
                     repositories {
                         mavenCentral()
@@ -59,6 +60,12 @@ class SimpleAndroidApp {
                             url = "${localRepo}"
                         }
                     }
+                }
+                plugins { 
+                    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.4.0' apply false 
+                }
+                if (GradleVersion.current() >= GradleVersion.version('7.6')) {
+                    apply plugin: 'org.gradle.toolchains.foojay-resolver-convention'
                 }
                 buildCache {
                     local {

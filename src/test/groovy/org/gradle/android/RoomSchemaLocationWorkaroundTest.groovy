@@ -15,9 +15,13 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
 
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers enabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
+
+        VersionNumber kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
+        checkMetadataIncompatibilityWithAgp8_1(androidVersion, kotlinVersionNumber)
+
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
-            .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .withKotlinVersion(kotlinVersionNumber)
             .build()
             .writeProject()
 
@@ -77,9 +81,13 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
 
     @Unroll
     def "schemas are generated into task-specific directory and are cacheable with kotlin and kapt workers disabled (Android #androidVersion) (Kotlin #kotlinVersion)"() {
+
+        VersionNumber kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
+        checkMetadataIncompatibilityWithAgp8_1(androidVersion, kotlinVersionNumber)
+
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
-            .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .withKotlinVersion(kotlinVersionNumber)
             .withKaptWorkersDisabled()
             .build()
             .writeProject()
@@ -446,9 +454,12 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
     @Unroll
     def "does not error when tasks are eagerly created (Android #androidVersion) (Kotlin #kotlinVersion)"() {
 
+        VersionNumber kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
+        checkMetadataIncompatibilityWithAgp8_1(androidVersion, kotlinVersionNumber)
+
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
-            .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .withKotlinVersion(kotlinVersionNumber)
             .build()
             .writeProject()
 
@@ -529,5 +540,12 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
     void assertKaptSchemaContainsColumnFor(String columnName, String variant) {
         assertRoomSchemaContainsColumn("app", "build/roomSchemas/kapt${variant.capitalize()}Kotlin", columnName)
         assertRoomSchemaContainsColumn("library", "build/roomSchemas/kapt${variant.capitalize()}Kotlin", columnName)
+    }
+
+    // Since 8.1.0-beta01, some AGP libraries are compiled with a newer Kotlin Compiler version.
+    // Builds using KGP < 1.7.0 and AGP 8.1.0-beta01+ cause metadata incompatibilities.
+    // https://issuetracker.google.com/issues/279710208
+    private checkMetadataIncompatibilityWithAgp8_1(VersionNumber androidVersion, VersionNumber kotlinVersion) {
+        Assume.assumeFalse(androidVersion >= VersionNumber.parse("8.1.0-beta01") && kotlinVersion < VersionNumber.parse("1.7.0"))
     }
 }

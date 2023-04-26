@@ -94,7 +94,7 @@ publishing {
     }
     repositories {
         maven {
-            url = uri(localRepo.toURI())
+            url = localRepo.toURI()
         }
     }
 }

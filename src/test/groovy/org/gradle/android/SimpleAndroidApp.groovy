@@ -482,6 +482,11 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withDatabindingDisabled() {
+            this.dataBindingEnabled = false
+            return this
+        }
+
         SimpleAndroidApp build() {
             return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock, kspEnabled)
         }

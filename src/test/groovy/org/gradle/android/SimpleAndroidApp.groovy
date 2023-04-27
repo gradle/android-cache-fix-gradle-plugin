@@ -212,12 +212,12 @@ class SimpleAndroidApp {
             android {
                 namespace "$namespace"
                 ndkVersion "20.0.5594570"
-                compileSdkVersion 32
+                compileSdkVersion 33
                 dataBinding.enabled = $dataBindingEnabled
                 ${sourceCompatibilityIfEnabled}
                 defaultConfig {
                     minSdkVersion 28
-                    targetSdkVersion 32
+                    targetSdkVersion 33
 
                     ${roomAnnotationProcessorArgumentIfEnabled}
 
@@ -479,6 +479,11 @@ class SimpleAndroidApp {
 
         Builder withKspEnabled() {
             this.kspEnabled = true
+            return this
+        }
+
+        Builder withDatabindingDisabled() {
+            this.dataBindingEnabled = false
             return this
         }
 

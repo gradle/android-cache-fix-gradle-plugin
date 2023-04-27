@@ -18,6 +18,7 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -80,6 +81,7 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .withKaptWorkersDisabled()
             .build()
             .writeProject()
@@ -449,6 +451,7 @@ class RoomSchemaLocationWorkaroundTest extends RoomWorkaroundAbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(VersionNumber.parse(kotlinVersion))
+            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 

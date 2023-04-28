@@ -32,7 +32,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run sanityCheck
-        run: ./gradlew sanityCheck
+        run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
@@ -48,7 +48,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run unit tests
-        run: ./gradlew test -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+        run: ./gradlew test -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication -Porg.gradle.java.installations.auto-download=false
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
           ORG_GRADLE_PROJECT_isPTSEnabled: ${{ github.ref_name != 'main' }}
@@ -97,7 +97,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run integration tests
-        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication -Porg.gradle.java.installations.auto-download=false
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
           ORG_GRADLE_PROJECT_isPTSEnabled: ${{ github.ref_name != 'main' }}

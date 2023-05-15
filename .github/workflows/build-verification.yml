@@ -69,7 +69,7 @@ jobs:
       - name: List Android Packages
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
       - name: Accept license 34.0.0-rc3
-        run: echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;34.0.0-rc4"
+        run: echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;34.0.0-rc3"
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v3
         with:

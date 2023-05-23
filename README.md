@@ -140,7 +140,8 @@ Please star them if you are experiencing them in your project.
 
 * Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
 
-The following issue is not fixed by the Android Cache Fix plugin since it has no workaround but will be fixed in a future release of the Android Gradle Plugin (8.0.0-alpha01 or newer).
+The following issue is not fixed by the Android Cache Fix plugin since it has no workaround but is fixed in Android Gradle Plugin 8.0.0 or newer.
+
 * MergeResources is not relocatable: https://issuetracker.google.com/issues/236001083
 
 ## Implementation Notes

@@ -134,14 +134,19 @@ static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 
 ### Unresolved Issues
 
-The following caching issues are fixed by the cache fix plugin but unresolved in any current or upcoming preview release of the Android Gradle Plugin as of 2022-09-09.
+***Please vote for the linked issues if you are experiencing them in your project.***
 
-Please star them if you are experiencing them in your project.
+Fixed by the Android Cache Fix plugin, but unresolved in any current or upcoming preview release of the Android Gradle Plugin:
 
 * Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
 
-The following issue is not fixed by the Android Cache Fix plugin since it has no workaround but will be fixed in a future release of the Android Gradle Plugin (8.0.0-alpha01 or newer).
-* MergeResources is not relocatable: https://issuetracker.google.com/issues/236001083
+Not fixed by the Android Cache Fix plugin since it has no workaround:
+
+* CompileLibraryResourcesTask outputs contain absolute paths: https://issuetracker.google.com/issues/282761461
+
+Not fixed by the Android Cache Fix plugin since it has no workaround but is fixed in Android Gradle Plugin 8.0.0 or newer:
+
+* MergeResources is not relocatable: https://issuetracker.google.com/issues/246529491
 
 ## Implementation Notes
 

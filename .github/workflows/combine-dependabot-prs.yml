@@ -2,7 +2,7 @@ name: Combine Dependabot PRs
 
 on:
   schedule:
-    - cron: '0 3 * * *'
+    - cron: '0 4 * * *'
   workflow_dispatch:
 
 # The minimum permissions required to run this Action

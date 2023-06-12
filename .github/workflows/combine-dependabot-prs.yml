@@ -20,4 +20,4 @@ jobs:
         uses: github/combine-prs@v3.1.1
         with:
           branch_regex: ^(dependa|wrapper)bot\/.*$
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_BOT_GITHUB_TOKEN }}

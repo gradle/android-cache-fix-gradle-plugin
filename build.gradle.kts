@@ -82,7 +82,7 @@ gradlePlugin {
 // in the TestKit plugin classpath.
 val localRepo = file("$buildDir/local-repo")
 
-val isProdPortal = System.getProperty("gradle.portal.url") != null
+val isProdPortal = System.getProperty("gradle.portal.url") == null
 // The legacy groupId gradle.plugin.* is only allowed when the plugin
 // has already been published
 val pluginGroupId = if (isCI && isProdPortal) "gradle.plugin.org.gradle.android" else project.group

@@ -1,0 +1,24 @@
+name: Submit GitHub Dependency Graph
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  
+permissions: write-all
+
+jobs:
+  generate-and-submit-graph:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 11
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2    
+    - name: Generate dependency graph
+      uses: gradle/gradle-build-action/actions/dependency-graph-generate@v2
+    - name: Submit dependency graph
+      uses: gradle/gradle-build-action/actions/dependency-graph-submit@v2

@@ -20,5 +20,7 @@ jobs:
       uses: gradle/gradle-build-action@v2    
     - name: Generate dependency graph
       uses: gradle/gradle-build-action/actions/dependency-graph-generate@v2
+      env:
+        GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
     - name: Submit dependency graph
       uses: gradle/gradle-build-action/actions/dependency-graph-submit@v2

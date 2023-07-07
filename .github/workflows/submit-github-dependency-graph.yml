@@ -1,4 +1,4 @@
-name: Submit GitHub Dependency Graph
+name: Submit Dependency Graph
 on:
   workflow_dispatch:
   push:
@@ -8,7 +8,7 @@ on:
 permissions: write-all
 
 jobs:
-  generate-and-submit-graph:
+  sanity-check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -17,10 +17,10 @@ jobs:
         distribution: temurin
         java-version: 11
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2    
-    - name: Generate dependency graph
-      uses: gradle/gradle-build-action/actions/dependency-graph-generate@v2
+      uses: gradle/gradle-build-action@dependency-graph
+      with:
+        dependency-graph: generate-and-submit
+    - name: Run sanityCheck to generate dependency graph
+      run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
       env:
         GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
-    - name: Submit dependency graph
-      uses: gradle/gradle-build-action/actions/dependency-graph-submit@v2

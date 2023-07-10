@@ -8,7 +8,7 @@ on:
 permissions: write-all
 
 jobs:
-  sanity-check:
+  generate-and-submit:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

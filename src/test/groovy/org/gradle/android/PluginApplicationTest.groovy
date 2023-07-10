@@ -22,7 +22,7 @@ class PluginApplicationTest extends AbstractTest {
         result.output =~ /Android plugin ${quote(androidVersion)} is not supported by Android cache fix plugin. Supported Android plugin versions: .*. Please check if a newer version of this plugin is available or override with -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true./
 
         where:
-        androidVersion << ["4.2.1"]
+        androidVersion << ["4.2.2"]
 
     }
 

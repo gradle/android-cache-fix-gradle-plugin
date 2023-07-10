@@ -6,7 +6,6 @@
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
 > - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
 > - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin] (this repository)_
-> - _[Wrapper Upgrade Gradle Plugin][wrapper-upgrade-gradle-plugin]_
 
 # Android Cache Fix Gradle Plugin
 

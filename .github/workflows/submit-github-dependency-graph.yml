@@ -20,7 +20,7 @@ jobs:
       uses: gradle/gradle-build-action@dependency-graph
       with:
         dependency-graph: generate-and-submit
-    - name: Run sanityCheck to generate dependency graph
-      run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
+    - name: Run 'publish' to generate dependency graph
+      run: ./gradlew publish -Porg.gradle.java.installations.auto-download=false
       env:
         GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}

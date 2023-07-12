@@ -18,6 +18,11 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
         // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
         Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.7.0"))
 
+        // AGP 8.2.0-alpha10 and higher require Kotlin 1.8.0 or higher
+        if (androidVersion >= VersionNumber.parse("8.2.0-alpha10")) {
+            Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.8.0"))
+        }
+
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinVersion(kotlinVersionNumber)
@@ -88,6 +93,11 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
 
         // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
         Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.7.0"))
+
+        // AGP 8.2.0-alpha10 and higher require Kotlin 1.8.0 or higher
+        if (androidVersion >= VersionNumber.parse("8.2.0-alpha10")) {
+            Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.8.0"))
+        }
 
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)

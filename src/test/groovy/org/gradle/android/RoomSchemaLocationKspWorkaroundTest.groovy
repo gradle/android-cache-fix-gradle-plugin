@@ -15,9 +15,6 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
     def "schemas are generated with Ksp into task-specific directory and are cacheable (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
 
-        // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
-        Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.7.0"))
-
         // AGP 8.2.0-alpha10 and higher require Kotlin 1.8.0 or higher
         if (androidVersion >= VersionNumber.parse("8.2.0-alpha10")) {
             Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.8.0"))
@@ -90,9 +87,6 @@ class RoomSchemaLocationKspWorkaroundTest extends RoomWorkaroundAbstractTest {
     @Unroll
     def "schemas are correctly generated with Ksp when only one variant is built incrementally (Android #androidVersion) (Kotlin #kotlinVersion)"() {
         def kotlinVersionNumber = VersionNumber.parse(kotlinVersion)
-
-        // The Room workaround for KSP does not support Kotlin version 1.6.x or lower
-        Assume.assumeTrue(kotlinVersionNumber >= VersionNumber.parse("1.7.0"))
 
         // AGP 8.2.0-alpha10 and higher require Kotlin 1.8.0 or higher
         if (androidVersion >= VersionNumber.parse("8.2.0-alpha10")) {

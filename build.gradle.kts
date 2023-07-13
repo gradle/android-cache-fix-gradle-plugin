@@ -50,7 +50,7 @@ dependencies {
 wrapperUpgrade {
     gradle {
         create("android-cache-fix-gradle-plugin") {
-            repo.set("gradle/android-cache-fix-gradle-plugin")
+            repo = "gradle/android-cache-fix-gradle-plugin"
         }
     }
 }
@@ -58,14 +58,14 @@ wrapperUpgrade {
 java {
     toolchain {
         // AGP 7+ only supports JDK 11+
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
 // Main plugin publishing metadata
 gradlePlugin {
-    website.set("https://github.com/gradle/android-cache-fix-gradle-plugin")
-    vcsUrl.set("https://github.com/gradle/android-cache-fix-gradle-plugin")
+    website = "https://github.com/gradle/android-cache-fix-gradle-plugin"
+    vcsUrl = "https://github.com/gradle/android-cache-fix-gradle-plugin"
 
     plugins {
         create("androidCacheFixPlugin") {
@@ -109,7 +109,7 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     retry {
         maxRetries.set(if (isCI) 1 else 0)
-        maxFailures.set(20)
+        maxFailures = 20
     }
 
     predictiveSelection {
@@ -132,7 +132,7 @@ getSupportedVersions().keys.forEach { androidVersion ->
 
         if (androidVersion >= "8.0.0") {
             javaLauncher.set(javaToolchains.launcherFor {
-                languageVersion.set(JavaLanguageVersion.of(17))
+                languageVersion = JavaLanguageVersion.of(17)
             })
         }
     }
@@ -156,8 +156,8 @@ tasks.register("sanityCheck") {
 }
 
 tasks.withType<ValidatePlugins>().configureEach {
-    failOnWarning.set(true)
-    enableStricterValidation.set(true)
+    failOnWarning = true
+    enableStricterValidation = true
 }
 
 signing {
@@ -172,15 +172,15 @@ signing {
 
 githubRelease {
     token(System.getenv("ANDROID_CACHE_FIX_PLUGIN_GIT_TOKEN") ?: "")
-    owner.set("gradle")
-    repo.set("android-cache-fix-gradle-plugin")
-    releaseName.set(releaseVersion)
-    tagName.set(releaseVersion.map { "v$it" })
-    prerelease.set(false)
-    overwrite.set(false)
-    generateReleaseNotes.set(false)
-    body.set(releaseNotes)
-    targetCommitish.set("main")
+    owner = "gradle"
+    repo = "android-cache-fix-gradle-plugin"
+    releaseName = releaseVersion
+    tagName = releaseVersion.map { "v$it" }
+    prerelease = false
+    overwrite = false
+    generateReleaseNotes = false
+    body = releaseNotes
+    targetCommitish = "main"
 }
 
 val createReleaseTag = tasks.register<CreateGitTag>("createReleaseTag") {

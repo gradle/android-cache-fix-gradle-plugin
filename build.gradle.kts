@@ -27,8 +27,8 @@ repositories {
 
 dependencies {
     val versions = mapOf(
-        "agp" to "7.3.1",
-        "sdkBuildTools" to "30.0.4",
+        "agp" to "8.0.2",
+        "sdkBuildTools" to "31.0.2",
         "spock" to "2.3-groovy-3.0",
     )
 

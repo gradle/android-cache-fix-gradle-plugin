@@ -1,2 +1,2 @@
 - [NEW] Drop support for Kotlin 1.6.X
-- [NEW] Run tests against AGP 8.2.0-alpha12
+- [NEW] Run tests against AGP 8.2.0-alpha13

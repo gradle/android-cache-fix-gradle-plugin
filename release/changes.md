@@ -1,3 +1,4 @@
 - [NEW] Drop support for Kotlin 1.6.X
 - [NEW] Run tests against AGP 8.2.0-alpha14
 - [NEW] Run tests against AGP 8.1.0
+- [NEW] New workaround: PackageForUnitTestWorkaround. It disables the cacheability of the AGP task PackageForUnitTest

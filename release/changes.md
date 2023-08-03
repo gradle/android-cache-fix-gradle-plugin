@@ -1,4 +1,0 @@
-- [NEW] Drop support for Kotlin 1.6.X
-- [NEW] Run tests against AGP 8.2.0-alpha14
-- [NEW] Run tests against AGP 8.1.0
-- [NEW] Disable caching of `PackageForUnitTest` task as it does not benefit from caching.

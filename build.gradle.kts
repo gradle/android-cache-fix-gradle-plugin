@@ -108,12 +108,12 @@ tasks.withType<Test>().configureEach {
     systemProperty("org.gradle.android.cache-fix.version", version)
     useJUnitPlatform()
     retry {
-        maxRetries.set(if (isCI) 1 else 0)
+        maxRetries = if (isCI) 1 else 0
         maxFailures = 20
     }
 
     predictiveSelection {
-        enabled.set(providers.gradleProperty("isPTSEnabled").map { it != "false" }.orElse(false))
+        enabled = providers.gradleProperty("isPTSEnabled").map { it != "false" }.orElse(false)
     }
 }
 
@@ -131,9 +131,9 @@ getSupportedVersions().keys.forEach { androidVersion ->
         }
 
         if (androidVersion >= "8.0.0") {
-            javaLauncher.set(javaToolchains.launcherFor {
+            javaLauncher = javaToolchains.launcherFor {
                 languageVersion = JavaLanguageVersion.of(17)
-            })
+            }
         }
     }
 
@@ -186,7 +186,7 @@ githubRelease {
 val createReleaseTag = tasks.register<CreateGitTag>("createReleaseTag") {
     // Ensure tag is created only after successful publishing
     mustRunAfter("publishPlugins")
-    tagName.set(githubRelease.tagName.map { it.toString() })
+    tagName = githubRelease.tagName.map { it.toString() }
 }
 
 tasks.named("githubRelease").configure {

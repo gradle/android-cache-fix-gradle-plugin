@@ -14,7 +14,7 @@ plugins {
 
 val releaseVersion = releaseVersion()
 val releaseNotes = releaseNotes()
-val isCI = (System.getenv("CI") ?: "false").toBoolean()
+val isCI = providers.environmentVariable("CI").isPresent
 
 group = "org.gradle.android"
 version = releaseVersion.get()
@@ -82,14 +82,14 @@ gradlePlugin {
 // in the TestKit plugin classpath.
 val localRepo = file("$buildDir/local-repo")
 
-val isProdPortal = System.getProperty("gradle.portal.url") == null
+val isProdPortal = providers.systemProperty("gradle.portal.url").orNull == null
 // The legacy groupId gradle.plugin.* is only allowed when the plugin
 // has already been published
-val pluginGroupId = if (isCI && isProdPortal) "gradle.plugin.org.gradle.android" else project.group
+val pluginGroupId: String = if (isCI && isProdPortal) "gradle.plugin.org.gradle.android" else project.group.toString()
 publishing {
     publications {
         create<MavenPublication>("pluginMaven") {
-            groupId = pluginGroupId.toString()
+            groupId = pluginGroupId
         }
     }
     repositories {
@@ -137,7 +137,7 @@ getSupportedVersions().keys.forEach { androidVersion ->
         }
     }
 
-    tasks.named("check").configure {
+    tasks.check {
         dependsOn(versionSpecificTest)
     }
 }
@@ -171,7 +171,7 @@ signing {
 }
 
 githubRelease {
-    token(System.getenv("ANDROID_CACHE_FIX_PLUGIN_GIT_TOKEN") ?: "")
+    token(providers.environmentVariable("ANDROID_CACHE_FIX_PLUGIN_GIT_TOKEN").orNull)
     owner = "gradle"
     repo = "android-cache-fix-gradle-plugin"
     releaseName = releaseVersion
@@ -185,21 +185,21 @@ githubRelease {
 
 val createReleaseTag = tasks.register<CreateGitTag>("createReleaseTag") {
     // Ensure tag is created only after successful publishing
-    mustRunAfter("publishPlugins")
+    mustRunAfter(tasks.publishPlugins)
     tagName = githubRelease.tagName.map { it.toString() }
 }
 
-tasks.named("githubRelease").configure {
+tasks.githubRelease {
     dependsOn(createReleaseTag)
 }
 
 tasks.withType<com.gradle.publish.PublishTask>().configureEach {
-    notCompatibleWithConfigurationCache("$name task does not support configuration caching")
+    notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/21283")
 }
 
 fun releaseVersion(): Provider<String> {
     val releaseVersionFile = layout.projectDirectory.file("release/version.txt")
-    return providers.fileContents(releaseVersionFile).asText.map { it -> it.trim() }
+    return providers.fileContents(releaseVersionFile).asText.map { it.trim() }
 }
 
 fun releaseNotes(): Provider<String> {
@@ -210,5 +210,5 @@ fun releaseNotes(): Provider<String> {
 @Suppress("UNCHECKED_CAST")
 fun getSupportedVersions(): Map<String, Array<String>> {
     return (JsonSlurper()
-        .parse(file("src/main/resources/versions.json")) as Map<String, Map<String, Array<String>>>)["supportedVersions"]!!
+        .parse(file("src/main/resources/versions.json")) as Map<String, Map<String, Array<String>>>).getValue("supportedVersions")
 }

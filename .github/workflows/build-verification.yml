@@ -114,7 +114,12 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run integration tests
-        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication -Porg.gradle.java.installations.auto-download=false
+        run: >-
+            ./gradlew testAndroid${{ matrix.versions }}
+            -x signPluginMavenPublication
+            -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+            -Porg.gradle.java.installations.auto-download=false
+            -DptsProfile=${{ needs.generate_versions_pts.outputs.pts-profile }}
+            -Dpts.mode=${{ needs.generate_versions_pts.outputs.pts-mode }}
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
-          ORG_GRADLE_PROJECT_isPTSEnabled: ${{ github.ref_name != 'main' }}

@@ -1,4 +1,7 @@
 import com.gradle.enterprise.gradleplugin.testretry.retry
+import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.FAST
+import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.CONSERVATIVE
+import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper
 
 plugins {
@@ -113,7 +116,15 @@ tasks.withType<Test>().configureEach {
     }
 
     predictiveSelection {
-        enabled.set(providers.gradleProperty("isPTSEnabled").map { it != "false" }.orElse(false))
+        enabled.set(providers.gradleProperty("ptsEnabled").map { it.equals("true") }.orElse(true))
+        profile.set(providers.gradleProperty("ptsProfile").map {
+            when(it) {
+                "FAST" -> FAST
+                "CONSERVATIVE" -> CONSERVATIVE
+                "STANDARD" -> STANDARD
+                else -> FAST// default
+            }
+        })
     }
 }
 

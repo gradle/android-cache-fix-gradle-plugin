@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main, citest ]
   pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:

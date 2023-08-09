@@ -8,7 +8,6 @@ class ConfigurationCachingTest extends AbstractTest {
     static final String CC_PROBLEMS_FOUND = "problems were found storing the configuration cache"
 
     def "plugin is compatible with configuration cache"() {
-        
         given:
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
                 .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())

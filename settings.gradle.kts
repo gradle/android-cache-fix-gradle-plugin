@@ -6,7 +6,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.6.0"
 }
 
-val isCI = System.getenv("GITHUB_ACTIONS") != null
+val isCI = providers.environmentVariable("CI").isPresent
 
 gradleEnterprise {
     server = "https://ge.solutions-team.gradle.com"

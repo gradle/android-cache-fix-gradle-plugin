@@ -9,40 +9,38 @@ import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
 @DisableCachingByDefault(because = "Produces no cacheable output")
-abstract class CreateGitTag extends DefaultTask {
+abstract class CreateGitTag @Inject constructor(
+    private val objects: ObjectFactory,
+    private val execOperations: ExecOperations
+) : DefaultTask() {
 
-    @Inject
-    abstract ObjectFactory getObjects()
+    @get:Input
+    val tagName: Property<String> = objects.property(String::class.java)
 
-    @Inject
-    abstract ExecOperations getExecOperations()
-
-    @Input
-    abstract Property<String> getTagName()
-
-    @Input
-    @Optional
-    final abstract Property<Boolean> overwriteExisting = objects.property(Boolean).convention(false)
+    @get:Input
+    @get:Optional
+    val overwriteExisting: Property<Boolean> = objects.property(Boolean::class.java).apply {
+        value(false)
+    }
 
     @TaskAction
-    def tag() {
+    fun applyArgbash() {
         logger.info("Tagging HEAD as ${tagName.get()}")
-        execOperations.exec { execSpec ->
-            def args = ["git", "tag"]
+        execOperations.exec {
+            val args = mutableListOf("git", "tag")
             if (overwriteExisting.get()) {
                 args.add("-f")
             }
             args.add(tagName.get())
-            execSpec.commandLine(args)
+            commandLine(args)
         }
-        execOperations.exec { execSpec ->
-            def args = ["git", "push", "origin"]
+        execOperations.exec {
+            val args = mutableListOf("git", "push", "origin")
             if (overwriteExisting.get()) {
                 args.add("-f")
             }
             args.add("--tags")
-            execSpec.commandLine(args)
+            commandLine(args)
         }
     }
-
 }

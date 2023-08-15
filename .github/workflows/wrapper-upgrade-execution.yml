@@ -9,6 +9,7 @@ jobs:
   upgrade_wrapper:
     name: Execution
     runs-on: ubuntu-latest
+    if: github.repository == 'gradle/android-cache-fix-gradle-plugin'
     steps:
       - name: Set up Git configuration
         env:

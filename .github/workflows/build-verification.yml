@@ -68,8 +68,8 @@ jobs:
         run: sudo test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_HOME/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
       - name: List Android Packages
         run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
-      - name: Accept license 34.0.0-rc3
-        run: echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;34.0.0-rc3"
+      - name: Accept license 34.0.0
+        run: echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;34.0.0"
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v3
         with:

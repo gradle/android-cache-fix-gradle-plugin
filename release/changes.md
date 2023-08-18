@@ -1,1 +1,5 @@
 - [NEW] Run tests against AGP 8.2.0-alpha16
+- [NEW] Enabled Predictive Test Selection (PTS) by default.
+- [NEW] Set the `FAST` PTS profile for `testAndroid${version}` test tasks and `STANDARD` profile for "regular" `test` task.
+- [NEW] Set `RELEVANT_TESTS` PTS mode for PRs (pre-merge) and `REMAINING_TESTS` for `main` (post-merge) branch builds.
+- [NEW] Enabled `Verify Build` action for all PRs, not just the ones targeting `main`

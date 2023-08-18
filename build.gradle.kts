@@ -7,7 +7,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("codenarc")
-    id("com.gradle.plugin-publish") version "1.2.0"
+    id("com.gradle.plugin-publish") version "1.2.1"
     id("com.github.breadmoirai.github-release") version "2.4.1"
     id("org.gradle.wrapper-upgrade") version "0.11.2"
 }

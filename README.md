@@ -17,11 +17,12 @@
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions. For other versions, please see [older versions.](#older-android-gradle-plugin-versions)
 
 * Supported Gradle versions: 7.0+
-* Supported Android Gradle Plugin versions: 7.0.4, 7.1.3, 7.2.2, 7.3.1, 7.4.2, 8.0.2, 8.1.1, 8.2.0-beta02, and 8.3.0-alpha02
+* Supported Android Gradle Plugin versions: 7.0+
 * Supported Kotlin versions: 1.7.0+
 
 The Android cache fix plugin is compatible with the [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html#header) when used in conjunction with Android Gradle Plugin 4.2.0 and above.  Using the configuration cache with earlier versions of the Android Gradle Plugin is not supported.
 
+<<<<<<< HEAD
 ### Compatibility matrix by AGP version
 
 | AGP | Latest Version tested |
@@ -37,6 +38,25 @@ The Android cache fix plugin is compatible with the [Gradle Configuration Cache]
 
 We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 7.0.1), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.
 
+||||||| parent of 8e881f0 (update README)
+=======
+### Compatibility matrix by AGP version
+
+| AGP | Latest Version tested |
+|-----|-----------------------|
+| 8.3 | 8.3.0-alpha02         |
+| 8.2 | 8.2.0-beta02          |
+| 8.1 | 8.1.0                 |
+| 8.0 | 8.0.2                 |
+| 7.4 | 7.4.2                 |
+| 7.3 | 7.3.1                 |
+| 7.2 | 7.2.2                 |
+| 7.1 | 7.1.3                 |
+| 7.0 | 7.0.4                 |
+
+We only test against the latest patch versions of each minor version of Android Gradle Plugin.  This means that although it may work perfectly well with an older patch version (say 7.0.1), we do not test against these older patch versions, so the latest patch version is the only version from that minor release that we technically support.
+
+>>>>>>> 8e881f0 (update README)
 ## Should I use this?
 Take a look at the [list of issues](#list-of-issues) especially [unresolved issues](#unresolved-issues). If any of these apply to your project, you can use this plugin to solve them.
 

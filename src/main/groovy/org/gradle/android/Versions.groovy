@@ -7,8 +7,6 @@ import com.google.common.collect.Multimap
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.gradle.android.workarounds.SystemPropertiesCompat
-import org.gradle.api.Project
 import org.gradle.util.GradleVersion
 
 @CompileStatic(TypeCheckingMode.SKIP)
@@ -17,7 +15,6 @@ class Versions {
     static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
     static final Multimap<VersionNumber, GradleVersion> SUPPORTED_VERSIONS_MATRIX
     static final VersionNumber CURRENT_ANDROID_VERSION
-    static final String IGNORE_VERSION_CHECK_PROPERTY = "org.gradle.android.cache-fix.ignoreVersionCheck"
 
     static {
         def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
@@ -49,21 +46,7 @@ class Versions {
         return new VersionNumber(earliestSupported.major, earliestSupported.minor, 0, "alpha")
     }
 
-    static VersionNumber latestAndroidVersion() {
-        return SUPPORTED_ANDROID_VERSIONS.max()
-    }
-
-    static boolean isSupportedAndroidVersion(Project project) {
-        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
-            SUPPORTED_ANDROID_VERSIONS.contains(CURRENT_ANDROID_VERSION)
-    }
-
-    static boolean isMaybeSupportedAndroidVersion(Project project) {
-        return SystemPropertiesCompat.getBoolean(IGNORE_VERSION_CHECK_PROPERTY, project) ||
-            isSameMajorAndMinorAsSupportedVersion()
-    }
-
-    static boolean isSameMajorAndMinorAsSupportedVersion() {
+    static boolean isMaybeSupportedAndroidVersion() {
         return isSameMajorAndMinorAsSupportedVersion(CURRENT_ANDROID_VERSION)
     }
 

@@ -6,7 +6,7 @@ import spock.lang.Unroll
 class WorkaroundTest extends Specification {
     @Unroll
     def "applies the right workarounds for Android #androidVersion"() {
-        def possibleWorkarounds = AndroidCacheFixPlugin.initializeWorkarounds(null)
+        def possibleWorkarounds = AndroidCacheFixPlugin.initializeWorkarounds()
         def workarounds = AndroidCacheFixPlugin.getWorkaroundsToApply(Versions.android(androidVersion), null, possibleWorkarounds)
         expect:
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()

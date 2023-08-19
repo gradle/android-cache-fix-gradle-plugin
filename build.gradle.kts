@@ -7,7 +7,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("codenarc")
-    id("com.gradle.plugin-publish") version "1.2.0"
+    id("com.gradle.plugin-publish") version "1.2.1"
     id("com.github.breadmoirai.github-release") version "2.4.1"
     id("org.gradle.wrapper-upgrade") version "0.11.2"
 }
@@ -80,7 +80,7 @@ gradlePlugin {
 
 // A local repo we publish our library to for testing in order to workaround limitations
 // in the TestKit plugin classpath.
-val localRepo = file("$buildDir/local-repo")
+val localRepo = layout.buildDirectory.dir("local-repo")
 
 val isProdPortal = providers.systemProperty("gradle.portal.url").orNull == null
 // The legacy groupId gradle.plugin.* is only allowed when the plugin
@@ -94,7 +94,7 @@ publishing {
     }
     repositories {
         maven {
-            url = localRepo.toURI()
+            url = localRepo.get().asFile.toURI()
         }
     }
 }
@@ -103,7 +103,7 @@ publishing {
 tasks.withType<Test>().configureEach {
     dependsOn(tasks.publish)
     workingDir = projectDir
-    systemProperty("local.repo", projectDir.toPath().relativize(localRepo.toPath()).toString())
+    systemProperty("local.repo", projectDir.toPath().relativize(localRepo.get().asFile.toPath()).toString())
     systemProperty("pluginGroupId", pluginGroupId)
     systemProperty("org.gradle.android.cache-fix.version", version)
     useJUnitPlatform()

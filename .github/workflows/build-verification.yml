@@ -5,6 +5,12 @@ on:
     branches: [ main, citest ]
   pull_request:
   workflow_dispatch:
+      inputs:
+          pts_enabled:
+              description: Is PTS enabled
+              required: true
+              default: false
+              type: boolean
 
 jobs:
   generate_versions_pts:
@@ -59,6 +65,7 @@ jobs:
             -x signAndroidCacheFixPluginPluginMarkerMavenPublication
             -Porg.gradle.java.installations.auto-download=false
             -Dpts.mode=${{ needs.generate_versions_pts.outputs.pts-mode }}
+            -PisPTSEnabled=${{ github.event.inputs.pts_enabled }}
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
@@ -114,5 +121,6 @@ jobs:
             -x signAndroidCacheFixPluginPluginMarkerMavenPublication
             -Porg.gradle.java.installations.auto-download=false
             -Dpts.mode=${{ needs.generate_versions_pts.outputs.pts-mode }}
+            -PisPTSEnabled=${{ github.event.inputs.pts_enabled }}
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}

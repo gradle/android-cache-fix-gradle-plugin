@@ -46,7 +46,7 @@ class Versions {
         return new VersionNumber(earliestSupported.major, earliestSupported.minor, 0, "alpha")
     }
 
-    static boolean isMaybeSupportedAndroidVersion() {
+    static boolean isSupportedAndroidVersion() {
         return isSameMajorAndMinorAsSupportedVersion(CURRENT_ANDROID_VERSION)
     }
 

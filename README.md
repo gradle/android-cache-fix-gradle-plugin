@@ -144,7 +144,7 @@ static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 }
 ```
 
-### Compatibility matrix by AGP version and Workaround
+### AGP version and Workarounds applied
 
 |                                               | 8.2.x              | 8.1.x              | 8.0.x              | 7.4.x              | 7.3.x              | 7.2.x              | 7.1.x              | 7.0.x              |
 |-----------------------------------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|

@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main, citest ]
   pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -16,7 +15,7 @@ jobs:
       - id: setup-matrix
         run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
       - name: debug
-        run: echo ${{ steps.setup-matrix.outputs.matrix }}
+        run: echo "matrix=${{ steps.setup-matrix.outputs.matrix }}"
     outputs:
       matrix: ${{ steps.setup-matrix.outputs.matrix }}
 
@@ -48,10 +47,15 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run unit tests
-        run: ./gradlew test -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication -Porg.gradle.java.installations.auto-download=false
+        run: >-
+            ./gradlew test
+            -x signPluginMavenPublication
+            -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+            -Porg.gradle.java.installations.auto-download=false
+            -Dpts.mode=$PTS_MODE
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
-          ORG_GRADLE_PROJECT_isPTSEnabled: ${{ github.ref_name != 'main' }}
+          PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
 
   android_version_tests:
     name: Android version tests
@@ -99,7 +103,12 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run integration tests
-        run: ./gradlew testAndroid${{ matrix.versions }} -x signPluginMavenPublication -x signAndroidCacheFixPluginPluginMarkerMavenPublication -Porg.gradle.java.installations.auto-download=false
+        run: >-
+            ./gradlew testAndroid${{ matrix.versions }}
+            -x signPluginMavenPublication
+            -x signAndroidCacheFixPluginPluginMarkerMavenPublication
+            -Porg.gradle.java.installations.auto-download=false
+            -Dpts.mode=$PTS_MODE
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
-          ORG_GRADLE_PROJECT_isPTSEnabled: ${{ github.ref_name != 'main' }}
+          PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"

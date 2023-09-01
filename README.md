@@ -56,7 +56,7 @@ This plugin should be applied anywhere the `com.android.application` or `com.and
 // in build.grade.kts for convention plugin build
 dependencies {
   // ...
-  implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.7.3")
+  implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.7.4")
   // ...
 }
 
@@ -77,7 +77,7 @@ plugins {
 // in build.grade for convention plugin build
 dependencies {
     // ...
-    implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.7.3")
+    implementation("org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin:2.7.4")
     // ...
 }
 
@@ -91,7 +91,7 @@ plugins {
 
 </details>
 
-If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '2.7.3' to the latest version of the cache fix plugin
+If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '2.7.4' to the latest version of the cache fix plugin
 [here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)). We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#sec:convention_plugins_vs_cross_configuration).
 
 <details open>
@@ -100,7 +100,7 @@ If you are not using convention plugins and would like a quick way of testing th
 
 ```kotlin
 plugins {
-    id("org.gradle.android.cache-fix") version "2.7.3" apply false
+    id("org.gradle.android.cache-fix") version "2.7.4" apply false
 }
 
 subprojects {
@@ -117,7 +117,7 @@ subprojects {
 
 ```groovy
 plugins {
-    id "org.gradle.android.cache-fix" version "2.7.3" apply false
+    id "org.gradle.android.cache-fix" version "2.7.4" apply false
 }
 
 subprojects {

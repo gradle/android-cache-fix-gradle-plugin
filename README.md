@@ -17,7 +17,7 @@
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions. For other versions, please see [older versions.](#older-android-gradle-plugin-versions)
 
 * Supported Gradle versions: 7.0+
-* Supported Android Gradle Plugin versions: 7.0.4, 7.1.3, 7.2.2, 7.3.1, 7.4.2, 8.0.2, 8.1.1, 8.2.0-beta01, and 8.3.0-alpha02
+* Supported Android Gradle Plugin versions: 7.0.4, 7.1.3, 7.2.2, 7.3.1, 7.4.2, 8.0.2, 8.1.1, 8.2.0-beta02, and 8.3.0-alpha02
 * Supported Kotlin versions: 1.7.0+
 
 The Android cache fix plugin is compatible with the [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html#header) when used in conjunction with Android Gradle Plugin 4.2.0 and above.  Using the configuration cache with earlier versions of the Android Gradle Plugin is not supported.

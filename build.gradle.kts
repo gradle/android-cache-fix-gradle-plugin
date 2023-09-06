@@ -1,6 +1,5 @@
 import com.gradle.enterprise.gradleplugin.testretry.retry
 import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.FAST
-import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.CONSERVATIVE
 import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper
 

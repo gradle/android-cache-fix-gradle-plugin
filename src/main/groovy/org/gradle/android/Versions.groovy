@@ -40,19 +40,13 @@ class Versions {
         GradleVersion.version(version)
     }
 
-    static VersionNumber earliestMaybeSupportedAndroidVersion() {
+    static VersionNumber earliestSupportedAndroidVersion() {
         VersionNumber earliestSupported = SUPPORTED_ANDROID_VERSIONS.min()
         // "alpha" is lower than null
         return new VersionNumber(earliestSupported.major, earliestSupported.minor, 0, "alpha")
     }
 
     static boolean isSupportedAndroidVersion() {
-        return isSameMajorAndMinorAsSupportedVersion(CURRENT_ANDROID_VERSION)
-    }
-
-    static boolean isSameMajorAndMinorAsSupportedVersion(VersionNumber versionNumber) {
-        return SUPPORTED_ANDROID_VERSIONS.stream().anyMatch { supportedVersion ->
-            versionNumber.major == supportedVersion.major && versionNumber.minor == supportedVersion.minor
-        }
+        return CURRENT_ANDROID_VERSION >= earliestSupportedAndroidVersion()
     }
 }

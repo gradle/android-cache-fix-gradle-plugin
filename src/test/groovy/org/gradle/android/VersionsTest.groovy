@@ -1,7 +1,6 @@
 package org.gradle.android
 
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class VersionsTest extends Specification {
     def "earliest supported version includes alpha and beta builds"() {

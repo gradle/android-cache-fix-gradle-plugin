@@ -30,12 +30,12 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     private final List<Workaround> workarounds = [] as List<Workaround>
 
-    static List<Workaround> initializeWorkarounds(Project project) {
+    static List<Workaround> initializeWorkarounds() {
         // This avoids trying to apply these workarounds to a build with a version of Android that does not contain
         // some of the classes the workarounds reference. In such a case, we can throw a friendlier "not supported"
         // error instead of a ClassDefNotFound.
-        if (isMaybeSupportedAndroidVersion(project)) {
-            return Arrays.<Workaround>asList(
+        if (isSupportedAndroidVersion()) {
+            return Arrays.<Workaround> asList(
                 new MergeNativeLibsWorkaround(),
                 new MergeSourceSetFoldersWorkaround(),
                 new RoomSchemaLocationWorkaround(),
@@ -55,14 +55,10 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        workarounds.addAll(initializeWorkarounds(project))
+        workarounds.addAll(initializeWorkarounds())
 
-        if (!isSupportedAndroidVersion(project)) {
-            if (isMaybeSupportedAndroidVersion(project)) {
-                Warnings.MAYBE_SUPPORTED_ANDROID_VERSION.warnOnce(project)
-            } else {
-                throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. Supported Android plugin versions: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}. Please check if a newer version of this plugin is available or override with -D${IGNORE_VERSION_CHECK_PROPERTY}=true.")
-            }
+        if (!isSupportedAndroidVersion()) {
+            throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please use Android Cache Fix Plugin 2.4.6")
         }
 
         def appliedWorkarounds = []
@@ -80,7 +76,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         Project project,
         List<Workaround> workarounds
     ) {
-        def workaroundsBuilder = ImmutableList.<Workaround>builder()
+        def workaroundsBuilder = ImmutableList.<Workaround> builder()
         for (def workaround : workarounds) {
             def androidIssue = workaround.class.getAnnotation(AndroidIssue)
             def introducedIn = android(androidIssue.introducedIn())

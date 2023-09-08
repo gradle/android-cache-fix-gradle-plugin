@@ -19,28 +19,10 @@ class PluginApplicationTest extends AbstractTest {
             .withProjectDir(projectDir)
             .withArguments("tasks", "--stacktrace")
             .buildAndFail()
-        result.output =~ /Android plugin ${quote(androidVersion)} is not supported by Android cache fix plugin. Supported Android plugin versions: .*. Please check if a newer version of this plugin is available or override with -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true./
+        result.output =~ /Android plugin ${quote(androidVersion)} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please use Android Cache Fix Plugin 2.4.6/
 
         where:
         androidVersion << ["4.2.2"]
 
-    }
-
-    def "warns when version is not supported but within range"() {
-        def notLatestPatchAndroidVersion = "7.0.3"
-        def projectDir = temporaryFolder.newFolder()
-        SimpleAndroidApp.builder(projectDir, cacheDir)
-            .withAndroidVersion(notLatestPatchAndroidVersion)
-            .build()
-            .writeProject()
-
-        expect:
-        def result = withGradleVersion(TestVersions.latestSupportedGradleVersionFor(notLatestPatchAndroidVersion).version)
-            .withProjectDir(projectDir)
-            .withArguments("tasks", "--stacktrace")
-            .build()
-        result.output.readLines().findAll {
-            it =~ /WARNING: Android plugin ${quote("7.0.3")} has not been tested with this version of the Android cache fix plugin, although it may work.  We test against only the latest patch release versions of Android Gradle plugin: ${Versions.SUPPORTED_ANDROID_VERSIONS.join(", ")}.  If 7.0.3 is newly released, we may not have had a chance to release a version tested against it yet.  Proceed with caution.  You can suppress this warning with with -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true./
-        }.size() == 1
     }
 }

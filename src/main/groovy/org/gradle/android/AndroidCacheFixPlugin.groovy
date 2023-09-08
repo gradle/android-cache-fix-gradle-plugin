@@ -58,7 +58,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         workarounds.addAll(initializeWorkarounds())
 
         if (!isSupportedAndroidVersion()) {
-            throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. Supported Android plugin versions: ${SUPPORTED_ANDROID_VERSIONS.join(", ")}")
+            throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please use Android Cache Fix Plugin 2.4.6")
         }
 
         def appliedWorkarounds = []

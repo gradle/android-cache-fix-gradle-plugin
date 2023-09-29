@@ -1,4 +1,0 @@
-- [FIX] - PGP key to sign the artifacts needs to be rotated
-- [NEW] - Run tests against AGP 8.1.2
-- [NEW] - Run tests against AGP 8.2.0-beta06
-- [NEW] - Run tests against AGP 8.3.0-alpha05

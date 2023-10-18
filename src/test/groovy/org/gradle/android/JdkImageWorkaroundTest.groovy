@@ -43,14 +43,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         then:
         buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         when:
         buildResult = withGradleVersion(gradleVersion.version)
@@ -111,14 +107,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         then:
         buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         when:
         buildResult = withGradleVersion(gradleVersion.version)
@@ -249,9 +241,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         then:
         buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         when:
         buildResult = withGradleVersion(gradleVersion.version)

@@ -14,7 +14,6 @@ import org.gradle.android.workarounds.MergeNativeLibsWorkaround
 import org.gradle.android.workarounds.MergeSourceSetFoldersWorkaround
 import org.gradle.android.workarounds.PackageForUnitTestWorkaround
 import org.gradle.android.workarounds.StripDebugSymbolsWorkaround
-import org.gradle.android.workarounds.RoomSchemaLocationWorkaround
 import org.gradle.android.workarounds.Workaround
 import org.gradle.android.workarounds.ZipMergingTaskWorkaround
 import org.gradle.api.Plugin
@@ -38,7 +37,6 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
             return Arrays.<Workaround> asList(
                 new MergeNativeLibsWorkaround(),
                 new MergeSourceSetFoldersWorkaround(),
-                new RoomSchemaLocationWorkaround(),
                 new CompileLibraryResourcesWorkaround(),
                 new StripDebugSymbolsWorkaround(),
                 new BundleLibraryClassesWorkaround(),

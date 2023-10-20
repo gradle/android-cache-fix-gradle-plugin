@@ -146,7 +146,6 @@ Not fixed by the Android Cache Fix plugin since it has no workaround but is fixe
 ### Room
 The Room annotation processor causes cache misses: https://issuetracker.google.com/issues/132245929.
 To work around this issue, please apply the [Room Gradle Plugin](https://developer.android.com/jetpack/androidx/releases/room#2.6.0-alpha02).
-We provided the `RoomWorkaround` solving the overlapping outputs and undeclared outputs.
 
 Since the release of Room Gradle Plugin([2.6.0](https://developer.android.com/jetpack/androidx/releases/room#2.6.0-alpha02)),
 the workaround is no longer required.

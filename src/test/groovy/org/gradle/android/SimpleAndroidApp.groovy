@@ -7,7 +7,6 @@ import java.nio.file.Paths
 import static org.gradle.android.Versions.android
 
 class SimpleAndroidApp {
-    public static final ROOM_LIBRARY_VERSION = "2.4.1"
     public static final String PLUGIN_VERSION_SYSTEM_PROPERTY = 'org.gradle.android.cache-fix.version'
     private static final String PLUGIN_GROUP_ID_SYSTEM_PROPERTY = "pluginGroupId"
     final File projectDir
@@ -17,14 +16,12 @@ class SimpleAndroidApp {
     private final boolean dataBindingEnabled
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
-    private final RoomConfiguration roomConfiguration
     private final String toolchainVersion
     private final JavaVersion sourceCompatibility
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
-    private final boolean kspEnabled
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, RoomConfiguration roomConfiguration, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock, boolean kspEnabled) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -32,12 +29,10 @@ class SimpleAndroidApp {
         this.kotlinVersion = kotlinVersion
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
-        this.roomConfiguration = roomConfiguration
         this.toolchainVersion = toolchainVersion
         this.sourceCompatibility = sourceCompatibility
         this.pluginsBlockEnabled = pluginsBlockEnabled
         this.pluginAppliedInPluginBlock = pluginAppliedInPluginBlock
-        this.kspEnabled = kspEnabled
     }
 
     def writeProject() {
@@ -50,7 +45,7 @@ class SimpleAndroidApp {
         def libraryActivity = 'LibraryActivity'
 
         file("settings.gradle") << """
-                import org.gradle.util.GradleVersion                
+                import org.gradle.util.GradleVersion
                 pluginManagement {
                     repositories {
                         mavenCentral()
@@ -61,8 +56,8 @@ class SimpleAndroidApp {
                         }
                     }
                 }
-                plugins { 
-                    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.4.0' apply false 
+                plugins {
+                    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.4.0' apply false
                 }
                 if (GradleVersion.current() >= GradleVersion.version('7.6')) {
                     apply plugin: 'org.gradle.toolchains.foojay-resolver-convention'
@@ -90,18 +85,17 @@ class SimpleAndroidApp {
                     }
                 }
                 ${pluginBlockConfiguration}
-                ${pluginKspIfEnabled}
             """.stripIndent()
         if (kotlinEnabled) {
             writeKotlinClass(library, libPackage, libraryActivity)
             writeKotlinClass(app, appPackage, appActivity)
         }
         writeActivity(library, libPackage, libraryActivity)
-        writeRoomSourcesIfEnabled(library, libPackage)
+
         file("${library}/src/main/AndroidManifest.xml") << CodeSnippets.getXmlEmptyManifest()
 
         writeActivity(app, appPackage, appActivity)
-        writeRoomSourcesIfEnabled(app, appPackage)
+
         file("${app}/src/main/AndroidManifest.xml") << CodeSnippets.getXmlManifest(appActivity, libPackage, libraryActivity)
 
         file("${app}/src/main/res/values/strings.xml") << CodeSnippets.getXmlStrings()
@@ -138,7 +132,6 @@ class SimpleAndroidApp {
         return pluginsBlockEnabled ? """
                     plugins{
                         id 'org.gradle.android.cache-fix' version '$pluginVersion' $applyPluginInBlock
-                        $pluginKspIfEnabled
                     }
                 """.stripIndent() : ""
     }
@@ -175,23 +168,6 @@ class SimpleAndroidApp {
         """.stripIndent() : ""
     }
 
-    private String getPluginKspIfEnabled() {
-        return kspEnabled ?
-            pluginAppliedInPluginBlock ? """
-                ${kspPlugin}
-            """.stripIndent()
-                : """
-            plugins {
-                ${kspPlugin}
-             }
-            """.stripIndent()
-            : ""
-    }
-
-    private String getKspPlugin() {
-        return "id 'com.google.devtools.ksp' version '${TestVersions.supportedKotlinVersions[kotlinVersion.toString()]}'"
-    }
-
     private subprojectConfiguration(String androidPlugin, String namespace) {
         """
             apply plugin: "$androidPlugin"
@@ -204,8 +180,6 @@ class SimpleAndroidApp {
             }
 
             dependencies {
-                ${roomRuntimeLibraryIfEnabled}
-                ${roomProcessorsIfEnabled}
                 ${kotlinDependenciesIfEnabled}
             }
 
@@ -219,43 +193,14 @@ class SimpleAndroidApp {
                     minSdkVersion 28
                     targetSdkVersion 33
 
-                    ${roomAnnotationProcessorArgumentIfEnabled}
-
                     lintOptions {
                         checkReleaseBuilds false
                     }
                 }
             }
 
-            ${roomExtensionIfEnabled}
-
             ${toolchainConfigurationIfEnabled}
         """.stripIndent()
-    }
-
-    private String getRoomRuntimeLibraryIfEnabled() {
-        return (roomConfiguration != RoomConfiguration.NO_LIBRARY) ? """
-                implementation "androidx.room:room-runtime:${ROOM_LIBRARY_VERSION}"
-        """ : ""
-    }
-
-    private String getRoomExtensionIfEnabled() {
-        return (roomConfiguration == RoomConfiguration.ROOM_EXTENSION) ? """
-            room {
-                schemaLocationDir = file("schemas")
-            }
-        """ : ""
-    }
-
-    private String getRoomAnnotationProcessorArgumentIfEnabled() {
-        return (roomConfiguration == RoomConfiguration.PROCESSOR_ARG) ? """
-                    javaCompileOptions {
-                        annotationProcessorOptions {
-                            arguments = ["room.schemaLocation":
-                                 "\${projectDir}/schemas".toString()]
-                        }
-                    }
-        """ : ""
     }
 
     private String getKotlinPluginsIfEnabled() {
@@ -266,9 +211,7 @@ class SimpleAndroidApp {
     }
 
     private String getProcessor() {
-        return kspEnabled ? """
-          apply plugin: "com.google.devtools.ksp"
-        """.stripIndent() : """
+        return """
           apply plugin: "kotlin-kapt"
         """.stripIndent()
     }
@@ -277,20 +220,6 @@ class SimpleAndroidApp {
         return kotlinEnabled ? """
             implementation "org.jetbrains.kotlin:kotlin-stdlib"
         """.stripIndent() : ""
-    }
-
-    private String getRoomProcessorsIfEnabled() {
-        return roomConfiguration != RoomConfiguration.NO_LIBRARY ?
-            kotlinEnabled ?
-                kspEnabled ?
-                    """ ksp "${roomProcessorLib}" """
-                    : """ kapt "${roomProcessorLib}" """
-                : """ annotationProcessor "${roomProcessorLib}" """
-            : ""
-    }
-
-    private static String getRoomProcessorLib() {
-        return "androidx.room:room-compiler:${ROOM_LIBRARY_VERSION}"
     }
 
     private String getToolchainConfigurationIfEnabled() {
@@ -344,21 +273,6 @@ class SimpleAndroidApp {
         file("${basedir}/src/main/rs/${resourceName}.rs") << CodeSnippets.getRs()
     }
 
-    private void writeRoomSourcesIfEnabled(String basedir, String packageName) {
-        if (roomConfiguration != RoomConfiguration.NO_LIBRARY) {
-            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUser.java") <<
-                CodeSnippets.getJavaRoomEntity(packageName)
-
-            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/JavaUserDao.java") <<
-                CodeSnippets.getJavaRoomDao(packageName)
-
-            file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/AppDatabase.java") <<
-                CodeSnippets.getJavaRoomDatabase(packageName)
-
-            file("${basedir}/schemas/${packageName}.AppDatabase/1.json") << CodeSnippets.getRoomLegacySchemaJson()
-        }
-    }
-
     private static String activityDependency() {
         """
             dependencies {
@@ -385,18 +299,12 @@ class SimpleAndroidApp {
         return new Builder(projectDir, cacheDir)
     }
 
-    enum RoomConfiguration {
-        NONE, ROOM_EXTENSION, PROCESSOR_ARG, NO_LIBRARY
-    }
-
     static class Builder {
         boolean dataBindingEnabled = true
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
         boolean pluginsBlockEnabled = false
         boolean pluginAppliedInPluginBlock = false
-        boolean kspEnabled = false
-        RoomConfiguration roomConfiguration = RoomConfiguration.ROOM_EXTENSION
 
         VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         VersionNumber kotlinVersion = TestVersions.latestSupportedKotlinVersion()
@@ -432,21 +340,6 @@ class SimpleAndroidApp {
             return this
         }
 
-        Builder withRoomProcessingArgumentConfigured() {
-            this.roomConfiguration = RoomConfiguration.PROCESSOR_ARG
-            return this
-        }
-
-        Builder withNoRoomConfiguration() {
-            this.roomConfiguration = RoomConfiguration.NONE
-            return this
-        }
-
-        Builder withNoRoomLibrary() {
-            this.roomConfiguration = RoomConfiguration.NO_LIBRARY
-            return this
-        }
-
         Builder withAndroidVersion(String androidVersion) {
             return withAndroidVersion(android(androidVersion))
         }
@@ -477,18 +370,13 @@ class SimpleAndroidApp {
             return this
         }
 
-        Builder withKspEnabled() {
-            this.kspEnabled = true
-            return this
-        }
-
         Builder withDatabindingDisabled() {
             this.dataBindingEnabled = false
             return this
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, roomConfiguration, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock, kspEnabled)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock)
         }
     }
 }

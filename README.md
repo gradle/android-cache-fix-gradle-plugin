@@ -115,8 +115,6 @@ subprojects {
 ```
 </details>
 
-Note that if you are currently exporting schemas with the Room annotation processor, you will need to change how you specify the output directory according to the instructions [here](https://github.com/gradle/android-cache-fix-gradle-plugin#roomschemalocationworkaround).
-
 ## List of issues
 
 You can take a look at the list of issues that the plugin fixes by looking at the classes in  [`org.gradle.android.workarounds`](https://github.com/gradle/android-cache-fix-gradle-plugin/blob/master/src/main/groovy/org/gradle/android/workarounds). It contains a number of `Workaround` implementations annotated with `@AndroidIssue`. The Javadoc has a short description of the problem, and the annotation gives information about when the problem was introduced, what is the first version of the Android plugin that fixes it, and there's a link to the issue on Android's issue tracker:
@@ -137,8 +135,6 @@ static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 
 Fixed by the Android Cache Fix plugin, but unresolved in any current or upcoming preview release of the Android Gradle Plugin:
 
-* Room annotation processor causes cache misses, doesn't declare outputs, overlapping outputs, etc: https://issuetracker.google.com/issues/132245929
-
 Not fixed by the Android Cache Fix plugin since it has no workaround:
 
 * CompileLibraryResourcesTask outputs contain absolute paths: https://issuetracker.google.com/issues/282761461
@@ -147,75 +143,12 @@ Not fixed by the Android Cache Fix plugin since it has no workaround but is fixe
 
 * MergeResources is not relocatable: https://issuetracker.google.com/issues/246529491
 
+### Room
+The Room annotation processor causes cache misses: https://issuetracker.google.com/issues/132245929.
+To work around this issue, please apply the [Room Gradle Plugin](https://developer.android.com/jetpack/androidx/releases/room#2.6.0-alpha02).
+
+
 ## Implementation Notes
-
-### RoomSchemaLocationWorkaround
-
-Most of the workarounds in this plugin should apply to your project without any changes.  However, one workaround
-requires some extra configuration.  The Room schema location workaround allows you to specify an output directory for
-Room schema exports without breaking caching for your Java and/or Kapt tasks where the annotation processor has been configured.
-There are various issues with how this annotation processor works (see https://issuetracker.google.com/issues/132245929
-and https://issuetracker.google.com/issues/139438151) which this workaround attempts to mitigate.  However, in order to
-do so in a manageable way, it imposes some restrictions:
-
-* The schema export directory must be configured via the "room" project extension instead of as an explicit annotation
-processor argument.  If an explicit annotation processor argument is provided, an exception will be thrown, instructing
-the user to configure it via the extension:
-
-<details open>
-<summary>Kotlin</summary>
-<br>
-
-```kotlin
-room {
-    schemaLocationDir.set(file("roomSchemas"))
-}
-```
-</details>
-
-<details>
-<summary>Groovy</summary>
-<br>
-
-```groovy
-room {
-    schemaLocationDir = file("roomSchemas")
-}
-```
-</details>
-
-* There can only be a single schema export directory for the project - you cannot configure variant-specific export
-directories.  Schemas exported from different variants will be merged in the directory specified in the "room" extension.
-
-#### Ksp
-Since version 2.7.0, `RoomSchemaLocationWorkaround` supports Kotlin Symbol Processing(Ksp). Like Kapt, applying the Room
-processor with Ksp was causing cache misses. The workaround allows you to specify an output directory for Room schema
-exports. The schema export directory must be configured via the "room" project extension instead of the Ksp
-configuration:
-<details open>
-<summary>Kotlin</summary>
-<br>
-
-```kotlin
-room {
-    schemaLocationDir.set(file("roomSchemas"))
-}
-```
-</details>
-
-<details>
-<summary>Groovy</summary>
-<br>
-
-```groovy
-room {
-    schemaLocationDir = file("roomSchemas")
-}
-```
-</details>
-
-
-Supported Ksp versions: 1.7.20-1.0.8+
 
 ### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, MergeSourceSetFolders, BundleLibraryClassesJar, DataBindingMergeDependencyArtifacts, LibraryJniLibs and ZipMerging Workarounds
 

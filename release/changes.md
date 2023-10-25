@@ -1,0 +1,2 @@
+- [NEW] - Drop support for `RoomWorkaround`. Please apply the [Room Gradle Plugin](https://developer.android.com/jetpack/androidx/releases/room#2.6.0-alpha02).
+- [BREAKING] - `room` extension removed.

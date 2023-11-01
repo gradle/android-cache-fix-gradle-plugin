@@ -10,7 +10,7 @@ import org.gradle.api.Task
  * Disables caching of ZipMergingTask which is mostly disk bound and
  * unlikely to provide positive performance benefits.
  */
-@AndroidIssue(introducedIn = "3.5.0", fixedIn = [], link="https://issuetracker.google.com/issues/200002454")
+@AndroidIssue(introducedIn = "3.5.0", fixedIn = "8.1.0-alpha10", link="https://issuetracker.google.com/issues/200002454")
 @CompileStatic
 class ZipMergingTaskWorkaround implements Workaround {
 

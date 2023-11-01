@@ -12,9 +12,9 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "8.3.0-alpha11" | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage']
-        "8.2.0-rc02"    | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage', 'PackageForUnitTest']
-        "8.1.2"         | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage', 'PackageForUnitTest']
+        "8.3.0-alpha11" | ['MergeSourceSetFolders', 'JdkImage']
+        "8.2.0-rc02"    | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']
+        "8.1.2"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']
         "8.0.2"         | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage', 'PackageForUnitTest']
         "7.4.2"         | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage', 'PackageForUnitTest']
         "7.3.1"         | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage', 'PackageForUnitTest']

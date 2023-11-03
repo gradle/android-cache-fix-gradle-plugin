@@ -33,6 +33,7 @@
     ":app:extractDeepLinksDebug"                         :  "FROM_CACHE",
     ":app:extractDeepLinksRelease"                       :  "FROM_CACHE",
     ":app:extractReleaseNativeSymbolTables"              :  "NO_SOURCE",
+    ":app:extractReleaseVersionControlInfo"              :  "SUCCESS",
     ":app:generateDebugAssets"                           :  "UP_TO_DATE",
     ":app:generateDebugResources"                        :  "UP_TO_DATE",
     ":app:generateDebugResValues"                        :  "FROM_CACHE",

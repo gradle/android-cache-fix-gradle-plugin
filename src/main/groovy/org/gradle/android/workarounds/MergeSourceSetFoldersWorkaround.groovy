@@ -11,7 +11,7 @@ import org.gradle.api.Task
  * performance benefits.
  */
 @CompileStatic
-@AndroidIssue(introducedIn = "3.5.0", fixedIn = [], link = "https://issuetracker.google.com/issues/194804421")
+@AndroidIssue(introducedIn = "3.5.0", fixedIn = ["8.4.0-alpha01"], link = "https://issuetracker.google.com/issues/194804421")
 class MergeSourceSetFoldersWorkaround implements Workaround {
     private static final String CACHING_ENABLED_PROPERTY = "org.gradle.android.cache-fix.MergeSourceSetFolders.caching.enabled"
 

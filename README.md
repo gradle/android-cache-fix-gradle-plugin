@@ -1,8 +1,8 @@
 > _This repository is maintained by the Develocity Solutions team, as one of several publicly available repositories:_
-> - _[Develocity Build Configuration Samples][dv-build-config-samples]_
-> - _[Develocity Build Optimization Experiments][dv-build-optimization-experiments]_
-> - _[Develocity Build Validation Scripts][dv-build-validation-scripts]_
-> - _[Develocity Open Source Projects][dv-oss-projects]_
+> - _[Develocity Build Configuration Samples][develocity-build-config-samples]_
+> - _[Develocity Build Optimization Experiments][develocity-elocity-build-optimization-experiments]_
+> - _[Develocity Build Validation Scripts][develocity-build-validation-scripts]_
+> - _[Develocity Open Source Projects][develocity-oss-projects]_
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
 > - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
 > - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin] (this repository)_
@@ -165,16 +165,20 @@ Use Android Cache Fix Plugin 2.4.6 when using an older Android Gradle Plugin ver
 Use Android Cache Fix Plugin 2.6.0 when using an older Kotlin Gradle Plugin version.
 * Supported Kotlin versions: \[1.3.72-1.5.32\]
 
+## Learn more
+
+Visit our website to learn more about [Develocity][develocity].
+
 ## License
 
 The Android Cache Fix Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
 
-[dv-build-config-samples]: https://github.com/gradle/gradle-enterprise-build-config-samples
-[dv-build-optimization-experiments]: https://github.com/gradle/gradle-enterprise-build-optimization-experiments
-[dv-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts
-[dv-oss-projects]: https://github.com/gradle/gradle-enterprise-oss-projects
+[develocity-build-config-samples]: https://github.com/gradle/gradle-enterprise-build-config-samples
+[develocity-build-optimization-experiments]: https://github.com/gradle/gradle-enterprise-build-optimization-experiments
+[develocity-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts
+[develocity-oss-projects]: https://github.com/gradle/gradle-enterprise-oss-projects
 [ccud-gradle-plugin]: https://github.com/gradle/common-custom-user-data-gradle-plugin
 [ccud-maven-extension]: https://github.com/gradle/common-custom-user-data-maven-extension
 [android-cache-fix-plugin]: https://github.com/gradle/android-cache-fix-gradle-plugin
-[gradle-enterprise]: https://gradle.com/enterprise
+[develocity]: https://gradle.com/develocity
 [apache-license]: https://www.apache.org/licenses/LICENSE-2.0.html

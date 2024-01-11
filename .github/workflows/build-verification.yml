@@ -60,13 +60,20 @@ jobs:
   android_version_tests:
     name: Android version tests
     needs: [ generate_versions, sanity_check ]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
+      # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
+      - name: Patch api-versions
+        run: sudo test -f $ANDROID_SDK_ROOT/platform-tools/api/api-versions.xml || (sudo mkdir $ANDROID_SDK_ROOT/platform-tools/api && sudo cp .github/api-versions.xml $ANDROID_SDK_ROOT/platform-tools/api/api-versions.xml)
+      - name: List Android Packages
+        run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
+      - name: Accept license 34.0.0
+        run: echo "y" | sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager "build-tools;34.0.0"
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v4
         with:

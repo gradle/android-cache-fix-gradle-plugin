@@ -115,7 +115,7 @@ tasks.withType<Test>().configureEach {
     }
 
     predictiveSelection {
-        enabled = providers.gradleProperty("isPTSEnabled").map { it != "false" }.orElse(true)
+        enabled = false
     }
 }
 

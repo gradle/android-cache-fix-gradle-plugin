@@ -67,8 +67,11 @@ jobs:
         versions: ${{ fromJson(needs.generate_versions.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
+      # Patch issue in platform-tools 31.0.3 where platform-tools/api/api-versions.xml is missing (see https://issuetracker.google.com/issues/195445762)
+      - name: Patch api-versions
+        run: test -f $ANDROID_HOME/platform-tools/api/api-versions.xml || (mkdir $ANDROID_HOME/platform-tools/api &&  cp .github/api-versions.xml $ANDROID_HOME/platform-tools/api/api-versions.xml)
       - name: List Android Packages
-        run: sudo $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
+        run: $ANDROID_HOME/tools/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
       - name: Accept license 34.0.0
         run: echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;34.0.0"
       - name: Setup ZULU_JDK

@@ -60,7 +60,7 @@ jobs:
   android_version_tests:
     name: Android version tests
     needs: [ generate_versions, sanity_check ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:

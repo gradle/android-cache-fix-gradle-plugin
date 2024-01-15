@@ -1,8 +1,8 @@
-> _This repository is maintained by the Gradle Enterprise Solutions team, as one of several publicly available repositories:_
-> - _[Gradle Enterprise Build Configuration Samples][ge-build-config-samples]_
-> - _[Gradle Enterprise Build Optimization Experiments][ge-build-optimization-experiments]_
-> - _[Gradle Enterprise Build Validation Scripts][ge-build-validation-scripts]_
-> - _[Gradle Enterprise Open Source Projects][ge-oss-projects]_
+> _This repository is maintained by the Develocity Solutions team, as one of several publicly available repositories:_
+> - _[Develocity Build Configuration Samples][develocity-build-config-samples]_
+> - _[Develocity Build Optimization Experiments][develocity-build-optimization-experiments]_
+> - _[Develocity Build Validation Scripts][develocity-build-validation-scripts]_
+> - _[Develocity Open Source Projects][develocity-oss-projects]_
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
 > - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
 > - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin] (this repository)_
@@ -11,7 +11,7 @@
 
 [![Verify Build](https://github.com/gradle/android-cache-fix-gradle-plugin/actions/workflows/build-verification.yml/badge.svg?branch=main)](https://github.com/gradle/android-cache-fix-gradle-plugin/actions/workflows/build-verification.yml)
 [![Plugin Portal](https://img.shields.io/maven-metadata/v?metadataUrl=https://plugins.gradle.org/m2/gradle/plugin/org/gradle/android/android-cache-fix-gradle-plugin/maven-metadata.xml&label=Plugin%20Portal)](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)
-[![Revved up by Gradle Enterprise](https://img.shields.io/badge/Revved%20up%20by-Gradle%20Enterprise-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.solutions-team.gradle.com/scans)
+[![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.solutions-team.gradle.com/scans)
 
 
 Some Android plugin versions have issues with Gradle's build cache feature. When applied to an Android project this plugin applies workarounds for these issues based on the Android plugin and Gradle versions. For other versions, please see [older versions.](#older-android-gradle-plugin-versions)
@@ -28,7 +28,7 @@ The Android cache fix plugin is compatible with the [Gradle Configuration Cache]
 Take a look at the [list of issues](#list-of-issues) especially [unresolved issues](#unresolved-issues). If any of these apply to your project, you can use this plugin to solve them.
 
 ## How can I discover issues?
-You can discover issues by using the task input comparison tool in Gradle Enterprise. More information about [how to diagnose cache misses here](https://docs.gradle.com/enterprise/tutorials/task-inputs-comparison/). You can compare the inputs of a build that seeds the build cache - typically CI - with a build that consumes from the build cache like a local developer build.
+You can discover issues by using the task input comparison tool in Develocity. More information about [how to diagnose cache misses here](https://docs.gradle.com/enterprise/tutorials/task-inputs-comparison/). You can compare the inputs of a build that seeds the build cache - typically CI - with a build that consumes from the build cache like a local developer build.
 If you discover an issue related to the Android Gradle Plugin, please file an issue in the [Android Bug Tracker](https://source.android.com/setup/contribute/report-bugs). You can also file an [issue here](https://github.com/gradle/android-cache-fix-gradle-plugin/issues) and we can see if a workaround is possible.
 
 ## Applying the plugin
@@ -165,16 +165,20 @@ Use Android Cache Fix Plugin 2.4.6 when using an older Android Gradle Plugin ver
 Use Android Cache Fix Plugin 2.6.0 when using an older Kotlin Gradle Plugin version.
 * Supported Kotlin versions: \[1.3.72-1.5.32\]
 
+## Learn more
+
+Visit our website to learn more about [Develocity][develocity].
+
 ## License
 
 The Android Cache Fix Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
 
-[ge-build-config-samples]: https://github.com/gradle/gradle-enterprise-build-config-samples
-[ge-build-optimization-experiments]: https://github.com/gradle/gradle-enterprise-build-optimization-experiments
-[ge-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts
-[ge-oss-projects]: https://github.com/gradle/gradle-enterprise-oss-projects
+[develocity-build-config-samples]: https://github.com/gradle/gradle-enterprise-build-config-samples
+[develocity-build-optimization-experiments]: https://github.com/gradle/gradle-enterprise-build-optimization-experiments
+[develocity-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts
+[develocity-oss-projects]: https://github.com/gradle/gradle-enterprise-oss-projects
 [ccud-gradle-plugin]: https://github.com/gradle/common-custom-user-data-gradle-plugin
 [ccud-maven-extension]: https://github.com/gradle/common-custom-user-data-maven-extension
 [android-cache-fix-plugin]: https://github.com/gradle/android-cache-fix-gradle-plugin
-[gradle-enterprise]: https://gradle.com/enterprise
+[develocity]: https://gradle.com/develocity
 [apache-license]: https://www.apache.org/licenses/LICENSE-2.0.html

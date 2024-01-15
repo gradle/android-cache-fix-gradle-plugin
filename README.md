@@ -1,6 +1,6 @@
 > _This repository is maintained by the Develocity Solutions team, as one of several publicly available repositories:_
 > - _[Develocity Build Configuration Samples][develocity-build-config-samples]_
-> - _[Develocity Build Optimization Experiments][develocity-elocity-build-optimization-experiments]_
+> - _[Develocity Build Optimization Experiments][develocity-build-optimization-experiments]_
 > - _[Develocity Build Validation Scripts][develocity-build-validation-scripts]_
 > - _[Develocity Open Source Projects][develocity-oss-projects]_
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_

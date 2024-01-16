@@ -1,6 +1,5 @@
 > _This repository is maintained by the Develocity Solutions team, as one of several publicly available repositories:_
 > - _[Develocity Build Configuration Samples][develocity-build-config-samples]_
-> - _[Develocity Build Optimization Experiments][develocity-build-optimization-experiments]_
 > - _[Develocity Build Validation Scripts][develocity-build-validation-scripts]_
 > - _[Develocity Open Source Projects][develocity-oss-projects]_
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
@@ -173,10 +172,9 @@ Visit our website to learn more about [Develocity][develocity].
 
 The Android Cache Fix Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
 
-[develocity-build-config-samples]: https://github.com/gradle/gradle-enterprise-build-config-samples
-[develocity-build-optimization-experiments]: https://github.com/gradle/gradle-enterprise-build-optimization-experiments
+[develocity-build-config-samples]: https://github.com/gradle/develocity-build-config-samples
 [develocity-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts
-[develocity-oss-projects]: https://github.com/gradle/gradle-enterprise-oss-projects
+[develocity-oss-projects]: https://github.com/gradle/develocity-oss-projects
 [ccud-gradle-plugin]: https://github.com/gradle/common-custom-user-data-gradle-plugin
 [ccud-maven-extension]: https://github.com/gradle/common-custom-user-data-maven-extension
 [android-cache-fix-plugin]: https://github.com/gradle/android-cache-fix-gradle-plugin

@@ -5,7 +5,8 @@ on:
     branches:
       - main
   
-permissions: write-all
+permissions:
+  contents: write
 
 jobs:
   generate-and-submit:
@@ -16,11 +17,8 @@ jobs:
       with:
         distribution: temurin
         java-version: 11
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        dependency-graph: generate-and-submit
-    - name: Run 'publish' to generate dependency graph
-      run: ./gradlew publish -Porg.gradle.java.installations.auto-download=false
+    - name: Submit dependency graph
+      uses: gradle/actions/dependency-submission@v3
       env:
+        DEPENDENCY_GRAPH_EXCLUDE_CONFIGURATIONS: '.*[Tt]est(Compile|Runtime)Classpath'
         GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}

@@ -14,7 +14,7 @@ class WorkaroundTest extends Specification {
         androidVersion  | expectedWorkarounds
         "8.4.0-alpha02" | ['JdkImage']
         "8.3.0-beta02"  | ['MergeSourceSetFolders', 'JdkImage']
-        "8.2.0"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']
+        "8.2.2"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']
         "8.1.4"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']
         "8.0.2"         | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage', 'PackageForUnitTest']
         "7.4.2"         | ['MergeSourceSetFolders', 'ZipMergingTask', 'JdkImage', 'PackageForUnitTest']

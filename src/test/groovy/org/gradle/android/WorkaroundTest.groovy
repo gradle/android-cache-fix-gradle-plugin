@@ -12,7 +12,7 @@ class WorkaroundTest extends Specification {
         workarounds.collect { it.class.simpleName.replaceAll(/Workaround/, "") }.sort() == expectedWorkarounds.sort()
         where:
         androidVersion  | expectedWorkarounds
-        "8.4.0-alpha02" | ['JdkImage']
+        "8.4.0-alpha07" | ['JdkImage']
         "8.3.0-beta02"  | ['MergeSourceSetFolders', 'JdkImage']
         "8.2.0"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']
         "8.1.4"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']

@@ -3,6 +3,19 @@ import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionP
 import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper
 
+// Upgrade transitive dependencies in plugin classpath
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        constraints {
+            // Dependency of 'com.github.breadmoirai.github-release:2.5.2'
+            classpath("com.squareup.okio:okio:3.4.0") // CVE-2023-3635
+        }
+    }
+}
+
 plugins {
     id("groovy")
     id("java-gradle-plugin")

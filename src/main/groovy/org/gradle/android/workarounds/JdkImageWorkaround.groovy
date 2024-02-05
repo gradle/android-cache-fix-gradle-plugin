@@ -24,8 +24,6 @@ import org.gradle.process.ExecOperations
 
 import javax.inject.Inject
 import java.lang.module.ModuleDescriptor
-import java.nio.ByteBuffer
-import java.nio.file.Files
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
@@ -187,20 +185,6 @@ class JdkImageWorkaround implements Workaround {
                     new File(jdkImageDir.get().asFile, "jdkImage/lib/modules").absolutePath
                 )
             }
-
-            // Capture the module descriptor ignoring the version, which is not enforced anyways
-            File moduleInfoFile = new File(targetDir, 'java.base/module-info.class')
-            ModuleDescriptor descriptor = captureModuleDescriptorWithoutVersion(moduleInfoFile)
-            File descriptorData = new File(targetDir, "module-descriptor.txt")
-            descriptorData.text = serializeDescriptor(descriptor)
-
-            fileOperations.delete {
-                delete(moduleInfoFile)
-            }
-        }
-
-        private static ModuleDescriptor captureModuleDescriptorWithoutVersion(File moduleFile) {
-            return ModuleDescriptor.read(ByteBuffer.wrap(Files.readAllBytes(moduleFile.toPath())))
         }
 
         @VisibleForTesting

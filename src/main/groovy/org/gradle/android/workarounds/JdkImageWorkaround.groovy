@@ -3,6 +3,7 @@ package org.gradle.android.workarounds
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
+import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
 import org.gradle.api.artifacts.transform.InputArtifact
@@ -24,6 +25,8 @@ import org.gradle.process.ExecOperations
 
 import javax.inject.Inject
 import java.lang.module.ModuleDescriptor
+import java.nio.ByteBuffer
+import java.nio.file.Files
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
@@ -185,6 +188,23 @@ class JdkImageWorkaround implements Workaround {
                     new File(jdkImageDir.get().asFile, "jdkImage/lib/modules").absolutePath
                 )
             }
+
+            if (Versions.CURRENT_ANDROID_VERSION.major < 8) {
+
+                // Capture the module descriptor ignoring the version, which is not enforced anyways
+                File moduleInfoFile = new File(targetDir, 'java.base/module-info.class')
+                ModuleDescriptor descriptor = captureModuleDescriptorWithoutVersion(moduleInfoFile)
+                File descriptorData = new File(targetDir, "module-descriptor.txt")
+                descriptorData.text = serializeDescriptor(descriptor)
+
+                fileOperations.delete {
+                    delete(moduleInfoFile)
+                }
+            }
+        }
+
+        private static ModuleDescriptor captureModuleDescriptorWithoutVersion(File moduleFile) {
+            return ModuleDescriptor.read(ByteBuffer.wrap(Files.readAllBytes(moduleFile.toPath())))
         }
 
         @VisibleForTesting

@@ -21,7 +21,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
+            .withToolchainVersion("19")
             .withSourceCompatibility(JavaVersion.VERSION_1_9)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()

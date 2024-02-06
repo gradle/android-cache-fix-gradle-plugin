@@ -259,13 +259,13 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
     }
 
-    @Unroll
-    def "workaround does not cause task to be skipped when inputs are empty (Android #androidVersion)"() {
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("8.0"))
+     def "workaround does not cause task to be skipped when inputs are empty (Android #androidVersion)"() {
+
         def zuluPath = System.getProperty(ZULU_PATH)
+        Assume.assumeTrue(androidVersion >= VersionNumber.parse("8.0"))
         Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
 
-        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
+
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
@@ -321,6 +321,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+
         where:
         androidVersion << TestVersions.latestAndroidVersions
     }

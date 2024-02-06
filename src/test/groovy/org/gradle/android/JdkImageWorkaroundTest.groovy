@@ -322,6 +322,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         where:
-        androidVersion << TestVersions.latestAndroidVersions.findAll { it.major >= 8 }
+        androidVersion << TestVersions.latestAndroidVersions
     }
 }

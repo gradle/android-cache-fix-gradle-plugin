@@ -6,7 +6,6 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Assume
 import spock.lang.Issue
-import spock.lang.Unroll
 
 @MultiVersionTest
 class JdkImageWorkaroundTest extends AbstractTest {

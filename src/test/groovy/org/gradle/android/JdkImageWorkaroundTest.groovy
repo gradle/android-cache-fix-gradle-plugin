@@ -257,4 +257,71 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
     }
+
+    def "jdkImage is normalized when using different JDK version in the build and toolchain configuration"() {
+
+        def zuluPath = System.getProperty(ZULU_PATH)
+        Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
+        Assume.assumeTrue("Android Gradle Plugin < 8", androidVersion >= VersionNumber.parse("8.0"))
+
+
+        def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withKotlinDisabled()
+            .withToolchainVersion("19")
+            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withDatabindingDisabled()
+            .build()
+            .writeProject()
+
+        when:
+        BuildResult buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withEnvironment(
+                System.getenv() +
+                    ["JDK": zuluPath]
+            )
+            .withArguments(
+                "clean", "testDebug", "testRelease", "assemble",
+                "--build-cache",
+                "-Porg.gradle.java.installations.auto-detect=false",
+                "-Porg.gradle.java.installations.fromEnv=JDK"
+            ).build()
+
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        when:
+        buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withEnvironment(
+                System.getenv() +
+                    ["JDK": zuluPath]
+            )
+            .withArguments(
+                "clean", "testDebug", "testRelease", "assemble",
+                "--build-cache",
+                "-Porg.gradle.java.installations.auto-detect=false",
+                "-Porg.gradle.java.installations.fromEnv=JDK"
+            ).build()
+
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+
+        where:
+        androidVersion << TestVersions.latestAndroidVersions
+    }
 }

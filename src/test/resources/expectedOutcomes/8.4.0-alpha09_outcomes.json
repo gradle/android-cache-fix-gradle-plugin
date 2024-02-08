@@ -98,6 +98,8 @@
     ":app:writeDebugSigningConfigVersions"               :  "SUCCESS",
     ":app:writeReleaseAppMetadata"                       :  "SUCCESS",
     ":app:writeReleaseSigningConfigVersions"             :  "SUCCESS",
+    ":app:mergeDebugStartupProfile"                      :  "SUCCESS",
+    ":app:mergeReleaseStartupProfile"                    :  "SUCCESS",
     ":library:assemble"                                  :  "SUCCESS",
     ":library:assembleDebug"                             :  "SUCCESS",
     ":library:assembleRelease"                           :  "SUCCESS",

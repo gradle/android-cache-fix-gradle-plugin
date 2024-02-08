@@ -189,7 +189,7 @@ class JdkImageWorkaround implements Workaround {
                 )
             }
 
-            // Since AGP 8 only major Java version is stored in the output, we don't need to use the ModuleDescriptor
+            // Starting with AGP 8 only the major Java version is stored in the output so we don't need any normalization
             // to create a new descriptor file
             if (Versions.CURRENT_ANDROID_VERSION.major < 8) {
                 // Capture the module descriptor ignoring the version, which is not enforced anyways

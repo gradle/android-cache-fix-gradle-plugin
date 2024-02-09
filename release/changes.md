@@ -1,0 +1,3 @@
+- [NEW] - Drop support for ZipMergingTaskWorkaround in AGP >= 8.1.
+- [NEW] - Drop support for MergeSourceSetFoldersWorkaround in AGP >= 8.4.
+- [FIX] - Avoid capturing module descriptor in JdkImageWorkaround when AGP >= 8.

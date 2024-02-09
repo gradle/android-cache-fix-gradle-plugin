@@ -3,6 +3,7 @@ package org.gradle.android.workarounds
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
+import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
 import org.gradle.api.artifacts.transform.InputArtifact
@@ -188,14 +189,16 @@ class JdkImageWorkaround implements Workaround {
                 )
             }
 
-            // Capture the module descriptor ignoring the version, which is not enforced anyways
-            File moduleInfoFile = new File(targetDir, 'java.base/module-info.class')
-            ModuleDescriptor descriptor = captureModuleDescriptorWithoutVersion(moduleInfoFile)
-            File descriptorData = new File(targetDir, "module-descriptor.txt")
-            descriptorData.text = serializeDescriptor(descriptor)
-
-            fileOperations.delete {
-                delete(moduleInfoFile)
+            // Starting with AGP 8 only the major Java version is stored in the output so we don't need any normalization
+            if (Versions.CURRENT_ANDROID_VERSION.major < 8) {
+                // Capture the module descriptor ignoring the version, which is not enforced anyways
+                File moduleInfoFile = new File(targetDir, 'java.base/module-info.class')
+                ModuleDescriptor descriptor = captureModuleDescriptorWithoutVersion(moduleInfoFile)
+                File descriptorData = new File(targetDir, "module-descriptor.txt")
+                descriptorData.text = serializeDescriptor(descriptor)
+                fileOperations.delete {
+                    delete(moduleInfoFile)
+                }
             }
         }
 

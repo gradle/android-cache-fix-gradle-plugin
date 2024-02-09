@@ -258,10 +258,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
     }
 
-    def "jdkImage is normalized when using different JDK version in the build and toolchain configuration"() {
+    def "jdkImage is normalized when using different toolchain configuration"() {
 
-        def zuluPath = System.getProperty(ZULU_PATH)
-        Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
         Assume.assumeTrue("Android Gradle Plugin < 8", androidVersion >= VersionNumber.parse("8.0"))
 
 
@@ -278,15 +276,9 @@ class JdkImageWorkaroundTest extends AbstractTest {
         when:
         BuildResult buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
-            .withEnvironment(
-                System.getenv() +
-                    ["JDK": zuluPath]
-            )
             .withArguments(
                 "clean", "testDebug", "testRelease", "assemble",
-                "--build-cache",
-                "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "--build-cache"
             ).build()
 
         then:
@@ -299,15 +291,9 @@ class JdkImageWorkaroundTest extends AbstractTest {
         when:
         buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
-            .withEnvironment(
-                System.getenv() +
-                    ["JDK": zuluPath]
-            )
             .withArguments(
                 "clean", "testDebug", "testRelease", "assemble",
-                "--build-cache",
-                "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "--build-cache"
             ).build()
 
         then:

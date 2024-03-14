@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         constraints {
             // Dependency of 'com.github.breadmoirai.github-release:2.5.2'
-            classpath("com.squareup.okio:okio:3.8.0") // CVE-2023-3635
+            classpath("com.squareup.okio:okio:3.9.0") // CVE-2023-3635
         }
     }
 }
@@ -51,7 +51,7 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:${versions["agp"]}")
     compileOnly("com.android.tools:common:${versions["sdkBuildTools"]}")
     compileOnly("com.android.tools:sdk-common:${versions["sdkBuildTools"]}")
-    implementation("com.google.guava:guava:33.0.0-jre")
+    implementation("com.google.guava:guava:33.1.0-jre")
 
 
     testImplementation(gradleTestKit())

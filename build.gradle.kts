@@ -51,7 +51,7 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:${versions["agp"]}")
     compileOnly("com.android.tools:common:${versions["sdkBuildTools"]}")
     compileOnly("com.android.tools:sdk-common:${versions["sdkBuildTools"]}")
-    implementation("com.google.guava:guava:33.0.0-jre")
+    implementation("com.google.guava:guava:33.1.0-jre")
 
 
     testImplementation(gradleTestKit())

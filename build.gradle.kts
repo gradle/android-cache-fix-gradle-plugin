@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         constraints {
             // Dependency of 'com.github.breadmoirai.github-release:2.5.2'
-            classpath("com.squareup.okio:okio:3.8.0") // CVE-2023-3635
+            classpath("com.squareup.okio:okio:3.9.0") // CVE-2023-3635
         }
     }
 }

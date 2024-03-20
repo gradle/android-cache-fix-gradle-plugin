@@ -1,5 +1,8 @@
 {
     "supportedVersions": {
+        "8.5.0-alpha01": [
+            "8.6"
+        ],
         "8.4.0-alpha13": [
             "8.6"
         ],

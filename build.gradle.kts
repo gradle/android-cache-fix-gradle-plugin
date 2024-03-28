@@ -234,6 +234,7 @@ fun releaseNotes(): Provider<String> {
 
 @Suppress("UNCHECKED_CAST")
 fun getSupportedVersions(): Map<String, Array<String>> {
+    val versionFile = providers.fileContents(layout.projectDirectory.file("src/main/resources/versions.json"))
     return (JsonSlurper()
-        .parse(file("src/main/resources/versions.json")) as Map<String, Map<String, Array<String>>>).getValue("supportedVersions")
+        .parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>).getValue("supportedVersions")
 }

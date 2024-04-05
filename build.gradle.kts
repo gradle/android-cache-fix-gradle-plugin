@@ -1,6 +1,6 @@
 import com.gradle.enterprise.gradleplugin.testretry.retry
-import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.FAST
-import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile.STANDARD
+import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.FAST
+import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper
 
 // Upgrade transitive dependencies in plugin classpath
@@ -122,18 +122,18 @@ tasks.withType<Test>().configureEach {
     systemProperty("pluginGroupId", pluginGroupId)
     systemProperty("org.gradle.android.cache-fix.version", version)
     useJUnitPlatform()
-    retry {
+    develocity.testRetry {
         maxRetries = if (isCI) 1 else 0
         maxFailures = 20
     }
 
-    predictiveSelection {
+    develocity.predictiveTestSelection {
         enabled = providers.gradleProperty("isPTSEnabled").map { it != "false" }.orElse(true)
     }
 }
 
 tasks.test {
-    predictiveSelection {
+    develocity.predictiveTestSelection {
         profile = STANDARD
     }
 }
@@ -157,7 +157,7 @@ getSupportedVersions().keys.forEach { androidVersion ->
             }
         }
 
-        predictiveSelection {
+        develocity.predictiveTestSelection {
             profile = FAST
         }
     }

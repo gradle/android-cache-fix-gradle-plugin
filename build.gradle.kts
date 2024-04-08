@@ -126,10 +126,6 @@ tasks.withType<Test>().configureEach {
         maxRetries = if (isCI) 1 else 0
         maxFailures = 20
     }
-
-    develocity.predictiveTestSelection {
-        enabled = providers.gradleProperty("isPTSEnabled").map { it != "false" }.orElse(true)
-    }
 }
 
 tasks.test {

@@ -29,7 +29,7 @@ jobs:
           java-version: 11
           distribution: 'temurin'
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
       - name: Run sanityCheck
         run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
         env:
@@ -45,7 +45,7 @@ jobs:
           java-version: 11
           distribution: 'temurin'
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
       - name: Run unit tests
         run: >-
             ./gradlew test
@@ -101,7 +101,7 @@ jobs:
           java-version: 17
           distribution: 'temurin'
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
       - name: Run integration tests
         run: >-
             ./gradlew testAndroid${{ matrix.versions }}

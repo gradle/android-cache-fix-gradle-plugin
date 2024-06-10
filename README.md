@@ -145,7 +145,7 @@ Not fixed by the Android Cache Fix plugin since it has no workaround but is fixe
 
 ### Room
 The Room annotation processor causes cache misses: https://issuetracker.google.com/issues/132245929.
-To work around this issue, please apply the [Room Gradle Plugin](https://developer.android.com/jetpack/androidx/releases/room#2.6.0-alpha02).
+To work around this issue, please apply the [Room Gradle Plugin](https://developer.android.com/jetpack/androidx/releases/room#gradle-plugin).
 
 
 ## Implementation Notes

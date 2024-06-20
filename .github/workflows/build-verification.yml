@@ -30,10 +30,10 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       - name: Run sanityCheck
         run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
-        env:
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
   tests:
     name: Tests
@@ -46,6 +46,8 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       - name: Run unit tests
         run: >-
             ./gradlew test
@@ -54,7 +56,6 @@ jobs:
             -Porg.gradle.java.installations.auto-download=false
             -Dpts.mode=$PTS_MODE
         env:
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
 
   android_version_tests:
@@ -99,6 +100,8 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       - name: Run integration tests
         run: >-
             ./gradlew testAndroid${{ matrix.versions }}
@@ -107,5 +110,4 @@ jobs:
             -Porg.gradle.java.installations.auto-download=false
             -Dpts.mode=$PTS_MODE
         env:
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"

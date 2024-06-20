@@ -1,4 +1,3 @@
-import com.gradle.enterprise.gradleplugin.testretry.retry
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.FAST
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper

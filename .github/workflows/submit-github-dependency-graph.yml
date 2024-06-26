@@ -19,6 +19,7 @@ jobs:
         java-version: 11
     - name: Submit dependency graph
       uses: gradle/actions/dependency-submission@v3
+      with:
+        develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       env:
         DEPENDENCY_GRAPH_EXCLUDE_CONFIGURATIONS: '.*[Tt]est(Compile|Runtime)Classpath'
-        GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}

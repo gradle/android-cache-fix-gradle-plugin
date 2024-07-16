@@ -24,10 +24,12 @@ jobs:
         with:
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
           gradle-home-cache-excludes: |
-            caches/build-cache-1
+            caches/build-cache-*
             caches/transforms-*
             caches/*/transforms
             caches/*/kotlin-dsl
             caches/*/groovy-dsl
+      - name: Clear Gradle user home caches we don't want
+        run: rm -rf $HOME/.gradle/caches/build-cache-* $HOME/.gradle/caches/transforms-* $HOME/.gradle/caches/*/transforms $HOME/.gradle/caches/*/kotlin-dsl $HOME/.gradle/caches/*/groovy-dsl
       - name: Run sanityCheck
         run: ./gradlew help -Dscan.tag.nonTaskCache -Dgradle.cache.local.enabled=false --no-configuration-cache ${{ matrix.arguments }}

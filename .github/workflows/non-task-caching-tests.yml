@@ -12,7 +12,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arguments: ['-Dscan.tag.baseline', '-Dscan.tag.transformCachingDisabled -Dorg.gradle.internal.transform-caching-disabled', '-Dscan.tag.kotlinScriptCachingDisabled -Dorg.gradle.experimental.kotlin-script-caching-disabled']
+        exp:
+          - cache: 'transforms'
+            args: '-Dscan.tag.baseline-transforms'
+          - cache: 'transforms'
+            args: '-Dscan.tag.transformCachingDisabled -Dorg.gradle.internal.transform-caching-disabled'
+          - cache: 'kotlin-dsl'
+            args: '-Dscan.tag.baseline-kotlin-dsl'
+          - cache: 'kotlin-dsl'
+            args: '-Dscan.tag.kotlinScriptCachingDisabled -Dorg.gradle.internal.kotlin-script-caching-disabled'
+          - cache: 'groovy-dsl'
+            args: '-Dscan.tag.baseline-groovy-dsl'
+          - cache: 'groovy-dsl'
+            args: '-Dscan.tag.groovyScriptCachingDisabled -Dorg.gradle.internal.groovy-script-caching-disabled'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -23,13 +35,23 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-          gradle-home-cache-excludes: |
-            caches/build-cache-*
-            caches/transforms-*
-            caches/*/transforms
-            caches/*/kotlin-dsl
-            caches/*/groovy-dsl
       - name: Clear Gradle user home caches we don't want
-        run: rm -rf $HOME/.gradle/caches/build-cache-* $HOME/.gradle/caches/transforms-* $HOME/.gradle/caches/*/transforms $HOME/.gradle/caches/*/kotlin-dsl $HOME/.gradle/caches/*/groovy-dsl
-      - name: Run sanityCheck
-        run: ./gradlew help -Dscan.tag.nonTaskCache -Dgradle.cache.local.enabled=false --no-configuration-cache ${{ matrix.arguments }}
+        run: |
+          cache='${{ matrix.exp.cache }}'
+          args='${{ matrix.exp.args }}'
+          
+          echo "Test caches/*/$cache removal with $args"
+
+          echo "Running build once to fully populate Gradle User Home"
+          ./gradlew help -Dscan.tag.remote-cache-experiment-init --no-daemon --no-configuration-cache -Ddevelocity.deprecation.muteWarnings=true 
+          ./gradlew --stop
+  
+          echo "Removing $cache from $homeDir/caches"
+          rm -rf ~/.gradle/caches/*/$cache
+          rm -rf ~/.gradle/caches/$cache-* # Also remove the transforms for Gradle 8.7
+  
+          # Always remove the local build cache, since we are testing connection with remote build cache
+          rm -rf ~/.gradle/caches/build-cache-1
+
+          echo "Running build again with --${buildCache}"
+          ./gradlew help --no-configuration-cache -Ddevelocity.deprecation.muteWarnings=true -Dscan.uploadInBackground=false $args

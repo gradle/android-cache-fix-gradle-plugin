@@ -15,7 +15,7 @@ class WorkaroundTest extends Specification {
         "8.7.0-alpha06" | ['JdkImage']
         "8.6.0-rc01"    | ['JdkImage']
         "8.5.2"         | ['JdkImage']
-        "8.4.1"         | ['JdkImage']
+        "8.4.2"         | ['JdkImage']
         "8.3.2"         | ['MergeSourceSetFolders', 'JdkImage']
         "8.2.2"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']
         "8.1.4"         | ['MergeSourceSetFolders', 'JdkImage', 'PackageForUnitTest']

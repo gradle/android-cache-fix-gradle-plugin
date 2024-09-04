@@ -113,6 +113,13 @@ publishing {
     }
 }
 
+tasks.withType<Jar>().configureEach {
+    into(".") {
+        from(layout.projectDirectory.file("LICENSE"))
+        from(layout.projectDirectory.dir("release/distribution"))
+    }
+}
+
 // Configuration common to all test tasks
 tasks.withType<Test>().configureEach {
     dependsOn(tasks.publish)

@@ -106,7 +106,7 @@ publishing {
             groupId = pluginGroupId
             pom {
                 name.set("Android Cache Fix Gradle Plugin")
-                description.set("A Gradle Plugin to workaround cache issues in Android builds")
+                description.set("A Gradle plugin to workaround cache issues in Android builds")
                 url.set("https://github.com/gradle/android-cache-fix-gradle-plugin")
                 licenses {
                     license {

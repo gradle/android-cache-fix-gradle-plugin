@@ -105,9 +105,9 @@ publishing {
         create<MavenPublication>("pluginMaven") {
             groupId = pluginGroupId
             pom {
-                name.set("Common Custom User Data Gradle Plugin")
-                description.set("A Gradle Plugin to capture common custom user data used for Gradle Build Scans in Develocity")
-                url.set("https://github.com/gradle/common-custom-user-data-gradle-plugin")
+                name.set("Android Cache Fix Gradle Plugin")
+                description.set("A Gradle Plugin to workaround cache issues in Android builds")
+                url.set("https://github.com/gradle/android-cache-fix-gradle-plugin")
                 licenses {
                     license {
                         name.set("Apache-2.0")
@@ -122,8 +122,8 @@ publishing {
                     }
                 }
                 scm {
-                    developerConnection.set("scm:git:https://github.com/gradle/common-custom-user-data-gradle-plugin.git")
-                    url.set("https://github.com/gradle/common-custom-user-data-gradle-plugin")
+                    developerConnection.set("scm:git:https://github.com/gradle/android-cache-fix-gradle-plugin.git")
+                    url.set("https://github.com/gradle/android-cache-fix-gradle-plugin")
                 }
             }
         }

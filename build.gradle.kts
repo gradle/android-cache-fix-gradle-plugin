@@ -104,6 +104,28 @@ publishing {
     publications {
         create<MavenPublication>("pluginMaven") {
             groupId = pluginGroupId
+            pom {
+                name.set("Android Cache Fix Gradle Plugin")
+                description.set("A Gradle plugin to workaround cache issues in Android builds")
+                url.set("https://github.com/gradle/android-cache-fix-gradle-plugin")
+                licenses {
+                    license {
+                        name.set("Apache-2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("The Gradle team")
+                        organization.set("Gradle Inc.")
+                        organizationUrl.set("https://gradle.com")
+                    }
+                }
+                scm {
+                    developerConnection.set("scm:git:https://github.com/gradle/android-cache-fix-gradle-plugin.git")
+                    url.set("https://github.com/gradle/android-cache-fix-gradle-plugin")
+                }
+            }
         }
     }
     repositories {

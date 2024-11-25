@@ -192,5 +192,7 @@
     ":library:syncReleaseLibJars"                        :  "FROM_CACHE",
     ":library:verifyReleaseResources"                    :  "UNKNOWN",
     ":library:writeDebugAarMetadata"                     :  "FROM_CACHE",
-    ":library:writeReleaseAarMetadata"                   :  "FROM_CACHE"
+    ":library:writeReleaseAarMetadata"                   :  "FROM_CACHE",
+    ":app:checkKotlinGradlePluginConfigurationErrors"    :  "SKIPPED",
+    ":library:checkKotlinGradlePluginConfigurationErrors":  "SKIPPED"
 }

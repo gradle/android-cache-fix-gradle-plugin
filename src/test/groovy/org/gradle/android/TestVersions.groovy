@@ -40,8 +40,7 @@ class TestVersions {
         return minorVersions.collect { getLatestVersionForAndroid(it) }
     }
 
-    // This map represents the Kotlin supported versions associated with Ksp supported versions
-    static List<String> supportedKotlinVersions = ["1.7.22", "1.8.22", "1.9.0"]
+    static List<String> supportedKotlinVersions = ["1.7.22", "1.8.22", "1.9.0", "2.0.21"]
 
     static VersionNumber latestSupportedKotlinVersion() {
         return VersionNumber.parse(supportedKotlinVersions.last().toString())

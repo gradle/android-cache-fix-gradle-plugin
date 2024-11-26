@@ -40,11 +40,15 @@ class TestVersions {
         return minorVersions.collect { getLatestVersionForAndroid(it) }
     }
 
-    // This map represents the Kotlin supported versions associated with Ksp supported versions
-    static List<String> supportedKotlinVersions = ["1.7.22", "1.8.22", "1.9.0"]
+    static List<String> supportedKotlinVersions = ["1.9.0", "2.0.21"]
 
     static VersionNumber latestSupportedKotlinVersion() {
-        return VersionNumber.parse(supportedKotlinVersions.last().toString())
+        // version 7.1.3 or higher should be used with kotlin-android plugin 2
+        if(latestAndroidVersionForCurrentJDK() <= VersionNumber.parse("7.0.4")) {
+           return VersionNumber.parse(supportedKotlinVersions.first().toString())
+        } else {
+            return VersionNumber.parse(supportedKotlinVersions.last().toString())
+        }
     }
 
     static VersionNumber latestKotlinVersionForGradleVersion(GradleVersion gradleVersion) {

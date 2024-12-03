@@ -184,5 +184,7 @@
     ":library:syncReleaseLibJars"                        :  "FROM_CACHE",
     ":library:verifyReleaseResources"                    :  "FROM_CACHE",
     ":library:writeDebugAarMetadata"                     :  "SUCCESS",
-    ":library:writeReleaseAarMetadata"                   :  "SUCCESS"
+    ":library:writeReleaseAarMetadata"                   :  "SUCCESS",
+    ":app:checkKotlinGradlePluginConfigurationErrors"    :  "SKIPPED",
+    ":library:checkKotlinGradlePluginConfigurationErrors":  "SKIPPED"
 }

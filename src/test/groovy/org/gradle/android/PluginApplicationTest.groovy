@@ -11,6 +11,7 @@ class PluginApplicationTest extends AbstractTest {
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)
             .withAndroidVersion(androidVersion)
+            .withKotlinVersion(VersionNumber.parse(TestVersions.kotlinVersionCompatibleWithOlderAgp))
             .build()
             .writeProject()
 

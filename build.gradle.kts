@@ -23,7 +23,7 @@ plugins {
     id("codenarc")
     id("com.gradle.plugin-publish") version "1.3.0"
     id("com.github.breadmoirai.github-release") version "2.5.2"
-    id("org.gradle.wrapper-upgrade") version "0.11.4"
+    id("org.gradle.wrapper-upgrade") version "0.12"
 }
 
 val releaseVersion = releaseVersion()

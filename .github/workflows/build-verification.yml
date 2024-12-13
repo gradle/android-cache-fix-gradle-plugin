@@ -112,6 +112,8 @@ jobs:
             -x signPluginMavenPublication
             -x signAndroidCacheFixPluginPluginMarkerMavenPublication
             -Porg.gradle.java.installations.auto-download=false
-            -Dpts.mode=$PTS_MODE
+            --no-build-cache
+            -Dpts.enabled=false
+#            -Dpts.mode=$PTS_MODE
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"

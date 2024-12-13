@@ -197,6 +197,14 @@ class SimpleAndroidApp {
                         checkReleaseBuilds false
                     }
                 }
+                signingConfigs {
+                    getByName("debug") {
+                        storeFile = file("/tmp/debug.keystore")
+                        storePassword = "android"
+                        keyAlias = "androiddebugkeynondefault"
+                        keyPassword = "android"
+                    }
+                }
             }
 
             ${toolchainConfigurationIfEnabled}

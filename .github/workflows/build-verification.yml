@@ -72,6 +72,10 @@ jobs:
         run: sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --list | sed -n '/Available Packages/q;p'
       - name: Accept license 34.0.0
         run: echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0"
+      - name: Create Android keystore folder
+        run: |
+          mkdir -p /home/runner/.config/.android
+          keytool -genkey -v -keystore /tmp/debug.keystore -storepass android -alias androiddebugkeynondefault -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "C=US, O=Android, CN=Android Debug"
       - name: Setup ZULU_JDK
         uses: actions/setup-java@v4
         with:

@@ -173,7 +173,7 @@ Visit our website to learn more about [Develocity][develocity].
 The Android Cache Fix Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
 
 [develocity-build-config-samples]: https://github.com/gradle/develocity-build-config-samples
-[develocity-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts
+[develocity-build-validation-scripts]: https://github.com/gradle/develocity-build-validation-scripts
 [develocity-oss-projects]: https://github.com/gradle/develocity-oss-projects
 [ccud-gradle-plugin]: https://github.com/gradle/common-custom-user-data-gradle-plugin
 [ccud-maven-extension]: https://github.com/gradle/common-custom-user-data-maven-extension

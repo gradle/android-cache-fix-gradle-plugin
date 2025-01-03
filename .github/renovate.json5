@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "enabledManagers": ["regex"],
+  "customManagers": [
+    {
+      // See https://docs.renovatebot.com/modules/manager/regex/
+      customType: "regex",
+      fileMatch: [
+        "src/main/resources/versions\\.json5",
+      ],
+      matchStrings: [
+        "(?:#|\/\/) renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>\\S+?))?\\s+?\"(?<currentValue>\\S+?)\"",
+      ],
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+    },
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": ["com.android.tools.build:gradle"],
+      "registryUrls": ["https://dl.google.com/dl/android/maven2/"],
+    },
+  ],
+}

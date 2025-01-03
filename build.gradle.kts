@@ -1,6 +1,7 @@
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.FAST
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper
+import groovy.json.JsonParserType
 
 // Upgrade transitive dependencies in plugin classpath
 buildscript {
@@ -162,7 +163,14 @@ tasks.test {
     }
 }
 
-getSupportedVersions().keys.forEach { androidVersion ->
+val latestVersion = providers.gradleProperty("org.gradle.android.latestKnownAgpVersion")
+val supportedVersions = readSupportedVersions()
+
+check(latestVersion.get() in supportedVersions) {
+    "The project must be updated to support AGP $latestVersion. Please add it to supported versions."
+}
+
+supportedVersions.keys.forEach { androidVersion ->
     val versionSpecificTest = tasks.register<Test>(androidTestTaskName(androidVersion)) {
         description = "Runs the multi-version tests for AGP $androidVersion"
         group = "verification"
@@ -257,8 +265,9 @@ fun releaseNotes(): Provider<String> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun getSupportedVersions(): Map<String, Array<String>> {
-    val versionFile = providers.fileContents(layout.projectDirectory.file("src/main/resources/versions.json"))
-    return (JsonSlurper()
-        .parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>).getValue("supportedVersions")
+fun readSupportedVersions(): Map<String, Array<String>> {
+    val versionFile = providers.fileContents(layout.projectDirectory.file("src/main/resources/versions.json5"))
+    val slurper = JsonSlurper().setType(JsonParserType.LAX)
+    val json = slurper.parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>
+    return json.getValue("supportedVersions")
 }

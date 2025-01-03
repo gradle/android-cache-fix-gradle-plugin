@@ -135,10 +135,15 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
     private static ExpectedResults expectedResults(VersionNumber androidVersion, VersionNumber kotlinVersion) {
         def builder = new ExpectedOutcomeBuilder()
-        def outcomesResource = CrossVersionOutcomeAndRelocationTest.classLoader.getResource("expectedOutcomes/${androidVersion}_outcomes.json")
+        def candidates = [
+            "expectedOutcomes/${androidVersion}_outcomes.json",
+            "expectedOutcomes/${androidVersion.major}.${androidVersion.minor}.x_outcomes.json",
+        ]
+        def loader = CrossVersionOutcomeAndRelocationTest.classLoader
+        def outcomesResource = candidates.findResult { loader.getResource(it) }
 
         if (outcomesResource == null) {
-            throw new IllegalStateException("Could not find expectedOutcomes/${androidVersion}_outcomes.json - make sure an outcomes file exists for this version!")
+            throw new IllegalStateException("No compatible expectedOutcomes file found: [${candidates.join(', ')}]")
         }
 
         Map<String, String> json = new JsonSlurper().parse(outcomesResource) as Map

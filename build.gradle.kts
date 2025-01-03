@@ -1,6 +1,7 @@
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.FAST
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper
+import groovy.json.JsonParserType
 
 // Upgrade transitive dependencies in plugin classpath
 buildscript {
@@ -258,7 +259,8 @@ fun releaseNotes(): Provider<String> {
 
 @Suppress("UNCHECKED_CAST")
 fun getSupportedVersions(): Map<String, Array<String>> {
-    val versionFile = providers.fileContents(layout.projectDirectory.file("src/main/resources/versions.json"))
-    return (JsonSlurper()
-        .parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>).getValue("supportedVersions")
+    val versionFile = providers.fileContents(layout.projectDirectory.file("src/main/resources/versions.json5"))
+    val slurper = JsonSlurper().setType(JsonParserType.LAX)
+    val json = slurper.parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>
+    return json.getValue("supportedVersions")
 }

@@ -10,9 +10,13 @@
       customType: "regex",
       fileMatch: [
         "src/main/resources/versions\\.json5",
+        "gradle\\.properties",
       ],
       matchStrings: [
-        "(?:#|\/\/) renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>\\S+?))?\\s+?\"(?<currentValue>\\S+?)\"",
+        // Matches versions in JSON: the first double-quoted string below the comment line, e.g. "1.0.0"
+        "\/\/ renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>\\S+?))?\\s+?\"(?<currentValue>\\S+?)\"",
+        // Matches versions in properties: the value of the first property below the comment line, e.g. anyProperty=1.0.0
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>\\S+?))?\\s+?\\S+?=(?<currentValue>\\S+?)(?:\\s|$)",
       ],
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
     },

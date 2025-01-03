@@ -22,5 +22,12 @@
       "matchDepNames": ["com.android.tools.build:gradle"],
       "registryUrls": ["https://dl.google.com/dl/android/maven2/"],
     },
+    {
+      // In versions.json5, suggest only patches
+      "matchDepNames": ["com.android.tools.build:gradle"],
+      "matchUpdateTypes": ["major", "minor"],
+      "matchFileNames": ["src/main/resources/versions\\.json5"],
+      "enabled": false,
+    },
   ],
 }

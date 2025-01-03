@@ -12,42 +12,54 @@
         "8.7.2": [
             "8.12"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "8.6.1": [
             "8.12"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "8.5.2": [
             "8.12"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "8.4.2": [
             "8.12"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "8.3.2": [
             "8.12"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "8.2.2": [
             "8.12"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "8.1.4": [
             "8.12"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "8.0.2": [
             "8.0.2"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "7.4.2": [
             "7.6.2"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "7.3.1": [
             "7.4.2",
             "7.6.2"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "7.2.2": [
             "7.3.3",
             "7.6.2"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "7.1.3": [
             "7.2",
             "7.6.2"
         ],
+        // renovate: datasource=maven depName=com.android.tools.build:gradle versioning=maven
         "7.0.4": [
             "7.0.2",
             "7.6.2"

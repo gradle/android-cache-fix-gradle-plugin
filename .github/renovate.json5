@@ -26,6 +26,8 @@
       "registryUrlTemplate": "https://dl.google.com/dl/android/maven2/",
     },
   ],
+  // Look for patches to older minors despite a newer minor being available
+  "separateMinorPatch": true,
   "packageRules": [
     {
       // In versions.json5, disable bumps of major/minor, which should be added as new properties

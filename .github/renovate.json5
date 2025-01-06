@@ -3,31 +3,32 @@
   "extends": [
     "config:recommended"
   ],
+  // See https://docs.renovatebot.com/modules/manager/regex/
+  // Dependabot is used for all other updates.
   "enabledManagers": ["regex"],
   "customManagers": [
     {
-      // See https://docs.renovatebot.com/modules/manager/regex/
+      // Matches AGP versions annotated with a "renovate: AGP version" comment
       customType: "regex",
       fileMatch: [
         "src/main/resources/versions\\.json5",
         "gradle\\.properties",
       ],
       matchStrings: [
-        // Matches versions in JSON: the first double-quoted string below the comment line, e.g. "1.0.0"
-        "\/\/ renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>\\S+?))?\\s+?\"(?<currentValue>\\S+?)\"",
-        // Matches versions in properties: the value of the first property below the comment line, e.g. anyProperty=1.0.0
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>\\S+?))?\\s+?\\S+?=(?<currentValue>\\S+?)(?:\\s|$)",
+        // For JSON: the first double-quoted string below the comment line, e.g. "1.0.0"
+        "\/\/ renovate: AGP version\\s+?\"(?<currentValue>\\S+?)\"",
+        // For properties: the value of the first property below the comment line, e.g. anyProperty=1.0.0
+        "# renovate: AGP version\\s+?\\S+?=(?<currentValue>\\S+?)(?:\\s|$)",
       ],
-      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+      "datasourceTemplate": "maven",
+      "versioningTemplate": "maven",
+      "depNameTemplate": "com.android.tools.build:gradle",
+      "registryUrlTemplate": "https://dl.google.com/dl/android/maven2/",
     },
   ],
   "packageRules": [
     {
-      "matchDepNames": ["com.android.tools.build:gradle"],
-      "registryUrls": ["https://dl.google.com/dl/android/maven2/"],
-    },
-    {
-      // In versions.json5, suggest only patches
+      // In versions.json5, disable bumps of major/minor, which should be added as new properties
       "matchDepNames": ["com.android.tools.build:gradle"],
       "matchUpdateTypes": ["major", "minor"],
       "matchFileNames": ["src/main/resources/versions\\.json5"],

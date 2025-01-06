@@ -3,6 +3,9 @@
   "extends": [
     "config:recommended"
   ],
+  // Allow unlimited PRs
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   // See https://docs.renovatebot.com/modules/manager/regex/
   // Dependabot is used for all other updates.
   "enabledManagers": ["regex"],
@@ -26,7 +29,8 @@
       "registryUrlTemplate": "https://dl.google.com/dl/android/maven2/",
     },
   ],
-  // Look for patches to older minors despite a newer minor being available
+  // Ensure patches to older minors are opened, even if a newer minor is available
+  // In versions.json5, means older minors will still be checked for a newer patch
   "separateMinorPatch": true,
   "packageRules": [
     {
@@ -35,6 +39,11 @@
       "matchUpdateTypes": ["major", "minor"],
       "matchFileNames": ["src/main/resources/versions\\.json5"],
       "enabled": false,
+    },
+    {
+      // Group changes to versions.json5
+      "matchFileNames": ["src/main/resources/versions\\.json5"],
+      "groupName": "supportedVersions",
     },
   ],
 }

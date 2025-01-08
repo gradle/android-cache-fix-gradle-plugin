@@ -1,0 +1,47 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "github>gradle/renovate-agent//presets/dv.json5",
+  ],
+  // See https://docs.renovatebot.com/modules/manager/regex/
+  // Dependabot is used for all other updates.
+  "enabledManagers": ["regex"],
+  "customManagers": [
+    {
+      // Matches AGP versions annotated with a "renovate: AGP version" comment
+      customType: "regex",
+      fileMatch: [
+        "src/main/resources/versions\\.json5",
+        "gradle\\.properties",
+      ],
+      matchStrings: [
+        // For JSON: the first double-quoted string below the comment line, e.g. "1.0.0"
+        "\/\/ renovate: AGP version\\s+?\"(?<currentValue>\\S+?)\"",
+        // For properties: the value of the first property below the comment line, e.g. anyProperty=1.0.0
+        "# renovate: AGP version\\s+?\\S+?=(?<currentValue>\\S+?)(?:\\s|$)",
+      ],
+      "datasourceTemplate": "maven",
+      "versioningTemplate": "maven",
+      "depNameTemplate": "com.android.tools.build:gradle",
+      "registryUrlTemplate": "https://dl.google.com/dl/android/maven2/",
+    },
+  ],
+  // Ensure patches to older minors are opened, even if a newer minor is available
+  // In versions.json5, means older minors will still be checked for a newer patch
+  "separateMinorPatch": true,
+  "packageRules": [
+    {
+      // In versions.json5, disable bumps of major/minor, which should be added as new properties
+      "matchDepNames": ["com.android.tools.build:gradle"],
+      "matchUpdateTypes": ["major", "minor"],
+      "matchFileNames": ["src/main/resources/versions\\.json5"],
+      "enabled": false,
+    },
+    {
+      // Group changes to versions.json5
+      "matchFileNames": ["src/main/resources/versions\\.json5"],
+      "groupName": "supportedVersions",
+    },
+  ],
+}

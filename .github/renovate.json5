@@ -4,9 +4,6 @@
     "config:recommended",
     "github>gradle/renovate-agent//presets/dv.json5",
   ],
-  // Allow unlimited PRs
-  "prConcurrentLimit": 0,
-  "prHourlyLimit": 0,
   // See https://docs.renovatebot.com/modules/manager/regex/
   // Dependabot is used for all other updates.
   "enabledManagers": ["regex"],

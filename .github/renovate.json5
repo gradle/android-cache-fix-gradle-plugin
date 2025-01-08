@@ -1,7 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "github>gradle/renovate-agent//presets/dv.json5",
   ],
   // Allow unlimited PRs
   "prConcurrentLimit": 0,

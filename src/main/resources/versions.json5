@@ -1,15 +1,15 @@
 {
     "supportedVersions": {
         // renovate: AGP version
-        "8.9.0-alpha04": [
+        "8.9.0-alpha09": [
             "8.12"
         ],
         // renovate: AGP version
-        "8.8.0-beta01": [
+        "8.8.0": [
             "8.12"
         ],
         // renovate: AGP version
-        "8.7.2": [
+        "8.7.3": [
             "8.12"
         ],
         // renovate: AGP version

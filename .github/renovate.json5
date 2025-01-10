@@ -6,7 +6,7 @@
   ],
   // See https://docs.renovatebot.com/modules/manager/regex/
   // Dependabot is used for all other updates.
-  "enabledManagers": ["regex"],
+  "enabledManagers": ["custom.regex"],
   "customManagers": [
     {
       // Matches AGP versions annotated with a "renovate: AGP version" comment

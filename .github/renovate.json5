@@ -3,10 +3,11 @@
   "extends": [
     "config:recommended",
     "github>gradle/renovate-agent//presets/dv.json5",
+    ":disableDependencyDashboard",
   ],
   // See https://docs.renovatebot.com/modules/manager/regex/
   // Dependabot is used for all other updates.
-  "enabledManagers": ["regex"],
+  "enabledManagers": ["custom.regex"],
   "customManagers": [
     {
       // Matches AGP versions annotated with a "renovate: AGP version" comment
@@ -39,9 +40,18 @@
       "enabled": false,
     },
     {
-      // Group changes to versions.json5
-      "matchFileNames": ["src/main/resources/versions\\.json5"],
-      "groupName": "supportedVersions",
+      // In gradle.properties, allow unstable versions
+      "matchDepNames": ["com.android.tools.build:gradle"],
+      "matchFileNames": ["gradle\\.properties"],
+      "ignoreUnstable": false,
+    },
+    {
+      // Group changes about AGP versions
+      "matchFileNames": [
+        "src/main/resources/versions\\.json5",
+        "gradle\\.properties",
+      ],
+      "groupName": "AGP versions",
     },
   ],
 }

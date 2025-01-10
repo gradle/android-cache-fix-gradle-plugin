@@ -39,9 +39,12 @@
       "enabled": false,
     },
     {
-      // Group changes to versions.json5
-      "matchFileNames": ["src/main/resources/versions\\.json5"],
-      "groupName": "supportedVersions",
+      // Group changes about AGP versions
+      "matchFileNames": [
+        "src/main/resources/versions\\.json5",
+        "gradle\\.properties",
+      ],
+      "groupName": "AGP versions",
     },
   ],
 }

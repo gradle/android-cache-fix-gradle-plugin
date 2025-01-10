@@ -40,6 +40,12 @@
       "enabled": false,
     },
     {
+      // In gradle.properties, allow unstable versions
+      "matchDepNames": ["com.android.tools.build:gradle"],
+      "matchFileNames": ["gradle\\.properties"],
+      "ignoreUnstable": false,
+    },
+    {
       // Group changes about AGP versions
       "matchFileNames": [
         "src/main/resources/versions\\.json5",

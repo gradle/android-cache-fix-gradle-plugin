@@ -13,9 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: setup-matrix
-        run: echo "matrix=$(jq -cM '.supportedVersions | keys' src/main/resources/versions.json | sed -e 's/\./_/g' -e 's/-/_/g')" >> $GITHUB_OUTPUT
-      - name: debug
-        run: echo "matrix=${{ steps.setup-matrix.outputs.matrix }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          json_to_matrix() {
+            json_without_comments="$(sed -E 's|\s//.*||' src/main/resources/versions.json5)"
+            echo "$json_without_comments" | jq -cM '.supportedVersions | keys' | sed -e 's/\./_/g' -e 's/-/_/g'
+          }
+          json_to_matrix
+          echo "matrix=$(json_to_matrix)" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.setup-matrix.outputs.matrix }}
 

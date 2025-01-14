@@ -12,22 +12,16 @@
     {
       // Matches AGP versions in versions.json
       customType: "regex",
-      fileMatch: ["src/main/resources/versions\\.json"],
-      "matchStringsStrategy": "recursive",
-      "matchStrings": [
-        // Matches versions followed by a list, e.g. "8.9.0": [. See https://docs.renovatebot.com/configuration-options/#recursive
-        "\\s+?\"(?<currentValue>\\S+?)\": \\[",
+      fileMatch: [
+        "src/main/resources/versions\\.json",
+        "gradle\\.properties",
       ],
-      "datasourceTemplate": "maven",
-      "versioningTemplate": "maven",
-      "depNameTemplate": "com.android.tools.build:gradle",
-      "registryUrlTemplate": "https://dl.google.com/dl/android/maven2/",
-    },
-    {
-      // Matches AGP versions annotated with a "renovate: AGP version" comment
-      customType: "regex",
-      fileMatch: ["gradle\\.properties"],
-      matchStrings: ["# renovate: AGP version\\s+?\\S+?=(?<currentValue>\\S+?)(?:\\s|$)"],
+      "matchStrings": [
+        // In versions.json, matches keys with a list value, e.g. "8.9.0": [
+        "\\s+?\"(?<currentValue>\\S+?)\": \\[",
+        // In gradle.properties, matches a specific property's value
+        "org\\.gradle\\.android\\.latestKnownAgpVersion=(?<currentValue>\\S+?)(?:\\s|$)",
+      ],
       "datasourceTemplate": "maven",
       "versioningTemplate": "maven",
       "depNameTemplate": "com.android.tools.build:gradle",

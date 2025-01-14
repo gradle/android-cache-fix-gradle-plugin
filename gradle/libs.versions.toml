@@ -1,0 +1,15 @@
+[versions]
+android-gradlePlugin = "8.1.4"
+android-sdkBuildTools = "31.1.1"
+spock = "2.3-groovy-3.0"
+guava = "33.4.0-jre"
+
+[libraries]
+android-tools-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradlePlugin" }
+android-tools-common = { module = "com.android.tools:common", version.ref = "android-sdkBuildTools" }
+android-tools-sdkCommon = { module = "com.android.tools:sdk-common", version.ref = "android-sdkBuildTools" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+spock-bom = { module = "org.spockframework:spock-bom", version.ref = "spock" }
+spock-core = { module = "org.spockframework:spock-core" }
+spock-junit4 = { module = "org.spockframework:spock-junit4" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }

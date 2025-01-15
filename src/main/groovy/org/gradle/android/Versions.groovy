@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.ImmutableSortedSet
 import com.google.common.collect.Multimap
 import groovy.json.JsonSlurper
-import groovy.json.JsonParserType
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.gradle.util.GradleVersion
@@ -18,8 +17,7 @@ class Versions {
     static final VersionNumber CURRENT_ANDROID_VERSION
 
     static {
-        def slurper = new JsonSlurper().setType(JsonParserType.LAX)
-        def versions = slurper.parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json5"))
+        def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
 
         def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
         versions.supportedVersions.each { String androidVersion, List<String> gradleVersions ->

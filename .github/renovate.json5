@@ -10,7 +10,7 @@
   "enabledManagers": ["custom.regex"],
   "customManagers": [
     {
-      // Matches AGP versions in versions.json
+      // Matches AGP versions in files with custom patterns
       customType: "regex",
       fileMatch: [
         "src/main/resources/versions\\.json",

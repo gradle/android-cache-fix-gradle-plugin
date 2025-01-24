@@ -1,4 +1,4 @@
-name: Combine Dependabot PRs
+name: Combine Bot PRs
 
 on:
   schedule:
@@ -12,11 +12,11 @@ permissions:
   checks: read
 
 jobs:
-  combine-dependabot-prs:
+  combine-bot-prs:
     if: github.repository == 'gradle/android-cache-fix-gradle-plugin'
     runs-on: ubuntu-latest
     steps:
-      - name: combine-dependabot-prs
+      - name: combine-bot-prs
         uses: github/combine-prs@v5.2.0
         with:
           branch_regex: ^(dependa|wrapper|renovate-)bot\/.*$

@@ -19,5 +19,5 @@ jobs:
       - name: combine-dependabot-prs
         uses: github/combine-prs@v5.2.0
         with:
-          branch_regex: ^(dependa|wrapper)bot\/.*$
+          branch_regex: ^(dependa|wrapper|renovate-)bot\/.*$
           github_token: ${{ secrets.GH_BOT_GITHUB_TOKEN }}

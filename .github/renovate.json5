@@ -5,6 +5,7 @@
     "github>gradle/renovate-agent//presets/dv.json5",
     ":disableDependencyDashboard",
   ],
+  "branchPrefix": "renovate-bot/",
   // See https://docs.renovatebot.com/modules/manager/regex/
   // Dependabot is used for all other updates.
   "enabledManagers": ["custom.regex"],

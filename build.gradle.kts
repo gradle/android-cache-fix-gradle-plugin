@@ -42,13 +42,13 @@ repositories {
 
 dependencies {
     compileOnly(gradleApi())
-    compileOnly(libs.android.tools.gradlePlugin)
-    compileOnly(libs.android.tools.common)
-    compileOnly(libs.android.tools.sdkCommon)
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.android.common)
+    compileOnly(libs.android.sdkCommon)
     implementation(libs.guava)
 
     testImplementation(gradleTestKit())
-    testImplementation(libs.android.tools.gradlePlugin)
+    testImplementation(libs.android.gradlePlugin)
     testImplementation(platform(libs.spock.bom))
     testImplementation(libs.spock.core) { exclude(group = "org.codehaus.groovy") }
     testImplementation(libs.spock.junit4) { exclude(group = "org.codehaus.groovy") }

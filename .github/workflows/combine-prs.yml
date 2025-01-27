@@ -1,4 +1,4 @@
-name: Combine Bot PRs
+name: Combine PRs
 
 on:
   schedule:
@@ -12,12 +12,11 @@ permissions:
   checks: read
 
 jobs:
-  combine-bot-prs:
+  combine-prs:
     if: github.repository == 'gradle/android-cache-fix-gradle-plugin'
     runs-on: ubuntu-latest
     steps:
-      - name: combine-bot-prs
-        uses: github/combine-prs@v5.2.0
+      - uses: github/combine-prs@v5.2.0
         with:
           branch_regex: ^(dependa|wrapper|renovate)bot\/.*$
           github_token: ${{ secrets.GH_BOT_GITHUB_TOKEN }}

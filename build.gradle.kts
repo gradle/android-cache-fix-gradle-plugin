@@ -22,9 +22,9 @@ plugins {
     id("maven-publish")
     id("signing")
     id("codenarc")
-    id("com.gradle.plugin-publish") version "1.3.0"
-    id("com.github.breadmoirai.github-release") version "2.5.2"
-    id("org.gradle.wrapper-upgrade") version "0.12"
+    alias(libs.plugins.gradle.pluginPublish)
+    alias(libs.plugins.github.release)
+    alias(libs.plugins.gradle.wrapperUpgrade)
 }
 
 val releaseVersion = releaseVersion()

@@ -1,25 +1,25 @@
 [versions]
 android-gradlePlugin = "8.1.4"
 android-sdkBuildTools = "31.1.1"
-spock = "2.3-groovy-3.0"
-guava = "33.4.0-jre"
+github-release = "2.5.2"
 gradle-pluginPublish = "1.3.0"
 gradle-wrapperUpgrade = "0.12"
-github-release = "2.5.2"
+guava = "33.4.0-jre"
 okio = "3.10.2"
+spock = "2.3-groovy-3.0"
 
 [libraries]
-android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradlePlugin" }
 android-common = { module = "com.android.tools:common", version.ref = "android-sdkBuildTools" }
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradlePlugin" }
 android-sdkCommon = { module = "com.android.tools:sdk-common", version.ref = "android-sdkBuildTools" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 spock-bom = { module = "org.spockframework:spock-bom", version.ref = "spock" }
 spock-core = { module = "org.spockframework:spock-core" }
 spock-junit4 = { module = "org.spockframework:spock-junit4" }
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 [plugins]
+github-release = { id = "com.github.breadmoirai.github-release", version.ref = "github-release" }
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-pluginPublish" }
 gradle-wrapperUpgrade = { id = "org.gradle.wrapper-upgrade", version.ref = "gradle-wrapperUpgrade" }
-github-release = { id = "com.github.breadmoirai.github-release", version.ref = "github-release" }

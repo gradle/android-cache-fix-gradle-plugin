@@ -53,7 +53,7 @@
         "gradle\\.properties",
       ],
       "commitMessageTopic": "AGP versions",
-      "groupName": "supported AGP versions",
+      "groupName": "AGP versions",
     },
   ],
 }

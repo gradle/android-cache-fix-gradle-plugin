@@ -5,6 +5,7 @@
     "github>gradle/renovate-agent//presets/dv.json5",
     ":disableDependencyDashboard",
   ],
+  "branchPrefix": "renovatebot/",
   // See https://docs.renovatebot.com/modules/manager/regex/
   // Dependabot is used for all other updates.
   "enabledManagers": ["custom.regex"],
@@ -51,6 +52,7 @@
         "src/main/resources/versions\\.json",
         "gradle\\.properties",
       ],
+      "commitMessageTopic": "AGP versions",
       "groupName": "AGP versions",
     },
   ],

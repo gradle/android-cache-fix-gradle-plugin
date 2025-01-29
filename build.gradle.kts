@@ -10,7 +10,7 @@ buildscript {
     dependencies {
         constraints {
             // Dependency of 'com.github.breadmoirai.github-release:2.5.2'
-            classpath("com.squareup.okio:okio:3.10.2") // CVE-2023-3635
+            classpath(libs.okio) // CVE-2023-3635
         }
     }
 }
@@ -21,9 +21,9 @@ plugins {
     id("maven-publish")
     id("signing")
     id("codenarc")
-    id("com.gradle.plugin-publish") version "1.3.0"
-    id("com.github.breadmoirai.github-release") version "2.5.2"
-    id("org.gradle.wrapper-upgrade") version "0.12"
+    alias(libs.plugins.gradle.pluginPublish)
+    alias(libs.plugins.github.release)
+    alias(libs.plugins.gradle.wrapperUpgrade)
 }
 
 val releaseVersion = releaseVersion()
@@ -40,25 +40,18 @@ repositories {
 }
 
 dependencies {
-    val versions = mapOf(
-        "agp" to "8.1.4",
-        "sdkBuildTools" to "31.1.1",
-        "spock" to "2.3-groovy-3.0",
-    )
-
     compileOnly(gradleApi())
-    compileOnly("com.android.tools.build:gradle:${versions["agp"]}")
-    compileOnly("com.android.tools:common:${versions["sdkBuildTools"]}")
-    compileOnly("com.android.tools:sdk-common:${versions["sdkBuildTools"]}")
-    implementation("com.google.guava:guava:33.4.0-jre")
-
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.android.common)
+    compileOnly(libs.android.sdkCommon)
+    implementation(libs.guava)
 
     testImplementation(gradleTestKit())
-    testImplementation("com.android.tools.build:gradle:${versions["agp"]}")
-    testImplementation(platform("org.spockframework:spock-bom:${versions["spock"]}"))
-    testImplementation("org.spockframework:spock-core") { exclude(group = "org.codehaus.groovy") }
-    testImplementation("org.spockframework:spock-junit4") { exclude(group = "org.codehaus.groovy") }
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation(libs.android.gradlePlugin)
+    testImplementation(platform(libs.spock.bom))
+    testImplementation(libs.spock.core) { exclude(group = "org.codehaus.groovy") }
+    testImplementation(libs.spock.junit4) { exclude(group = "org.codehaus.groovy") }
+    testImplementation(libs.junit.jupiter.api)
 }
 
 wrapperUpgrade {

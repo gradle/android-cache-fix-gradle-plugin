@@ -1,5 +1,5 @@
 [versions]
-android-gradlePlugin = "8.1.4"
+android-gradlePlugin = "8.8.0"
 android-sdkBuildTools = "31.8.0"
 github-release = "2.5.2"
 gradle-pluginPublish = "1.3.1"

@@ -13,6 +13,10 @@ updates:
     schedule:
       interval: "daily"
       time: "02:00"
+    # See libs.versions.toml for explanations
+    ignore:
+      - dependency-name: "com.android.tools.build:gradle"
+        versions: ["[8.2.0,)"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

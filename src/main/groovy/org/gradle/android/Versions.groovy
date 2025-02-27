@@ -11,8 +11,8 @@ import org.gradle.util.GradleVersion
 
 @CompileStatic(TypeCheckingMode.SKIP)
 class Versions {
-    static final Set<GradleVersion> SUPPORTED_GRADLE_VERSIONS
-    static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
+    static final Set<GradleVersion> TESTED_GRADLE_VERSIONS
+    static final Set<VersionNumber> TESTED_ANDROID_VERSIONS
     static final Multimap<VersionNumber, GradleVersion> TESTED_VERSIONS_MATRIX
     static final VersionNumber CURRENT_ANDROID_VERSION
 
@@ -26,8 +26,8 @@ class Versions {
         def matrix = builder.build()
 
         TESTED_VERSIONS_MATRIX = matrix
-        SUPPORTED_ANDROID_VERSIONS = ImmutableSortedSet.copyOf(matrix.keySet())
-        SUPPORTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
+        TESTED_ANDROID_VERSIONS = ImmutableSortedSet.copyOf(matrix.keySet())
+        TESTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
 
         CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
     }
@@ -41,7 +41,7 @@ class Versions {
     }
 
     static VersionNumber earliestSupportedAndroidVersion() {
-        VersionNumber earliestSupported = SUPPORTED_ANDROID_VERSIONS.min()
+        VersionNumber earliestSupported = TESTED_ANDROID_VERSIONS.min()
         // "alpha" is lower than null
         return new VersionNumber(earliestSupported.major, earliestSupported.minor, 0, "alpha")
     }

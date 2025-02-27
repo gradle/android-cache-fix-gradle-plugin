@@ -17,7 +17,7 @@ jobs:
         run: |
           set -euo pipefail
           json_to_matrix() {
-            file="src/main/resources/versions.json"
+            file="src/main/resources/testedVersions.json"
             jq -cM '.testedVersions | keys' "$file" | sed -e 's/\./_/g' -e 's/-/_/g'
           }
           json_to_matrix

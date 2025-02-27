@@ -18,7 +18,7 @@
         "gradle\\.properties",
       ],
       "matchStrings": [
-        // In versions.json, matches keys with a list value, e.g. "8.9.0": [
+        // In testedVersions.json, matches keys with a list value, e.g. "8.9.0": [
         "\\s+?\"(?<currentValue>\\S+?)\": \\[",
         // In gradle.properties, matches a specific property's value
         "org\\.gradle\\.android\\.latestKnownAgpVersion=(?<currentValue>\\S+?)(?:\\s|$)",
@@ -30,11 +30,11 @@
     },
   ],
   // Ensure patches to older minors are opened, even if a newer minor is available
-  // In versions.json, means older minors will still be checked for a newer patch
+  // In testedVersions.json, means older minors will still be checked for a newer patch
   "separateMinorPatch": true,
   "packageRules": [
     {
-      // In versions.json, disable bumps of major/minor, which should be added as new properties
+      // In testedVersions.json, disable bumps of major/minor, which should be added as new properties
       "matchDepNames": ["com.android.tools.build:gradle"],
       "matchUpdateTypes": ["major", "minor"],
       "matchFileNames": ["src/main/resources/versions\\.json"],

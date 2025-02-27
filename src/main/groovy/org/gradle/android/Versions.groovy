@@ -13,19 +13,19 @@ import org.gradle.util.GradleVersion
 class Versions {
     static final Set<GradleVersion> SUPPORTED_GRADLE_VERSIONS
     static final Set<VersionNumber> SUPPORTED_ANDROID_VERSIONS
-    static final Multimap<VersionNumber, GradleVersion> SUPPORTED_VERSIONS_MATRIX
+    static final Multimap<VersionNumber, GradleVersion> TESTED_VERSIONS_MATRIX
     static final VersionNumber CURRENT_ANDROID_VERSION
 
     static {
         def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
 
         def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
-        versions.supportedVersions.each { String androidVersion, List<String> gradleVersions ->
+        versions.testedVersions.each { String androidVersion, List<String> gradleVersions ->
             builder.putAll(android(androidVersion), gradleVersions.collect { gradle(it) })
         }
         def matrix = builder.build()
 
-        SUPPORTED_VERSIONS_MATRIX = matrix
+        TESTED_VERSIONS_MATRIX = matrix
         SUPPORTED_ANDROID_VERSIONS = ImmutableSortedSet.copyOf(matrix.keySet())
         SUPPORTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
 

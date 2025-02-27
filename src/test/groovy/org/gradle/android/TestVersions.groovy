@@ -8,9 +8,9 @@ class TestVersions {
     static Multimap<VersionNumber, GradleVersion> getAllCandidateTestVersions() {
         def testedVersion = System.getProperty('org.gradle.android.testVersion')
         if (testedVersion) {
-            return ImmutableMultimap.copyOf(Versions.SUPPORTED_VERSIONS_MATRIX.entries().findAll {it.key == VersionNumber.parse(testedVersion) })
+            return ImmutableMultimap.copyOf(Versions.TESTED_VERSIONS_MATRIX.entries().findAll {it.key == VersionNumber.parse(testedVersion) })
         } else {
-            return Versions.SUPPORTED_VERSIONS_MATRIX
+            return Versions.TESTED_VERSIONS_MATRIX
         }
     }
 

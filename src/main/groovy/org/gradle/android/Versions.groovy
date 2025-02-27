@@ -17,7 +17,7 @@ class Versions {
     static final VersionNumber CURRENT_ANDROID_VERSION
 
     static {
-        def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
+        def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("testedVersions.json"))
 
         def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
         versions.testedVersions.each { String androidVersion, List<String> gradleVersions ->

@@ -52,8 +52,8 @@
         "src/main/resources/versions\\.json",
         "gradle\\.properties",
       ],
-      "commitMessageTopic": "AGP versions",
-      "groupName": "AGP versions",
+      "commitMessageTopic": "tested AGP versions",
+      "groupName": "tested AGP versions",
     },
   ],
 }

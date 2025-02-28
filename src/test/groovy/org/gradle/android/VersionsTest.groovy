@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 class VersionsTest extends Specification {
     def "earliest supported version includes alpha and beta builds"() {
-        def alphaOfEarliest = alphaVersionOf(Versions.SUPPORTED_ANDROID_VERSIONS.min())
+        def alphaOfEarliest = alphaVersionOf(Versions.TESTED_ANDROID_VERSIONS.min())
 
         expect:
         alphaOfEarliest >= Versions.earliestSupportedAndroidVersion()

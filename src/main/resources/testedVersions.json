@@ -1,5 +1,5 @@
 {
-    "supportedVersions": {
+    "testedVersions": {
         "8.10.0-alpha07": [
             "8.12"
         ],

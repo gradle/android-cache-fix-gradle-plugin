@@ -1,16 +1,36 @@
 package org.gradle.android
 
 import com.google.common.collect.ImmutableMultimap
+import com.google.common.collect.ImmutableSortedSet
 import com.google.common.collect.Multimap
+import groovy.json.JsonSlurper
 import org.gradle.util.GradleVersion
 
 class TestVersions {
+    static final Set<GradleVersion> TESTED_GRADLE_VERSIONS
+    static final Set<VersionNumber> TESTED_ANDROID_VERSIONS
+    static final Multimap<VersionNumber, GradleVersion> TESTED_VERSIONS_MATRIX
+
+    static {
+        def versions = new JsonSlurper().parse(AndroidCacheFixPlugin.classLoader.getResource("versions.json"))
+
+        def builder = ImmutableMultimap.<VersionNumber, GradleVersion>builder()
+        versions.testedVersions.each { String androidVersion, List<String> gradleVersions ->
+            builder.putAll(Versions.android(androidVersion), gradleVersions.collect { Versions.gradle(it) })
+        }
+        def matrix = builder.build()
+
+        TESTED_VERSIONS_MATRIX = matrix
+        TESTED_ANDROID_VERSIONS = ImmutableSortedSet.copyOf(matrix.keySet())
+        TESTED_GRADLE_VERSIONS = ImmutableSortedSet.copyOf(matrix.values())
+    }
+
     static Multimap<VersionNumber, GradleVersion> getAllCandidateTestVersions() {
         def testedVersion = System.getProperty('org.gradle.android.testVersion')
         if (testedVersion) {
-            return ImmutableMultimap.copyOf(Versions.TESTED_VERSIONS_MATRIX.entries().findAll {it.key == VersionNumber.parse(testedVersion) })
+            return ImmutableMultimap.copyOf(TESTED_VERSIONS_MATRIX.entries().findAll {it.key == VersionNumber.parse(testedVersion) })
         } else {
-            return Versions.TESTED_VERSIONS_MATRIX
+            return TESTED_VERSIONS_MATRIX
         }
     }
 

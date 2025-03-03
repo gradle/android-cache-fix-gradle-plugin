@@ -258,7 +258,7 @@ fun releaseNotes(): Provider<String> {
 
 @Suppress("UNCHECKED_CAST")
 fun readTestedVersions(): Map<String, Array<String>> {
-    val versionFile = providers.fileContents(layout.projectDirectory.file("src/main/resources/testedVersions.json"))
+    val versionFile = providers.fileContents(layout.projectDirectory.file("src/test/resources/versions.json"))
     val json = JsonSlurper().parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>
     return json.getValue("testedVersions")
 }

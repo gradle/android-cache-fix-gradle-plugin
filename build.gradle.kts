@@ -156,13 +156,13 @@ tasks.test {
 }
 
 val latestVersion = providers.gradleProperty("org.gradle.android.latestKnownAgpVersion")
-val supportedVersions = readSupportedVersions()
+val testedVersions = readTestedVersions()
 
-check(latestVersion.get() in supportedVersions) {
-    "The project must be updated to support AGP $latestVersion. Please add it to supported versions."
+check(latestVersion.get() in testedVersions) {
+    "The project must be updated to support AGP $latestVersion. Please add it to tested versions."
 }
 
-supportedVersions.keys.forEach { androidVersion ->
+testedVersions.keys.forEach { androidVersion ->
     val versionSpecificTest = tasks.register<Test>(androidTestTaskName(androidVersion)) {
         description = "Runs the multi-version tests for AGP $androidVersion"
         group = "verification"
@@ -257,8 +257,8 @@ fun releaseNotes(): Provider<String> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun readSupportedVersions(): Map<String, Array<String>> {
-    val versionFile = providers.fileContents(layout.projectDirectory.file("src/main/resources/versions.json"))
+fun readTestedVersions(): Map<String, Array<String>> {
+    val versionFile = providers.fileContents(layout.projectDirectory.file("src/test/resources/versions.json"))
     val json = JsonSlurper().parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>
-    return json.getValue("supportedVersions")
+    return json.getValue("testedVersions")
 }

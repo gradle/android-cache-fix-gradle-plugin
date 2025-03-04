@@ -17,8 +17,8 @@ jobs:
         run: |
           set -euo pipefail
           json_to_matrix() {
-            file="src/main/resources/versions.json"
-            jq -cM '.supportedVersions | keys' "$file" | sed -e 's/\./_/g' -e 's/-/_/g'
+            file="src/test/resources/versions.json"
+            jq -cM '.testedVersions | keys' "$file" | sed -e 's/\./_/g' -e 's/-/_/g'
           }
           json_to_matrix
           echo "matrix=$(json_to_matrix)" >> $GITHUB_OUTPUT

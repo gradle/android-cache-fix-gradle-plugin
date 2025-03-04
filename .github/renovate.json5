@@ -14,7 +14,7 @@
       // Matches AGP versions in files with custom patterns
       customType: "regex",
       fileMatch: [
-        "src/main/resources/versions\\.json",
+        "src/test/resources/versions\\.json",
         "gradle\\.properties",
       ],
       "matchStrings": [
@@ -37,7 +37,7 @@
       // In versions.json, disable bumps of major/minor, which should be added as new properties
       "matchDepNames": ["com.android.tools.build:gradle"],
       "matchUpdateTypes": ["major", "minor"],
-      "matchFileNames": ["src/main/resources/versions\\.json"],
+      "matchFileNames": ["src/test/resources/versions\\.json"],
       "enabled": false,
     },
     {
@@ -49,11 +49,11 @@
     {
       // Group changes about AGP versions
       "matchFileNames": [
-        "src/main/resources/versions\\.json",
+        "src/test/resources/versions\\.json",
         "gradle\\.properties",
       ],
-      "commitMessageTopic": "AGP versions",
-      "groupName": "AGP versions",
+      "commitMessageTopic": "tested AGP versions",
+      "groupName": "tested AGP versions",
     },
   ],
 }

@@ -16,7 +16,7 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: git config --global url."https://unused-username:${TOKEN}@github.com/".insteadOf "https://github.com/"
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@cb9bde2e2525e640591a934b1fd28eef1dcaf5e5
+        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec
         with:
           gpg_private_key: ${{ secrets.GH_BOT_PGP_PRIVATE_KEY }}
           passphrase: ${{ secrets.GH_BOT_PGP_PASSPHRASE }}

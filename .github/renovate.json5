@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
+    ":semanticPrefixFixDepsChoreOthers",
+    "group:monorepos",
+    "group:recommended",
+    "replacements:all",
+    "workarounds:all",
     "github>gradle/renovate-agent//presets/dv.json5",
     ":disableDependencyDashboard",
   ],

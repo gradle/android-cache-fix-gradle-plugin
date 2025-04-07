@@ -23,7 +23,7 @@
       ],
       "matchStrings": [
         // In versions.json, matches keys with a list value, e.g. "8.9.0": [
-        "\\s+?\"(?<currentValue>\\S+?)\": \\[",
+        "\\s*?\"(?<currentValue>\\S+?)\": *\\[",
         // In gradle.properties, matches a specific property's value
         "org\\.gradle\\.android\\.latestKnownAgpVersion=(?<currentValue>\\S+?)(?:\\s|$)",
       ],

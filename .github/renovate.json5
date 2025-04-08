@@ -1,13 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    ":semanticPrefixFixDepsChoreOthers",
-    "group:monorepos",
-    "group:recommended",
-    "replacements:all",
-    "workarounds:all",
+    "config:recommended",
     "github>gradle/renovate-agent//presets/dv.json5",
     ":disableDependencyDashboard",
+  ],
+  "ignorePresets": [
+    // Ignore for versions.json to be parsed (inherited from config:recommended)
+    ":ignoreModulesAndTests",
   ],
   "branchPrefix": "renovatebot/",
   // See https://docs.renovatebot.com/modules/manager/regex/

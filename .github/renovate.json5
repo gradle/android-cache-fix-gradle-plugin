@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
+    ":semanticPrefixFixDepsChoreOthers",
+    "group:monorepos",
+    "group:recommended",
+    "replacements:all",
+    "workarounds:all",
     "github>gradle/renovate-agent//presets/dv.json5",
     ":disableDependencyDashboard",
   ],
@@ -19,7 +23,7 @@
       ],
       "matchStrings": [
         // In versions.json, matches keys with a list value, e.g. "8.9.0": [
-        "\\s+?\"(?<currentValue>\\S+?)\": \\[",
+        "\\s*?\"(?<currentValue>\\S+?)\": *\\[",
         // In gradle.properties, matches a specific property's value
         "org\\.gradle\\.android\\.latestKnownAgpVersion=(?<currentValue>\\S+?)(?:\\s|$)",
       ],

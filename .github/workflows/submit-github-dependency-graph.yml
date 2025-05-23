@@ -16,7 +16,7 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 11
+        java-version: 17
     - name: Submit dependency graph
       uses: gradle/actions/dependency-submission@v4
       with:

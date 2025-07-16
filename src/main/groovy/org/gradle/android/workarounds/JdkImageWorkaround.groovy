@@ -34,6 +34,13 @@ import java.util.stream.Stream
  * Works around cache misses due to the custom Java runtime used when source compatibility is set higher
  * than Java 9.  This normalizes out minor inconsequential differences between JDKs used to generate the
  * custom runtime and improve cache hits between environments.
+ *
+ * Although this issue was marked as fixed in AGP 7.4.0-alpha07, we are still able to reproduce cache misses
+ * with different JDK vendors in recent AGP and JDK versions.
+ * Example: https://ge.solutions-team.gradle.com/c/fpylyt2yu7c26/gneeakcvrhijs/task-inputs
+ *
+ * As a result, the workaround remains necessary to guarantee cache hits between environments.
+ *
  */
 @AndroidIssue(introducedIn = "7.1.0", link = "https://issuetracker.google.com/u/1/issues/234820480")
 class JdkImageWorkaround implements Workaround {

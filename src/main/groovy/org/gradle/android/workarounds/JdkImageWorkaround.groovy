@@ -41,7 +41,7 @@ import java.util.stream.Stream
  *
  * As a result, the workaround remains necessary to guarantee cache hits between environments.
  *
- * */
+ */
 @AndroidIssue(introducedIn = "7.1.0", link = "https://issuetracker.google.com/u/1/issues/234820480")
 class JdkImageWorkaround implements Workaround {
     static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.enabled"

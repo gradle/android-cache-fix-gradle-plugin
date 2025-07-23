@@ -188,5 +188,7 @@
     ":library:writeDebugAarMetadata"                     :  "SUCCESS",
     ":library:writeReleaseAarMetadata"                   :  "SUCCESS",
     ":app:checkKotlinGradlePluginConfigurationErrors"    :  "SKIPPED",
-    ":library:checkKotlinGradlePluginConfigurationErrors":  "SKIPPED"
+    ":library:checkKotlinGradlePluginConfigurationErrors":  "SKIPPED",
+    ":library:checkReleaseAarMetadata"                   :  "SUCCESS",
+    ":library:checkDebugAarMetadata"                     :  "SUCCESS"
 }

@@ -6,6 +6,8 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.util.GradleVersion
 
+import java.lang.reflect.Method
+
 @CompileStatic
 class SystemPropertiesCompat {
 
@@ -56,10 +58,23 @@ class SystemPropertiesCompat {
     private static Provider<String> getSystemProperty(String key, Project project) {
         def systemProperty = project.providers.systemProperty(key)
 
-        if (Versions.gradle(project.gradle.gradleVersion) < GradleVersion.version("7.4")) {
-            systemProperty = systemProperty.forUseAtConfigurationTime()
-        }
+        systemProperty = forUseAtConfigurationTime(project, systemProperty)
 
         return systemProperty
+    }
+
+    private static Provider<String> forUseAtConfigurationTime(Project project, Provider<String> provider) {
+        def gradleVersion = Versions.gradle(project.gradle.gradleVersion)
+        if (gradleVersion >= GradleVersion.version("6.5") && gradleVersion < GradleVersion.version("7.4")) {
+            try {
+                // Use reflection to access the forUseAtConfigurationTime method as it was removed in Gradle 9.
+                Method method = Provider.class.getMethod("forUseAtConfigurationTime");
+                return (Provider<String>) method.invoke(provider);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to invoke forUseAtConfigurationTime via reflection", e);
+            }
+        } else {
+            return provider;
+        }
     }
 }

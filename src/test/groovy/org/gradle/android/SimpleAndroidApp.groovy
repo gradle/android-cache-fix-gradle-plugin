@@ -111,6 +111,7 @@ class SimpleAndroidApp {
             """
                 dependencies {
                     implementation project(':${library}')
+                    testImplementation 'junit:junit:4.13.2'
                 }
             """.stripIndent()
 

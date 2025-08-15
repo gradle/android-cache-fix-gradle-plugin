@@ -31,6 +31,7 @@ class CodeSnippets {
             """.stripIndent()
     }
 
+
     static String getJavaAndroidTest(String packageName) {
         return """
                 package ${packageName};
@@ -43,8 +44,15 @@ class CodeSnippets {
     static String getJavaSimpleTest(String packageName) {
         return """
                 package ${packageName};
+                import org.junit.Test;
+
 
                 public class JavaUserTest {
+
+                    @Test
+                    public void test() {
+
+                    }
                 }
             """.stripIndent()
     }

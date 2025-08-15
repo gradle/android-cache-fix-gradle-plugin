@@ -37,4 +37,4 @@ jobs:
       - name: Upgrade Wrappers
         run: ./gradlew clean upgradeGradleWrapperAll --continue -Porg.gradle.java.installations.auto-download=false
         env:
-          WRAPPER_UPGRADE_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WRAPPER_UPGRADE_GIT_TOKEN: ${{ secrets.GH_BOT_GITHUB_TOKEN }}

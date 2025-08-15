@@ -61,12 +61,12 @@ class TestVersions {
     }
 
     static String kotlinVersion = "2.2.0"
-    // AGP versions <= 7.0 can't use the kotlin-android plugin version 2.0
-    static String kotlinVersionCompatibleWithOlderAgp = "1.9.0"
+    // AGP versions <= 8.0 can't use the kotlin-android plugin version 2.2
+    static String kotlinVersionCompatibleWithOlderAgp = "2.0.21"
 
     static VersionNumber latestSupportedKotlinVersion() {
         // version 7.1.3 or higher should be used with kotlin-android plugin 2
-        if(latestAndroidVersionForCurrentJDK() <= VersionNumber.parse("7.0.4")) {
+        if(latestAndroidVersionForCurrentJDK() <= VersionNumber.parse("8.0.2")) {
            return VersionNumber.parse(kotlinVersionCompatibleWithOlderAgp)
         } else {
             return VersionNumber.parse(kotlinVersion)

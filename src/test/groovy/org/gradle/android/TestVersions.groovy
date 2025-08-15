@@ -60,7 +60,7 @@ class TestVersions {
         return minorVersions.collect { getLatestVersionForAndroid(it) }
     }
 
-    static String kotlinVersion = "2.0.21"
+    static String kotlinVersion = "2.2.0"
     // AGP versions <= 7.0 can't use the kotlin-android plugin version 2.0
     static String kotlinVersionCompatibleWithOlderAgp = "1.9.0"
 

@@ -190,5 +190,11 @@
     ":app:checkKotlinGradlePluginConfigurationErrors"    :  "SKIPPED",
     ":library:checkKotlinGradlePluginConfigurationErrors":  "SKIPPED",
     ":library:checkReleaseAarMetadata"                   :  "SUCCESS",
-    ":library:checkDebugAarMetadata"                     :  "SUCCESS"
+    ":library:checkDebugAarMetadata"                     :  "SUCCESS",
+    ":library:processDebugNavigationResources"           :  "FROM_CACHE",
+    ":app:processDebugNavigationResources"               :  "FROM_CACHE",
+    ":app:compileDebugNavigationResources"               :  "FROM_CACHE",
+    ":library:processReleaseNavigationResources"         :  "FROM_CACHE",
+    ":app:processReleaseNavigationResources"             :  "FROM_CACHE",
+    ":app:compileReleaseNavigationResources"             :  "FROM_CACHE"
 }

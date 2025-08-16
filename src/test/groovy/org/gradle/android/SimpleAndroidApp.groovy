@@ -278,6 +278,7 @@ class SimpleAndroidApp {
         """
             dependencies {
                 implementation 'joda-time:joda-time:2.7'
+                testImplementation 'junit:junit:4.13.2'
             }
         """.stripIndent()
     }

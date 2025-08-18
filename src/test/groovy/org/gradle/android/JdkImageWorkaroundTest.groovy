@@ -22,7 +22,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion("17")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -86,7 +86,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion("17")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -146,7 +146,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion("17")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -187,7 +187,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion("17")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -227,7 +227,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .build()
             .writeProject()
 
@@ -268,7 +268,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion("19")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled()
             .build()
             .writeProject()

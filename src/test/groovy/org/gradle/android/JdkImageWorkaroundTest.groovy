@@ -262,12 +262,13 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         Assume.assumeTrue("Android Gradle Plugin < 8", androidVersion >= VersionNumber.parse("8.0"))
 
+        def toolchainVersion = (androidVersion >= VersionNumber.parse("8.2.0")) ? "21" : "19"
 
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("21")
+            .withToolchainVersion(toolchainVersion)
             .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled()
             .build()
@@ -278,7 +279,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withProjectDir(temporaryFolder.root)
             .withArguments(
                 "clean", "testDebug", "testRelease", "assemble",
-                "--build-cache","--info"
+                "--build-cache"
             ).build()
 
         then:

@@ -65,7 +65,7 @@ wrapperUpgrade {
 java {
     toolchain {
         // AGP 7+ only supports JDK 11+
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 

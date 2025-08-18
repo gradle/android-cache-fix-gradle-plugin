@@ -21,8 +21,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withToolchainVersion("17")
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -85,8 +85,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withToolchainVersion("17")
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -145,8 +145,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withToolchainVersion("17")
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -186,8 +186,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withToolchainVersion("17")
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -227,7 +227,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .build()
             .writeProject()
 
@@ -262,13 +262,14 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         Assume.assumeTrue("Android Gradle Plugin < 8", androidVersion >= VersionNumber.parse("8.0"))
 
+        def toolchainVersion = (androidVersion >= VersionNumber.parse("8.2.0")) ? "21" : "19"
 
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("19")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
+            .withToolchainVersion(toolchainVersion)
+            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled()
             .build()
             .writeProject()

@@ -161,8 +161,11 @@ check(latestVersion.get() in testedVersions) {
     "The project must be updated to support AGP $latestVersion. Please add it to tested versions."
 }
 
+val test by testing.suites.existing(JvmTestSuite::class)
 testedVersions.keys.forEach { androidVersion ->
     val versionSpecificTest = tasks.register<Test>(androidTestTaskName(androidVersion)) {
+        testClassesDirs = files(test.map { it.sources.output.classesDirs })
+        classpath = files(test.map { it.sources.runtimeClasspath })
         description = "Runs the multi-version tests for AGP $androidVersion"
         group = "verification"
 

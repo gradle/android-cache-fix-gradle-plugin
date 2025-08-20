@@ -12,6 +12,8 @@ class ConfigurationCachingTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
                 .withAndroidVersion(TestVersions.latestAndroidVersionForCurrentJDK())
                 .withKotlinVersion(SUPPORTED_KOTLIN_VERSION)
+                .withToolchainVersion("11")
+                .withSourceCompatibility(org.gradle.api.JavaVersion.VERSION_11)
                 .build()
                 .writeProject()
 

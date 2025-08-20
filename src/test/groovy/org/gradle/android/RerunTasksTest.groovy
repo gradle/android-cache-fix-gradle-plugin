@@ -12,6 +12,8 @@ class RerunTasksTest extends AbstractTest {
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)
                 .withKotlinVersion(TestVersions.latestSupportedKotlinVersion())
+                .withToolchainVersion("11")
+                .withSourceCompatibility(org.gradle.api.JavaVersion.VERSION_11)
                 .build()
                 .writeProject()
 

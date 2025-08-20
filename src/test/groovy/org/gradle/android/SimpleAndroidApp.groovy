@@ -231,9 +231,6 @@ class SimpleAndroidApp {
                 }
             }
 
-            tasks.withType(JavaCompile).configureEach {
-                javaCompiler = javaToolchains.compilerFor(java.toolchain)
-            }
         """ : ""
     }
 

@@ -21,8 +21,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -86,7 +84,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -145,8 +142,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -186,8 +181,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withToolchainVersion("11")
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
             .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
@@ -269,7 +262,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion(toolchainVersion)
-            .withSourceCompatibility(JavaVersion.VERSION_17)
             .withDatabindingDisabled()
             .build()
             .writeProject()

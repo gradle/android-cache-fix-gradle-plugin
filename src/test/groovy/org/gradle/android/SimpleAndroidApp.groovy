@@ -17,11 +17,10 @@ class SimpleAndroidApp {
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
     private final String toolchainVersion
-    private final JavaVersion sourceCompatibility
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, JavaVersion sourceCompatibility, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -30,7 +29,6 @@ class SimpleAndroidApp {
         this.kotlinEnabled = kotlinEnabled
         this.kaptWorkersEnabled = kaptWorkersEnabled
         this.toolchainVersion = toolchainVersion
-        this.sourceCompatibility = sourceCompatibility
         this.pluginsBlockEnabled = pluginsBlockEnabled
         this.pluginAppliedInPluginBlock = pluginAppliedInPluginBlock
     }
@@ -189,7 +187,7 @@ class SimpleAndroidApp {
                 ndkVersion "20.0.5594570"
                 compileSdkVersion 33
                 dataBinding.enabled = $dataBindingEnabled
-                ${sourceCompatibilityIfEnabled}
+                ${sourceCompatibility}
                 defaultConfig {
                     minSdkVersion 28
                     targetSdkVersion 33
@@ -224,30 +222,33 @@ class SimpleAndroidApp {
     }
 
     private String getToolchainConfigurationIfEnabled() {
-        def toolchainVersion = this.androidVersion.major < 8 ? "11" : "17"
-        return """
+        return (toolchainVersion != null) ? """
             java {
                 toolchain {
                     languageVersion.set(JavaLanguageVersion.of(${toolchainVersion}))
                 }
             }
 
+            tasks.withType(JavaCompile).configureEach {
+                javaCompiler = javaToolchains.compilerFor(java.toolchain)
+            }
+        """ : """
+            java {
+                toolchain {
+                    languageVersion.set(JavaLanguageVersion.of(${this.androidVersion.major < 8 ? "11" : "17"}))
+                }
+            }
         """
     }
 
-    private String getSourceCompatibilityIfEnabled() {
+    private String getSourceCompatibility() {
         def currentSourceCompatibility = this.androidVersion.major < 8 ? JavaVersion.VERSION_11 : JavaVersion.VERSION_17
-        // We need to set the source compatibility when the Kotlin plugin is applied and using AGP 7.4+
-        // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-//        if (kotlinEnabled && currentSourceCompatibility == null) {
-//            currentSourceCompatibility = JavaVersion.current()
-//        }
-        return (currentSourceCompatibility != null) ? """
+        return """
             compileOptions {
                 sourceCompatibility JavaVersion.${currentSourceCompatibility.name()}
                 targetCompatibility JavaVersion.${currentSourceCompatibility.name()}
             }
-        """ : ""
+        """
     }
 
     private writeKotlinClass(String basedir, String packageName, String className) {
@@ -310,7 +311,6 @@ class SimpleAndroidApp {
         VersionNumber kotlinVersion = TestVersions.latestSupportedKotlinVersion()
 
         String toolchainVersion
-        JavaVersion sourceCompatibility
 
         File projectDir
         File cacheDir
@@ -354,11 +354,6 @@ class SimpleAndroidApp {
             return this
         }
 
-        Builder withSourceCompatibility(JavaVersion sourceCompatibility) {
-            this.sourceCompatibility = sourceCompatibility
-            return this
-        }
-
         Builder withPluginsBlockEnabled() {
             this.pluginsBlockEnabled = true
             return this
@@ -376,7 +371,7 @@ class SimpleAndroidApp {
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, sourceCompatibility, pluginsBlockEnabled, pluginAppliedInPluginBlock)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, pluginsBlockEnabled, pluginAppliedInPluginBlock)
         }
     }
 }

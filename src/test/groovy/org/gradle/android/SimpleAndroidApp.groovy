@@ -225,7 +225,7 @@ class SimpleAndroidApp {
         return (toolchainVersion != null) ? """
             java {
                 toolchain {
-                    languageVersion.set(JavaLanguageVersion.of(${toolchainVersion}))
+                    languageVersion.set(JavaLanguageVersion.of("${toolchainVersion}"))
                 }
             }
 

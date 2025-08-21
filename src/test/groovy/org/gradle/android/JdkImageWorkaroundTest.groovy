@@ -1,7 +1,6 @@
 package org.gradle.android
 
 import org.gradle.android.workarounds.JdkImageWorkaround
-import org.gradle.api.JavaVersion
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Assume

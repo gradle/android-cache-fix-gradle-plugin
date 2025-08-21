@@ -224,23 +224,24 @@ class SimpleAndroidApp {
     }
 
     private String getToolchainConfigurationIfEnabled() {
-        return (toolchainVersion != null) ? """
+        def toolchainVersion = this.androidVersion.major < 8 ? "11" : "17"
+        return """
             java {
                 toolchain {
                     languageVersion.set(JavaLanguageVersion.of(${toolchainVersion}))
                 }
             }
 
-        """ : ""
+        """
     }
 
     private String getSourceCompatibilityIfEnabled() {
-        def currentSourceCompatibility = sourceCompatibility
+        def currentSourceCompatibility = this.androidVersion.major < 8 ? JavaVersion.VERSION_11 : JavaVersion.VERSION_17
         // We need to set the source compatibility when the Kotlin plugin is applied and using AGP 7.4+
         // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-        if (kotlinEnabled && currentSourceCompatibility == null) {
-            currentSourceCompatibility = JavaVersion.current()
-        }
+//        if (kotlinEnabled && currentSourceCompatibility == null) {
+//            currentSourceCompatibility = JavaVersion.current()
+//        }
         return (currentSourceCompatibility != null) ? """
             compileOptions {
                 sourceCompatibility JavaVersion.${currentSourceCompatibility.name()}

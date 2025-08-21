@@ -16,8 +16,6 @@ class PluginBlockTest extends AbstractTest {
 
         SimpleAndroidApp.builder(projectDir, cacheDir)
             .withKotlinVersion(TestVersions.latestSupportedKotlinVersion())
-            .withToolchainVersion("11")
-            .withSourceCompatibility(org.gradle.api.JavaVersion.VERSION_11)
             .withPluginsBlockEnabled()
             .build()
             .writeProject()

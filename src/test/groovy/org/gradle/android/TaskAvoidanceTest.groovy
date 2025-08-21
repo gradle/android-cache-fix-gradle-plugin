@@ -10,8 +10,6 @@ class TaskAvoidanceTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
                 .withAndroidVersion(androidVersion)
                 .withKotlinDisabled()
-                .withToolchainVersion("11")
-                .withSourceCompatibility(org.gradle.api.JavaVersion.VERSION_11)
                 .build()
                 .writeProject()
 

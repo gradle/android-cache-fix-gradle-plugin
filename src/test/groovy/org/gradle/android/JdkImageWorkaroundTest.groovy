@@ -220,7 +220,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withSourceCompatibility(JavaVersion.VERSION_1_9)
             .build()
             .writeProject()
 

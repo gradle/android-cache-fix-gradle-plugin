@@ -64,8 +64,7 @@ wrapperUpgrade {
 
 java {
     toolchain {
-        // AGP 7+ only supports JDK 11+
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -178,9 +177,11 @@ testedVersions.keys.forEach { androidVersion ->
             systemProperty("org.gradle.android.java_zulu_alt_path", it)
         }
 
-        if (androidVersion >= "8.0.0") {
-            javaLauncher = javaToolchains.launcherFor {
-                languageVersion = JavaLanguageVersion.of(17)
+        if (androidVersion < "7.1.0") {
+            java {
+                toolchain {
+                    languageVersion = JavaLanguageVersion.of(11)
+                }
             }
         }
 

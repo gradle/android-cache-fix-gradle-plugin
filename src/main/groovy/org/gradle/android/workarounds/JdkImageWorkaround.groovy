@@ -40,9 +40,11 @@ import java.util.stream.Stream
  * Example: https://ge.solutions-team.gradle.com/c/fpylyt2yu7c26/gneeakcvrhijs/task-inputs
  *
  * As a result, the workaround remains necessary to guarantee cache hits between environments.
+ * Original issue: https://issuetracker.google.com/issues/234820480 (marked as fixed)
+ * Current issue: https://issuetracker.google.com/issues/267213045
  *
  */
-@AndroidIssue(introducedIn = "7.1.0", link = "https://issuetracker.google.com/u/1/issues/234820480")
+@AndroidIssue(introducedIn = "7.1.0", link = "https://issuetracker.google.com/issues/267213045")
 class JdkImageWorkaround implements Workaround {
     static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.enabled"
 

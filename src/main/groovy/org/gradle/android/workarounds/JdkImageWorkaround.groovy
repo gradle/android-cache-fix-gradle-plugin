@@ -40,7 +40,7 @@ import java.util.stream.Stream
  * Example: https://ge.solutions-team.gradle.com/c/fpylyt2yu7c26/gneeakcvrhijs/task-inputs
  *
  * As a result, the workaround remains necessary to guarantee cache hits between environments.
- * Original issue: https://issuetracker.google.com/u/1/issues/234820480 (marked as fixed)
+ * Original issue: https://issuetracker.google.com/issues/234820480 (marked as fixed)
  * Current issue: https://issuetracker.google.com/issues/267213045
  *
  */

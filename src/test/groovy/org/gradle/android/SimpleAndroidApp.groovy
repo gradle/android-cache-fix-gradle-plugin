@@ -185,12 +185,12 @@ class SimpleAndroidApp {
             android {
                 namespace "$namespace"
                 ndkVersion "20.0.5594570"
-                compileSdkVersion 33
+                compileSdkVersion 34
                 dataBinding.enabled = $dataBindingEnabled
                 ${sourceCompatibility}
                 defaultConfig {
                     minSdkVersion 28
-                    targetSdkVersion 33
+                    targetSdkVersion 34
 
                     lintOptions {
                         checkReleaseBuilds false

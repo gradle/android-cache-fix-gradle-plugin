@@ -216,7 +216,7 @@ class SimpleAndroidApp {
     }
 
     private String getKotlinAndroid() {
-        return androidVersion.major < 9 ? """apply plugin: "kotlin-android""" : ""
+        return androidVersion.major < 9 ? """apply plugin: "kotlin-android" """ : ""
     }
 
     private String getKotlinDependenciesIfEnabled() {

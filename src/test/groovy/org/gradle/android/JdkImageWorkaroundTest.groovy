@@ -32,10 +32,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
                     ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", ":app:testDebugUnitTest", "assemble",
+                baseTasks(androidVersion) + [
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "-Porg.gradle.java.installations.fromEnv=JDK" ]
             ).build()
 
         then:
@@ -53,10 +53,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
                     ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "testDebugUnitTest", "assemble",
+                baseTasks(androidVersion) + [
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "-Porg.gradle.java.installations.fromEnv=JDK" ]
             ).build()
 
         then:
@@ -94,10 +94,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
                 ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "testDebugUnitTest", "assemble",
+                baseTasks(androidVersion) + [
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "-Porg.gradle.java.installations.fromEnv=JDK" ]
             ).build()
 
         then:
@@ -115,10 +115,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
                 ["JDK": zuluAltPath]
             )
             .withArguments(
-                "clean", "testDebugUnitTest", "assemble",
+                baseTasks(androidVersion) + [
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "-Porg.gradle.java.installations.fromEnv=JDK" ]
             ).build()
 
         then:
@@ -267,8 +267,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "clean", "testDebugUnitTest", "assemble",
-                "--build-cache"
+                baseTasks(androidVersion) + [
+                "--build-cache"]
             ).build()
 
         then:
@@ -282,8 +282,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "clean", "testDebugUnitTest", "assemble",
-                "--build-cache"
+                baseTasks(androidVersion) + [
+                "--build-cache" ]
             ).build()
 
         then:
@@ -300,4 +300,11 @@ class JdkImageWorkaroundTest extends AbstractTest {
         where:
         androidVersion << TestVersions.latestAndroidVersions
     }
+
+      private static List<String> baseTasks(VersionNumber androidVersion) {
+        boolean isAgpLt9 = androidVersion < VersionNumber.parse("9.0.0")
+        return isAgpLt9
+            ? ["clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble"]
+            : ["clean", "testDebugUnitTest", "assemble"]
+      }
 }

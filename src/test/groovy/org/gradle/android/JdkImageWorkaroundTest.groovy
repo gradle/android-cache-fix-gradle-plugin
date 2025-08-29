@@ -32,7 +32,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                     ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble",
+                "clean", ":app:testDebugUnitTest", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -53,7 +53,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                     ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble",
+                "clean", "testDebugUnitTest", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -94,7 +94,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                 ["JDK": zuluPath]
             )
             .withArguments(
-                "clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble",
+                "clean", "testDebugUnitTest", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -115,7 +115,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                 ["JDK": zuluAltPath]
             )
             .withArguments(
-                "clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble",
+                "clean", "testDebugUnitTest", "assemble",
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
                 "-Porg.gradle.java.installations.fromEnv=JDK"
@@ -267,7 +267,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         BuildResult buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble",
+                "clean", "testDebugUnitTest", "assemble",
                 "--build-cache"
             ).build()
 
@@ -282,7 +282,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
             .withArguments(
-                "clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble",
+                "clean", "testDebugUnitTest", "assemble",
                 "--build-cache"
             ).build()
 

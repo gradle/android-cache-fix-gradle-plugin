@@ -206,10 +206,12 @@ class SimpleAndroidApp {
         return androidVersion.major < 9 ? 33 : 35
     }
     private String getKotlinPluginsIfEnabled() {
-        return kotlinEnabled ? """
+        if (androidVersion.major < 9) {
+            return kotlinEnabled ? """
             apply plugin: "kotlin-android"
             ${processor}
         """ : ""
+        }
     }
 
     private String getProcessor() {

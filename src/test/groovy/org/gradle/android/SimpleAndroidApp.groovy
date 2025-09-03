@@ -78,7 +78,6 @@ class SimpleAndroidApp {
                     }
                     dependencies {
                         classpath ('com.android.tools.build:gradle') { version { strictly '$androidVersion' } }
-                        ${legacyKaptPlugin}
                         ${pluginBuildScriptClasspathConfiguration}
                         ${kotlinPluginDependencyIfEnabled}
                     }
@@ -146,11 +145,6 @@ class SimpleAndroidApp {
             """.stripIndent()
     }
 
-    private String getLegacyKaptPlugin() {
-        return androidVersion.major >= 9 ?
-            "classpath ('com.android.legacy-kapt:com.android.legacy-kapt.gradle.plugin:$androidVersion')" : ""
-    }
-
     static String getPluginVersion() {
         def pluginVersion = System.getProperty(PLUGIN_VERSION_SYSTEM_PROPERTY)
         if (pluginVersion == null) {
@@ -212,16 +206,10 @@ class SimpleAndroidApp {
         return androidVersion.major < 9 ? 33 : 35
     }
     private String getKotlinPluginsIfEnabled() {
-        if (androidVersion.major < 9) {
-            return kotlinEnabled ? """
+        return kotlinEnabled && androidVersion.major < 9 ? """
             apply plugin: "kotlin-android"
             ${processor}
         """ : ""
-        } else {
-            return kotlinEnabled ? """
-             apply plugin: "com.android.legacy-kapt"
-           """  : ""
-        }
     }
 
     private String getProcessor() {

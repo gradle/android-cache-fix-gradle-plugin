@@ -211,6 +211,9 @@ class SimpleAndroidApp {
             apply plugin: "kotlin-android"
             ${processor}
         """ : ""
+        } else {
+            return kotlinEnabled ? """
+            ${processor}"""  : ""
         }
     }
 

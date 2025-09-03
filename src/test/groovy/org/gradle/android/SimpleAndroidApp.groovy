@@ -78,6 +78,7 @@ class SimpleAndroidApp {
                     }
                     dependencies {
                         classpath ('com.android.tools.build:gradle') { version { strictly '$androidVersion' } }
+                        ${legacyKaptPlugin}
                         ${pluginBuildScriptClasspathConfiguration}
                         ${kotlinPluginDependencyIfEnabled}
                     }
@@ -143,6 +144,11 @@ class SimpleAndroidApp {
         return pluginsBlockEnabled ? "" : """
                 classpath "${pluginGroupId}:android-cache-fix-gradle-plugin:${pluginVersion}"
             """.stripIndent()
+    }
+
+    private String getLegacyKaptPlugin() {
+        return androidVersion.major >= 9 ?
+            "classpath ('com.android.legacy-kapt:com.android.legacy-kapt.gradle.plugin:$androidVersion')" : ""
     }
 
     static String getPluginVersion() {
@@ -213,7 +219,7 @@ class SimpleAndroidApp {
         """ : ""
         } else {
             return kotlinEnabled ? """
-             apply plugin: "com.android.legacy-kapt" version "9.0.0-alpha03"
+             apply plugin: "com.android.legacy-kapt"
             ${processor}"""  : ""
         }
     }

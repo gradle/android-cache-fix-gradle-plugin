@@ -66,9 +66,13 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
 
         buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+
+        if(androidVersion.major < 9) {
+            buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+            buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        }
+
     }
 
     def "jdkImage is normalized across same vendor similar JDK versions"() {

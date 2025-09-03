@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [ main, citest ]
+    branches: [ main, iv/agp_9_alpha3 ]
   pull_request:
   workflow_dispatch:
 

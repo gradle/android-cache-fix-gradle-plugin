@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [ main, citest ]
+    branches: [ main, iv/recovering_workaround_tests ]
   pull_request:
   workflow_dispatch:
 

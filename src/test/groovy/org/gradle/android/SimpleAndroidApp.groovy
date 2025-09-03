@@ -213,7 +213,7 @@ class SimpleAndroidApp {
         """ : ""
         } else {
             return kotlinEnabled ? """
-             apply pluin: "com.android.legacy-kapt" version "9.0.0-alpha03"
+             apply plugin: "com.android.legacy-kapt" version "9.0.0-alpha03"
             ${processor}"""  : ""
         }
     }

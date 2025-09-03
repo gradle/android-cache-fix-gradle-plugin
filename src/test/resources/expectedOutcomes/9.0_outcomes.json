@@ -176,5 +176,9 @@
     ":app:compileDebugNavigationResources"               :  "FROM_CACHE",
     ":library:processReleaseNavigationResources"         :  "FROM_CACHE",
     ":app:processReleaseNavigationResources"             :  "FROM_CACHE",
-    ":app:compileReleaseNavigationResources"             :  "FROM_CACHE"
+    ":app:compileReleaseNavigationResources"             :  "FROM_CACHE",
+    ":library:generateDebugRFile"                        :  "FROM_CACHE",
+    ":app:generateDebugRFile"                            :  "FROM_CACHE",
+    ":library:generateReleaseRFile"                      :  "FROM_CACHE",
+    ":app:generateReleaseRFile"                          :  "FROM_CACHE"
 }

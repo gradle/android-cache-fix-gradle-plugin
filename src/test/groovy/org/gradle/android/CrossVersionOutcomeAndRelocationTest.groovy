@@ -148,7 +148,7 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
             builder.expect(task as String, outcome as String)
         }
 
-        if (kotlinVersion >= VersionNumber.parse("1.6.0")) {
+        if (kotlinVersion >= VersionNumber.parse("1.6.0") && androidVersion.major < 9) {
             builder.expect(":app:buildKotlinToolingMetadata", "SUCCESS")
         }
 

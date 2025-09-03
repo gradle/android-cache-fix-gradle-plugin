@@ -220,7 +220,7 @@ class SimpleAndroidApp {
         } else {
             return kotlinEnabled ? """
              apply plugin: "com.android.legacy-kapt"
-            ${processor}"""  : ""
+           """  : ""
         }
     }
 

@@ -185,12 +185,12 @@ class SimpleAndroidApp {
             android {
                 namespace "$namespace"
                 ndkVersion "20.0.5594570"
-                compileSdkVersion 33
+                compileSdkVersion $sdkVersion
                 dataBinding.enabled = $dataBindingEnabled
                 ${sourceCompatibility}
                 defaultConfig {
                     minSdkVersion 28
-                    targetSdkVersion 33
+                    targetSdkVersion $sdkVersion
 
                     lintOptions {
                         checkReleaseBuilds false
@@ -202,8 +202,11 @@ class SimpleAndroidApp {
         """.stripIndent()
     }
 
+    private int getSdkVersion() {
+        return androidVersion.major < 9 ? 33 : 35
+    }
     private String getKotlinPluginsIfEnabled() {
-        return kotlinEnabled ? """
+        return kotlinEnabled && androidVersion.major < 9 ? """
             apply plugin: "kotlin-android"
             ${processor}
         """ : ""

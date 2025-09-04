@@ -310,9 +310,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
     }
 
     private static List<String> baseTasks(VersionNumber androidVersion) {
-        boolean isAgpLt9 = androidVersion.major < 9
-        return isAgpLt9
-            ? ["clean", "testDebugUnitTest", "testReleaseUnitTest", "assemble"]
-            : ["clean", "testDebugUnitTest", "assemble"]
+        return ["clean", "rest", "assemble"]
     }
 }

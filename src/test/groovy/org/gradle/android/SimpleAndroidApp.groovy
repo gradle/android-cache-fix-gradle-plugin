@@ -205,6 +205,7 @@ class SimpleAndroidApp {
     private int getSdkVersion() {
         return androidVersion.major < 9 ? 33 : 35
     }
+
     private String getKotlinPluginsIfEnabled() {
         return kotlinEnabled && androidVersion.major < 9 ? """
             apply plugin: "kotlin-android"

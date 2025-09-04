@@ -121,7 +121,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
                 baseTasks(androidVersion) + [
                 "--build-cache",
                 "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK" ]
+                "-Porg.gradle.java.installations.fromEnv=JDK", ]
             ).build()
 
         then:

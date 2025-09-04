@@ -310,6 +310,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
     }
 
     private static List<String> baseTasks(VersionNumber androidVersion) {
-        return ["clean", "rest", "assemble"]
+        return ["clean", "assemble", "test"]
     }
 }

@@ -117,7 +117,6 @@ class SimpleAndroidApp {
 
         file("gradle.properties") << """
                 android.useAndroidX=true
-                android.newDsl=false
                 org.gradle.jvmargs=-Xmx1536m -Dkotlin.daemon.jvm.options=-Xmx768m,-Xms256m
                 kapt.use.worker.api=${kaptWorkersEnabled}
                 android.experimental.enableSourceSetPathsMap=true

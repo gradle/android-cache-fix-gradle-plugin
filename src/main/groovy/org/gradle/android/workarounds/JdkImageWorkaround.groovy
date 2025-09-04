@@ -3,6 +3,7 @@ package org.gradle.android.workarounds
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
+import org.gradle.android.VersionNumber
 import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
@@ -60,19 +61,33 @@ class JdkImageWorkaround implements Workaround {
         // runtime configuration before querying (and instantiating) task configurations.
         applyRuntimeClasspathNormalization(project)
 
-        applyToAllAndroidVariants(project) { variant ->
-            variant.javaCompileProvider.configure { JavaCompile task ->
-                def jdkImageInput = getJdkImageInput(task)
-                if (jdkImageInput != null) {
-                    setupExtractedJdkImageInputTransform(project, getJvmHome(task))
-                    replaceCommandLineProvider(task, jdkImageInput)
+        if (Versions.CURRENT_ANDROID_VERSION < VersionNumber.parse("9.0.0-alpha03")) {
+            applyToAllAndroidVariants(project) { variant ->
+                variant.javaCompileProvider.configure { JavaCompile task ->
+                    jdkTransform(project, task)
+                }
+            }
+        } else {
+            // Since AGP 9.0.0-alpha04, the new DSL is enabled, replacing the old DSL implementation with the new Variant API.
+            // One of the changes is the removal of direct access to the JavaCompile task provider.
+            // Because we need this task in the different configurations of the workaround,
+            // we configure the workaround directly at the JavaCompile task level.
+            project.afterEvaluate {
+                project.tasks.withType(JavaCompile).configureEach { JavaCompile task ->
+                    jdkTransform(project, task)
                 }
             }
         }
     }
 
-    // Configuration for Old Variant API will drop in AGP 9. We will need to use a different
-    // approach to retrieve the variants using the new Variant API.
+    private static void jdkTransform(Project project, JavaCompile task) {
+        def jdkImageInput = getJdkImageInput(task)
+        if (jdkImageInput != null) {
+            setupExtractedJdkImageInputTransform(project, getJvmHome(task))
+            replaceCommandLineProvider(task, jdkImageInput)
+        }
+    }
+
     private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
         project.plugins.withId("com.android.application") {
             def android = project.extensions.findByName("android")

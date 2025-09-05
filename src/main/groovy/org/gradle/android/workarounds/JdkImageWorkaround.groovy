@@ -73,8 +73,10 @@ class JdkImageWorkaround implements Workaround {
             // Because we need this task in the different configurations of the workaround,
             // we configure the workaround directly at the JavaCompile task level.
             project.afterEvaluate {
-                project.tasks.withType(JavaCompile).configureEach { JavaCompile task ->
-                    jdkTransform(project, task)
+                plugins.withId("com.android.base") {
+                    project.tasks.withType(JavaCompile).configureEach { JavaCompile task ->
+                        jdkTransform(project, task)
+                    }
                 }
             }
         }

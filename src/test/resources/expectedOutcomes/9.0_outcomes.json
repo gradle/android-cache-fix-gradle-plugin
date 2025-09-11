@@ -132,7 +132,6 @@
     ":library:generateDebugRFile"                        :  "FROM_CACHE",
     ":library:generateReleaseAssets"                     :  "UP_TO_DATE",
     ":library:generateReleaseResources"                  :  "FROM_CACHE",
-    ":library:generateReleaseResValues"                  :  "FROM_CACHE",
     ":library:generateReleaseRFile"                      :  "FROM_CACHE",
     ":library:javaPreCompileDebug"                       :  "FROM_CACHE",
     ":library:javaPreCompileRelease"                     :  "FROM_CACHE",

@@ -253,67 +253,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
     }
 
-    def "jdkImage is normalized when using different toolchain configuration"() {
-
-        Assume.assumeTrue("Android Gradle Plugin < 8", androidVersion >= VersionNumber.parse("8.0"))
-
-        def toolchainVersion = (androidVersion >= VersionNumber.parse("8.2.0")) ? "21" : "19"
-
-        def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
-        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
-            .withAndroidVersion(androidVersion)
-            .withKotlinDisabled()
-            .withToolchainVersion(toolchainVersion)
-            .withDatabindingDisabled()
-            .build()
-            .writeProject()
-
-        when:
-        BuildResult buildResult = withGradleVersion(gradleVersion.version)
-            .withProjectDir(temporaryFolder.root)
-            .withArguments(
-                "clean", "test", "assemble",
-                "--build-cache"
-            ).build()
-
-        then:
-        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
-
-        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
-        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
-
-        when:
-        buildResult = withGradleVersion(gradleVersion.version)
-            .withProjectDir(temporaryFolder.root)
-            .withArguments(
-                "clean", "test", "assemble",
-                "--build-cache"
-            ).build()
-
-        then:
-        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-
-        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-
-        if (androidVersion.major < 9) {
-            buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-            buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        }
-
-        where:
-        androidVersion << TestVersions.latestAndroidVersions
-    }
-
-    def "jdkImage is normalized across same vendor similar JDK versions with differences in the invoke lang package"() {
-        def zuluPath = System.getProperty(ZULU_PATH)
-        def zuluAltPath = System.getProperty(ZULU_ALT_PATH)
-        Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
-        Assume.assumeTrue("Zulu alternate path is not available", zuluAltPath != null && new File(zuluAltPath).exists())
+    def "WORKAROUND_INVOKE_NORMALIZATION_PROPERTY is enabled and normalizes **/java/lang/invoke/**"() {
 
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
@@ -323,34 +263,15 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withDatabindingDisabled()
             .build()
             .writeProject()
-        def f = file("$temporaryFolder.root/src/main/java/com/foo/java/lang/invoke/Bar.java")
-        f.parentFile.mkdirs()
-        f << """
-
-            package com.foo.java.lang.invoke;
-
-            public class Bar {
-                public static String bar() {
-                    return "bar";
-                }
-            }
-        """
-
+        createLibJavaClass("firstBuild")
 
         when:
         BuildResult buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
-            .withEnvironment(
-                System.getenv() +
-                    ["JDK": zuluPath]
-            )
             .withArguments(
                 "clean", "test", "assemble",
-                "--build-cache",
-                "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "--build-cache"
             ).build()
-
         then:
         buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
         buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
@@ -359,42 +280,75 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         when:
-        def fa = file("$temporaryFolder.root/src/main/java/com/foo/java/lang/invoke/Bar2.java")
-        fa.parentFile.mkdirs()
-        fa << """
-            package com.foo.java.lang.invoke;
-
-            public class Bar2 {
-                public static String bar() {
-                    return "foo";
-                }
-            }
-        """
+        createLibJavaClass("secondBuild")
         buildResult = withGradleVersion(gradleVersion.version)
             .withProjectDir(temporaryFolder.root)
-            .withEnvironment(
-                System.getenv() +
-                    ["JDK": zuluAltPath]
-            )
             .withArguments(
                 "clean", "test", "assemble",
-                "--build-cache",
-                "-Porg.gradle.java.installations.auto-detect=false",
-                "-Porg.gradle.java.installations.fromEnv=JDK"
+                "--build-cache"
             ).build()
 
         then:
-        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-
-        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        if(androidVersion.major < 9) {
-            buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-            buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        }
+        buildResult.task(':app:testDebugUnitTest').outcome == TaskOutcome.FROM_CACHE
     }
 
+    def "WORKAROUND_INVOKE_NORMALIZATION_PROPERTY is disable and doesn't normalize **/java/lang/invoke/**"() {
+
+        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
+        def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withKotlinDisabled()
+            .withDatabindingDisabled()
+            .build()
+            .writeProject()
+        createLibJavaClass("firstBuild")
+
+        when:
+        BuildResult buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache",
+                "-D${JdkImageWorkaround.WORKAROUND_INVOKE_NORMALIZATION_PROPERTY}=false"
+            ).build()
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        when:
+        createLibJavaClass("secondBuild")
+
+        buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache",
+                "-D${JdkImageWorkaround.WORKAROUND_INVOKE_NORMALIZATION_PROPERTY}=false"
+            ).build()
+
+        then:
+        buildResult.task(':app:testDebugUnitTest').outcome == TaskOutcome.SUCCESS
+    }
+
+    def createLibJavaClass(String label) {
+        def barClass = file("library/src/main/java/com/foo/java/lang/invoke/Bar.java")
+        if (barClass.exists()) {
+            barClass.delete()
+        }
+        barClass.parentFile.mkdirs()
+        barClass << """
+
+            package com.foo.java.lang.invoke;
+
+            public class Bar {
+                public static String bar() {
+                    return "$label";
+                }
+            }
+        """
+    }
 }

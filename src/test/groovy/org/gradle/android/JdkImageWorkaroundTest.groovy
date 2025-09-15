@@ -356,7 +356,9 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         when:
-        file("src/main/java/com/foo/java/lang/invoke/Bar.java") << """
+        def f = file("src/main/java/com/foo/java/lang/invoke/Bar.java")
+        f.parentFile.mkdirs() // ensure all parent directories exist
+        f << """
             package com.foo.java.lang.invoke;
 
             public class Bar {

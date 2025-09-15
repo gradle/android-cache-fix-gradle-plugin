@@ -308,4 +308,88 @@ class JdkImageWorkaroundTest extends AbstractTest {
         where:
         androidVersion << TestVersions.latestAndroidVersions
     }
+
+    def "jdkImage is normalized across same vendor similar JDK versions with differences in the invoke lang package"() {
+        def zuluPath = System.getProperty(ZULU_PATH)
+        def zuluAltPath = System.getProperty(ZULU_ALT_PATH)
+        Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
+        Assume.assumeTrue("Zulu alternate path is not available", zuluAltPath != null && new File(zuluAltPath).exists())
+
+        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
+        def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withKotlinDisabled()
+            .withDatabindingDisabled()
+            .build()
+            .writeProject()
+        file("src/main/java/com/foo/java/lang/invoke/Bar.java") << """
+            package com.foo.java.lang.invoke;
+
+            public class Bar {
+                public static String bar() {
+                    return "bar";
+                }
+            }
+        """
+
+
+        when:
+        BuildResult buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withEnvironment(
+                System.getenv() +
+                    ["JDK": zuluPath]
+            )
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache",
+                "-Porg.gradle.java.installations.auto-detect=false",
+                "-Porg.gradle.java.installations.fromEnv=JDK"
+            ).build()
+
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        when:
+        file("src/main/java/com/foo/java/lang/invoke/Bar.java") << """
+            package com.foo.java.lang.invoke;
+
+            public class Bar {
+                public static String bar() {
+                    return "foo";
+                }
+            }
+        """
+        buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withEnvironment(
+                System.getenv() +
+                    ["JDK": zuluAltPath]
+            )
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache",
+                "-Porg.gradle.java.installations.auto-detect=false",
+                "-Porg.gradle.java.installations.fromEnv=JDK"
+            ).build()
+
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':app:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileReleaseJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        if(androidVersion.major < 9) {
+            buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+            buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
+        }
+    }
+
 }

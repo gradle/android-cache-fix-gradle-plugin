@@ -91,9 +91,9 @@ class JdkImageWorkaround implements Workaround {
     static def applyRuntimeClasspathNormalization(Project project) {
         project.normalization { handler ->
             handler.runtimeClasspath {
-                if (SystemPropertiesCompat.getBoolean(WORKAROUND_INVOKE_NORMALIZATION_PROPERTY, project, true)) {
-                    it.ignore '**/java/lang/invoke/**'
-                }
+               // if (SystemPropertiesCompat.getBoolean(WORKAROUND_INVOKE_NORMALIZATION_PROPERTY, project, true)) {
+               //     it.ignore '**/java/lang/invoke/**'
+               // }
                 it.metaInf { metaInfNormalization ->
                     metaInfNormalization.ignoreAttribute('Implementation-Version')
                     metaInfNormalization.ignoreAttribute('Implementation-Vendor')

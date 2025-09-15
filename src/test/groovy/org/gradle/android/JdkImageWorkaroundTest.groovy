@@ -323,8 +323,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withDatabindingDisabled()
             .build()
             .writeProject()
-        def f = file("src/main/java/com/foo/java/lang/invoke/Bar.java")
-        f.parentFile.mkdirs() // ensure all parent directories exist
+        def f = file("$temporaryFolder.root/src/main/java/com/foo/java/lang/invoke/Bar.java")
+        f.parentFile.mkdirs()
         f << """
 
             package com.foo.java.lang.invoke;
@@ -359,8 +359,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
 
         when:
-        def fa = file("src/main/java/com/foo/java/lang/invoke/Bar2.java")
-        fa.parentFile.mkdirs() // ensure all parent directories exist
+        def fa = file("$temporaryFolder.root/src/main/java/com/foo/java/lang/invoke/Bar2.java")
+        fa.parentFile.mkdirs()
         fa << """
             package com.foo.java.lang.invoke;
 

@@ -312,8 +312,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
     def "jdkImage is normalized across same vendor similar JDK versions with differences in the invoke lang package"() {
         def zuluPath = System.getProperty(ZULU_PATH)
         def zuluAltPath = System.getProperty(ZULU_ALT_PATH)
-   //     Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
-   //     Assume.assumeTrue("Zulu alternate path is not available", zuluAltPath != null && new File(zuluAltPath).exists())
+        Assume.assumeTrue("Zulu path is not available", zuluPath != null && new File(zuluPath).exists())
+        Assume.assumeTrue("Zulu alternate path is not available", zuluAltPath != null && new File(zuluAltPath).exists())
 
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)

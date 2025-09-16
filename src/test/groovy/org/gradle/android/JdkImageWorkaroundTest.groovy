@@ -255,9 +255,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
     def "WORKAROUND_INVOKE_NORMALIZATION_PROPERTY is enabled and normalizes **/java/lang/invoke/**"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
-        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
@@ -295,9 +294,8 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
     def "WORKAROUND_INVOKE_NORMALIZATION_PROPERTY is disable and doesn't normalize **/java/lang/invoke/**"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
-        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()

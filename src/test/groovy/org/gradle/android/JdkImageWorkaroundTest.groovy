@@ -308,4 +308,103 @@ class JdkImageWorkaroundTest extends AbstractTest {
         where:
         androidVersion << TestVersions.latestAndroidVersions
     }
+
+    def "Invoke normalization property is enabled and normalizes **/java/lang/invoke/**"() {
+        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
+        def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withKotlinDisabled()
+            .withDatabindingDisabled()
+            .build()
+            .writeProject()
+        createLibJavaClass("firstBuild")
+
+        when:
+        BuildResult buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache"
+            ).build()
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        when:
+        createLibJavaClass("secondBuild")
+        buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache"
+            ).build()
+
+        then:
+        buildResult.task(':app:testDebugUnitTest').outcome == TaskOutcome.FROM_CACHE
+    }
+
+    def "Invoke normalization property is disable and doesn't normalize **/java/lang/invoke/**"() {
+        def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
+        def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
+        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
+        SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
+            .withAndroidVersion(androidVersion)
+            .withKotlinDisabled()
+            .withDatabindingDisabled()
+            .build()
+            .writeProject()
+        createLibJavaClass("firstBuild")
+
+        when:
+        BuildResult buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache",
+                "-D${JdkImageWorkaround.WORKAROUND_INVOKE_NORMALIZATION_PROPERTY}=false"
+            ).build()
+        then:
+        buildResult.task(':app:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+        buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.SUCCESS
+
+        when:
+        createLibJavaClass("secondBuild")
+
+        buildResult = withGradleVersion(gradleVersion.version)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments(
+                "clean", "test", "assemble",
+                "--build-cache",
+                "-D${JdkImageWorkaround.WORKAROUND_INVOKE_NORMALIZATION_PROPERTY}=false"
+            ).build()
+
+        then:
+        buildResult.task(':app:testDebugUnitTest').outcome == TaskOutcome.SUCCESS
+    }
+
+    def createLibJavaClass(String label) {
+        def barClass = file("library/src/main/java/com/foo/java/lang/invoke/Bar.java")
+        if (barClass.exists()) {
+            barClass.delete()
+        }
+        barClass.parentFile.mkdirs()
+        barClass << """
+
+            package com.foo.java.lang.invoke;
+
+            public class Bar {
+                public static String bar() {
+                    return "$label";
+                }
+            }
+        """
+    }
 }

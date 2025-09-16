@@ -47,6 +47,7 @@ import java.util.stream.Stream
 @AndroidIssue(introducedIn = "7.1.0", link = "https://issuetracker.google.com/issues/267213045")
 class JdkImageWorkaround implements Workaround {
     static final String WORKAROUND_ENABLED_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.enabled"
+    static final String WORKAROUND_INVOKE_NORMALIZATION_PROPERTY = "org.gradle.android.cache-fix.JdkImageWorkaround.normalization.enabled"
 
     static final String JDK_IMAGE = "_internal_android_jdk_image"
     static final String JDK_IMAGE_EXTRACTED = "_internal_android_jdk_image_extracted"
@@ -90,6 +91,9 @@ class JdkImageWorkaround implements Workaround {
     static def applyRuntimeClasspathNormalization(Project project) {
         project.normalization { handler ->
             handler.runtimeClasspath {
+               if (SystemPropertiesCompat.getBoolean(WORKAROUND_INVOKE_NORMALIZATION_PROPERTY, project, true)) {
+                    it.ignore '**/java/lang/invoke/**'
+                }
                 it.metaInf { metaInfNormalization ->
                     metaInfNormalization.ignoreAttribute('Implementation-Version')
                     metaInfNormalization.ignoreAttribute('Implementation-Vendor')

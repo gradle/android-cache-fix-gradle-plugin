@@ -348,7 +348,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         buildResult.task(':app:testDebugUnitTest').outcome == TaskOutcome.FROM_CACHE
     }
 
-    def "Invoke normalization property is disabled and doesn't normalize **/java/lang/invoke/**"() {
+    def "**/java/lang/invoke/** is not normalized when normalization property is false"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))

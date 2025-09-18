@@ -309,7 +309,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
         androidVersion << TestVersions.latestAndroidVersions
     }
 
-    def "Invoke normalization property is enabled and normalizes **/java/lang/invoke/**"() {
+    def "**/java/lang/invoke/** is normalized by default"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))

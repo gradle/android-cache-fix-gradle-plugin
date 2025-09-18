@@ -391,20 +391,17 @@ class JdkImageWorkaroundTest extends AbstractTest {
     }
 
     def createLibJavaClass(String label) {
-        def barClass = file("library/src/main/java/com/foo/java/lang/invoke/Bar.java")
-        if (barClass.exists()) {
-            barClass.delete()
-        }
-        barClass.parentFile.mkdirs()
-        barClass << """
-
-            package com.foo.java.lang.invoke;
-
-            public class Bar {
-                public static String bar() {
-                    return "$label";
-                }
+        file("library/src/main/java/com/foo/java/lang/invoke/Bar.java")
+            .createParentDirectories()
+            .newWriter { w ->
+                w << """
+                    package com.foo.java.lang.invoke;
+                    public class Bar {
+                        public static String bar() {
+                            return "$label";
+                        }
+                    }
+                """
             }
-        """
     }
 }

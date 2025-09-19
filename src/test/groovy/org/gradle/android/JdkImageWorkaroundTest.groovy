@@ -393,7 +393,7 @@ class JdkImageWorkaroundTest extends AbstractTest {
     def createLibJavaClass(String label) {
         file("library/src/main/java/com/foo/java/lang/invoke/Bar.java")
             .createParentDirectories()
-            .newWriter { w ->
+            .withWriter { w ->
                 w << """
                     package com.foo.java.lang.invoke;
                     public class Bar {

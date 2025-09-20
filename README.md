@@ -158,7 +158,7 @@ Additionally, the workaround applies runtime classpath normalization by ignoring
 
 You can opt out of this normalization by adding the following property to your gradle.properties file:
 ```
-org.gradle.android.cache-fix.JdkImageWorkaround.normalization.enabled=false
+systemProp.org.gradle.android.cache-fix.JdkImageWorkaround.normalization.enabled=false
 ```
 
 ### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, MergeSourceSetFolders, BundleLibraryClassesJar, DataBindingMergeDependencyArtifacts, LibraryJniLibs and ZipMerging Workarounds

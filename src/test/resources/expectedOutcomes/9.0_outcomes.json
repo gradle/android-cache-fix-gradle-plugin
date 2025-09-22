@@ -177,5 +177,5 @@
     ":app:compileReleaseNavigationResources"             :  "FROM_CACHE",
     ":app:generateDebugRFile"                            :  "FROM_CACHE",
     ":app:generateReleaseRFile"                          :  "FROM_CACHE",
-    ":library:compileReleaseNavigationResources"         :  "FROM-CACHE"
+    ":library:compileReleaseNavigationResources"         :  "FROM_CACHE"
 }

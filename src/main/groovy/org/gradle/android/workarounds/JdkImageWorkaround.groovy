@@ -61,22 +61,16 @@ class JdkImageWorkaround implements Workaround {
         // runtime configuration before querying (and instantiating) task configurations.
         applyRuntimeClasspathNormalization(project)
 
-        if (Versions.CURRENT_ANDROID_VERSION < VersionNumber.parse("9.0.0-alpha04")) {
-            applyToAllAndroidVariants(project) { variant ->
+        if (Versions.CURRENT_ANDROID_VERSION < VersionNumber.parse("9.0.0")) {
+            applyToAllAndroidVariantsLegacy(project) { variant ->
                 variant.javaCompileProvider.configure { JavaCompile task ->
                     jdkTransform(project, task)
                 }
             }
         } else {
-            // Since AGP 9.0.0-alpha04, the new DSL is enabled, replacing the old DSL implementation with the new Variant API.
-            // One of the changes is the removal of direct access to the JavaCompile task provider.
-            // Because we need this task in the different configurations of the workaround,
-            // we configure the workaround directly at the JavaCompile task level.
-            project.afterEvaluate {
-                project.plugins.withId("com.android.base") {
-                    project.tasks.withType(JavaCompile).configureEach { JavaCompile task ->
-                        jdkTransform(project, task)
-                    }
+            applyToAllAndroidVariants(project) { variant ->
+                variant.configureJavaCompileTask { compileTask ->
+                    jdkTransform(project, compileTask)
                 }
             }
         }
@@ -90,7 +84,7 @@ class JdkImageWorkaround implements Workaround {
         }
     }
 
-    private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
+    private static void applyToAllAndroidVariantsLegacy(Project project, Closure<?> configureVariant) {
         project.plugins.withId("com.android.application") {
             def android = project.extensions.findByName("android")
             android.unitTestVariants.all(configureVariant)
@@ -101,6 +95,20 @@ class JdkImageWorkaround implements Workaround {
             def android = project.extensions.findByName("android")
             android.unitTestVariants.all(configureVariant)
             android.libraryVariants.all(configureVariant)
+        }
+    }
+
+    private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
+        project.plugins.withId("com.android.application") {
+            def androidComponents = project.extensions.findByName("androidComponents")
+            def selector = androidComponents.selector()
+            androidComponents.onVariants(selector.all(), configureVariant)
+        }
+
+        project.plugins.withId("com.android.library") {
+            def androidComponents = project.extensions.findByName("androidComponents")
+            def selector = androidComponents.selector()
+            androidComponents.onVariants(selector.all(), configureVariant)
         }
     }
 

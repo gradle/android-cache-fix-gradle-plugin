@@ -34,10 +34,8 @@
     ":app:extractReleaseVersionControlInfo"              :  "SUCCESS",
     ":app:generateDebugAssets"                           :  "UP_TO_DATE",
     ":app:generateDebugResources"                        :  "FROM_CACHE",
-    ":app:generateDebugResValues"                        :  "FROM_CACHE",
     ":app:generateReleaseAssets"                         :  "UP_TO_DATE",
     ":app:generateReleaseResources"                      :  "FROM_CACHE",
-    ":app:generateReleaseResValues"                      :  "FROM_CACHE",
     ":app:javaPreCompileDebug"                           :  "FROM_CACHE",
     ":app:javaPreCompileRelease"                         :  "FROM_CACHE",
     ":app:mapDebugSourceSetPaths"                        :  "SUCCESS",
@@ -128,11 +126,9 @@
     ":library:extractReleaseAnnotations"                 :  "FROM_CACHE",
     ":library:generateDebugAssets"                       :  "UP_TO_DATE",
     ":library:generateDebugResources"                    :  "FROM_CACHE",
-    ":library:generateDebugResValues"                    :  "FROM_CACHE",
     ":library:generateDebugRFile"                        :  "FROM_CACHE",
     ":library:generateReleaseAssets"                     :  "UP_TO_DATE",
     ":library:generateReleaseResources"                  :  "FROM_CACHE",
-    ":library:generateReleaseResValues"                  :  "FROM_CACHE",
     ":library:generateReleaseRFile"                      :  "FROM_CACHE",
     ":library:javaPreCompileDebug"                       :  "FROM_CACHE",
     ":library:javaPreCompileRelease"                     :  "FROM_CACHE",
@@ -180,5 +176,6 @@
     ":app:processReleaseNavigationResources"             :  "FROM_CACHE",
     ":app:compileReleaseNavigationResources"             :  "FROM_CACHE",
     ":app:generateDebugRFile"                            :  "FROM_CACHE",
-    ":app:generateReleaseRFile"                          :  "FROM_CACHE"
+    ":app:generateReleaseRFile"                          :  "FROM_CACHE",
+    ":library:compileReleaseNavigationResources"         :  "FROM_CACHE"
 }

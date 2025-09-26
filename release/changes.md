@@ -1,0 +1,1 @@
+- [NEW] - Support new Variant API in JdkImageWorkaround

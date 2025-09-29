@@ -1,0 +1,2 @@
+- [NEW] - Support new Variant API in JdkImageWorkaround
+- [NEW] - Adding normalization for invoke

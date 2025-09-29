@@ -3,6 +3,7 @@ package org.gradle.android.workarounds
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
+import org.gradle.android.VersionNumber
 import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
@@ -61,20 +62,30 @@ class JdkImageWorkaround implements Workaround {
         // runtime configuration before querying (and instantiating) task configurations.
         applyRuntimeClasspathNormalization(project)
 
-        applyToAllAndroidVariants(project) { variant ->
-            variant.javaCompileProvider.configure { JavaCompile task ->
-                def jdkImageInput = getJdkImageInput(task)
-                if (jdkImageInput != null) {
-                    setupExtractedJdkImageInputTransform(project, getJvmHome(task))
-                    replaceCommandLineProvider(task, jdkImageInput)
+        if (Versions.CURRENT_ANDROID_VERSION < VersionNumber.parse("9.0.0-alpha04")) {
+            applyToAllAndroidVariantsLegacy(project) { variant ->
+                variant.javaCompileProvider.configure { JavaCompile task ->
+                    jdkTransform(project, task)
+                }
+            }
+        } else {
+            applyToAllAndroidVariants(project) { variant ->
+                variant.configureJavaCompileTask { compileTask ->
+                    jdkTransform(project, compileTask)
                 }
             }
         }
     }
 
-    // Configuration for Old Variant API will drop in AGP 9. We will need to use a different
-    // approach to retrieve the variants using the new Variant API.
-    private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
+    private static void jdkTransform(Project project, JavaCompile task) {
+        def jdkImageInput = getJdkImageInput(task)
+        if (jdkImageInput != null) {
+            setupExtractedJdkImageInputTransform(project, getJvmHome(task))
+            replaceCommandLineProvider(task, jdkImageInput)
+        }
+    }
+
+    private static void applyToAllAndroidVariantsLegacy(Project project, Closure<?> configureVariant) {
         project.plugins.withId("com.android.application") {
             def android = project.extensions.findByName("android")
             android.unitTestVariants.all(configureVariant)
@@ -85,6 +96,20 @@ class JdkImageWorkaround implements Workaround {
             def android = project.extensions.findByName("android")
             android.unitTestVariants.all(configureVariant)
             android.libraryVariants.all(configureVariant)
+        }
+    }
+
+    private static void applyToAllAndroidVariants(Project project, Closure<?> configureVariant) {
+        project.plugins.withId("com.android.application") {
+            def androidComponents = project.extensions.findByName("androidComponents")
+            def selector = androidComponents.selector()
+            androidComponents.onVariants(selector.all(), configureVariant)
+        }
+
+        project.plugins.withId("com.android.library") {
+            def androidComponents = project.extensions.findByName("androidComponents")
+            def selector = androidComponents.selector()
+            androidComponents.onVariants(selector.all(), configureVariant)
         }
     }
 

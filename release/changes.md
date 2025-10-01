@@ -1,0 +1,1 @@
+- [NEW] - JdkImageWorkaround: uses the Variant API on AGP ≥ 9.0.0-alpha06, falls back to legacy APIs on earlier versions

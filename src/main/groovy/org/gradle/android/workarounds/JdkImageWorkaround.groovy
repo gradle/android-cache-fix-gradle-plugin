@@ -61,7 +61,7 @@ class JdkImageWorkaround implements Workaround {
         // runtime configuration before querying (and instantiating) task configurations.
         applyRuntimeClasspathNormalization(project)
 
-        if (Versions.CURRENT_ANDROID_VERSION < VersionNumber.parse("9.0.0-alpha04")) {
+        if (Versions.CURRENT_ANDROID_VERSION < VersionNumber.parse("9.0.0-alpha06")) {
             applyToAllAndroidVariantsLegacy(project) { variant ->
                 variant.javaCompileProvider.configure { JavaCompile task ->
                     jdkTransform(project, task)

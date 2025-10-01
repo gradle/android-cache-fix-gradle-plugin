@@ -79,8 +79,7 @@ plugins {
 
 </details>
 
-If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle (change '3.0.2' to the latest version of the cache fix plugin
-[here](https://plugins.gradle.org/plugin/org.gradle.android.cache-fix)). We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#sec:convention_plugins_vs_cross_configuration).
+If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle. We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#sec:convention_plugins_vs_cross_configuration).
 
 <details open>
 <summary>Kotlin</summary>

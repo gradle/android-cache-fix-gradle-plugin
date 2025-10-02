@@ -35,7 +35,7 @@ jobs:
           java-version: 21
           distribution: 'temurin'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       - name: Run sanityCheck
@@ -51,7 +51,7 @@ jobs:
           java-version: 21
           distribution: 'temurin'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       - name: Run unit tests
@@ -106,7 +106,7 @@ jobs:
           java-version: 21
           distribution: 'temurin'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       - name: Run integration tests

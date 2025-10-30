@@ -203,7 +203,7 @@ class SimpleAndroidApp {
     }
 
     private int getSdkVersion() {
-        return androidVersion.major < 9 ? 33 : 35
+        return androidVersion.major < 9 ? 33 : 36
     }
 
     private String getKotlinPluginsIfEnabled() {

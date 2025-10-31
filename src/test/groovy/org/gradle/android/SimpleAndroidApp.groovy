@@ -14,18 +14,16 @@ class SimpleAndroidApp {
     final VersionNumber androidVersion
     final VersionNumber kotlinVersion
     private final boolean kotlinEnabled
-    private final boolean kaptWorkersEnabled
     private final String toolchainVersion
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean kotlinEnabled, String toolchainVersion, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
         this.kotlinVersion = kotlinVersion
         this.kotlinEnabled = kotlinEnabled
-        this.kaptWorkersEnabled = kaptWorkersEnabled
         this.toolchainVersion = toolchainVersion
         this.pluginsBlockEnabled = pluginsBlockEnabled
         this.pluginAppliedInPluginBlock = pluginAppliedInPluginBlock
@@ -114,10 +112,6 @@ class SimpleAndroidApp {
         file("gradle.properties") << """
                 android.useAndroidX=true
                 org.gradle.jvmargs=-Xmx1536m -Dkotlin.daemon.jvm.options=-Xmx768m,-Xms256m
-                kapt.use.worker.api=${kaptWorkersEnabled}
-                android.experimental.enableSourceSetPathsMap=true
-                android.experimental.cacheCompileLibResources=true
-                android.defaults.buildfeatures.renderscript=false
             """.stripIndent()
 
         configureAndroidSdkHome()
@@ -301,7 +295,6 @@ class SimpleAndroidApp {
 
     static class Builder {
         boolean kotlinEnabled = true
-        boolean kaptWorkersEnabled = true
         boolean pluginsBlockEnabled = false
         boolean pluginAppliedInPluginBlock = false
 
@@ -325,11 +318,6 @@ class SimpleAndroidApp {
 
         Builder withKotlinVersion(VersionNumber kotlinVersion) {
             this.kotlinVersion = kotlinVersion
-            return this
-        }
-
-        Builder withKaptWorkersDisabled() {
-            this.kaptWorkersEnabled = false
             return this
         }
 
@@ -364,7 +352,7 @@ class SimpleAndroidApp {
         }
 
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, pluginsBlockEnabled, pluginAppliedInPluginBlock)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, kotlinEnabled, toolchainVersion, pluginsBlockEnabled, pluginAppliedInPluginBlock)
         }
     }
 }

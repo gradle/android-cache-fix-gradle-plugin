@@ -8,7 +8,7 @@ import org.gradle.util.GradleVersion
 @CompileStatic(TypeCheckingMode.SKIP)
 class Versions {
     static final VersionNumber CURRENT_ANDROID_VERSION = android(Version.ANDROID_GRADLE_PLUGIN_VERSION)
-    static final VersionNumber MINIMUM_ANDROID_VERSION = android("7.0.0-alpha01")
+    static final VersionNumber MINIMUM_ANDROID_VERSION = android("8.4.0")
 
     static VersionNumber android(String version) {
         VersionNumber.parse(version)

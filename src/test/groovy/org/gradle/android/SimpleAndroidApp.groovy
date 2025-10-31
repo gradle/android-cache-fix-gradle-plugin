@@ -186,7 +186,7 @@ class SimpleAndroidApp {
                 namespace "$namespace"
                 ndkVersion "20.0.5594570"
                 compileSdkVersion $sdkVersion
-                dataBinding.enabled = $dataBindingEnabled
+                ${dataBindingConfigurationIfEnabled}
                 ${sourceCompatibility}
                 defaultConfig {
                     minSdkVersion 28
@@ -203,7 +203,13 @@ class SimpleAndroidApp {
     }
 
     private int getSdkVersion() {
-        return androidVersion.major < 9 ? 33 : 35
+        return androidVersion.major < 9 ? 33 : 36
+    }
+
+    private String getDataBindingConfigurationIfEnabled() {
+        return dataBindingEnabled && androidVersion.major < 9 ? """
+            dataBinding.enabled = true
+        """ : ""
     }
 
     private String getKotlinPluginsIfEnabled() {

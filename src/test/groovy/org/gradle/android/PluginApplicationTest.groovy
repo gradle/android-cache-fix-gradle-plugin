@@ -20,10 +20,10 @@ class PluginApplicationTest extends AbstractTest {
             .withProjectDir(projectDir)
             .withArguments("tasks", "--stacktrace")
             .buildAndFail()
-        result.output =~ /Android plugin ${quote(androidVersion)} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please use Android Cache Fix Plugin 2.4.6/
+        result.output =~ /Android plugin ${quote(androidVersion)} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please check #older-android-gradle-plugin-versions/
 
         where:
-        androidVersion << ["4.2.2"]
+        androidVersion << ["8.4"]
 
     }
 }

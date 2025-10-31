@@ -7,7 +7,6 @@ import org.junit.Assume
 class RerunTasksTest extends AbstractTest {
 
     def "test with configuration cache and --rerun-tasks works"() {
-        Assume.assumeTrue(TestVersions.latestAndroidVersionForCurrentJDK() >= VersionNumber.parse("4.2.0-alpha01"))
 
         def projectDir = temporaryFolder.newFolder()
         SimpleAndroidApp.builder(projectDir, cacheDir)

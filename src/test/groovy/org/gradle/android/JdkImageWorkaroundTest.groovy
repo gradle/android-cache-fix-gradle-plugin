@@ -20,7 +20,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -85,7 +84,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -140,12 +138,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
     def "workaround can be disabled via system property"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -179,12 +175,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
     def "workaround is enabled when enabled via system property"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -255,16 +249,13 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
     def "jdkImage is normalized when using different toolchain configuration"() {
 
-        Assume.assumeTrue("Android Gradle Plugin < 8", androidVersion >= VersionNumber.parse("8.0"))
-
-        def toolchainVersion = (androidVersion >= VersionNumber.parse("8.2.0")) ? "21" : "19"
+        def toolchainVersion = "21"
 
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion(toolchainVersion)
-            .withDatabindingDisabled()
             .build()
             .writeProject()
 

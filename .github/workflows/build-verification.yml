@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [ main, citest ]
+    branches: [ main, iv/removing_unused_workarounds ]
   pull_request:
   workflow_dispatch:
 

@@ -69,21 +69,10 @@ class TestVersions {
 
 
     static String kotlinVersion22 = "2.2.0"
-    static String kotlinVersion20 = "2.0.0"
     static String kotlinVersion19 = "1.9.0"
 
     static VersionNumber latestSupportedKotlinVersion() {
-        def agp = latestAndroidVersionForCurrentJDK()
-        if (agp.compareTo(VersionNumber.parse("7.0.4")) <= 0) {
-            // AGP ≤ 7.0.4 → Kotlin 1.9.0
-            return VersionNumber.parse(kotlinVersion19);
-        } else if (agp.compareTo(VersionNumber.parse("8.0.2")) < 0) {
-            // 7.0.4 < AGP < 8.0.2 → Kotlin 2.0
-            return VersionNumber.parse(kotlinVersion20);
-        } else {
-            // AGP ≥ 8.0.2 → Kotlin 2.2.0
-            return VersionNumber.parse(kotlinVersion22);
-        }
+        return VersionNumber.parse(kotlinVersion22)
     }
 
     static VersionNumber latestKotlinVersionForGradleVersion(GradleVersion gradleVersion) {

@@ -13,15 +13,13 @@ class SimpleAndroidApp {
     private final File cacheDir
     final VersionNumber androidVersion
     final VersionNumber kotlinVersion
-    private final boolean dataBindingEnabled
     private final boolean kotlinEnabled
     private final boolean kaptWorkersEnabled
     private final String toolchainVersion
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
-        this.dataBindingEnabled = dataBindingEnabled
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
         this.projectDir = projectDir
         this.cacheDir = cacheDir
         this.androidVersion = androidVersion
@@ -57,9 +55,7 @@ class SimpleAndroidApp {
                 plugins {
                     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.4.0' apply false
                 }
-                if (GradleVersion.current() >= GradleVersion.version('7.6')) {
-                    apply plugin: 'org.gradle.toolchains.foojay-resolver-convention'
-                }
+                apply plugin: 'org.gradle.toolchains.foojay-resolver-convention'
                 buildCache {
                     local {
                         directory = "${cacheDir.absolutePath.replace(File.separatorChar, '/' as char)}"
@@ -186,7 +182,6 @@ class SimpleAndroidApp {
                 namespace "$namespace"
                 ndkVersion "20.0.5594570"
                 compileSdkVersion $sdkVersion
-                ${dataBindingConfigurationIfEnabled}
                 ${sourceCompatibility}
                 defaultConfig {
                     minSdkVersion 28
@@ -204,12 +199,6 @@ class SimpleAndroidApp {
 
     private int getSdkVersion() {
         return androidVersion.major < 9 ? 33 : 36
-    }
-
-    private String getDataBindingConfigurationIfEnabled() {
-        return dataBindingEnabled && androidVersion.major < 9 ? """
-            dataBinding.enabled = true
-        """ : ""
     }
 
     private String getKotlinPluginsIfEnabled() {
@@ -245,7 +234,7 @@ class SimpleAndroidApp {
         """ : """
             java {
                 toolchain {
-                    languageVersion.set(JavaLanguageVersion.of(${this.androidVersion.major < 8 ? "11" : "17"}))
+                    languageVersion.set(JavaLanguageVersion.of(17))
                 }
             }
         """
@@ -311,7 +300,6 @@ class SimpleAndroidApp {
     }
 
     static class Builder {
-        boolean dataBindingEnabled = true
         boolean kotlinEnabled = true
         boolean kaptWorkersEnabled = true
         boolean pluginsBlockEnabled = false
@@ -375,13 +363,8 @@ class SimpleAndroidApp {
             return this
         }
 
-        Builder withDatabindingDisabled() {
-            this.dataBindingEnabled = false
-            return this
-        }
-
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, pluginsBlockEnabled, pluginAppliedInPluginBlock)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, pluginsBlockEnabled, pluginAppliedInPluginBlock)
         }
     }
 }

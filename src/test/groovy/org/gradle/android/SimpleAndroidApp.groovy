@@ -198,14 +198,7 @@ class SimpleAndroidApp {
     private String getKotlinPluginsIfEnabled() {
         return kotlinEnabled && androidVersion.major < 9 ? """
             apply plugin: "kotlin-android"
-            ${processor}
         """ : ""
-    }
-
-    private String getProcessor() {
-        return """
-          apply plugin: "kotlin-kapt"
-        """.stripIndent()
     }
 
     private String getKotlinDependenciesIfEnabled() {

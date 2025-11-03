@@ -43,9 +43,10 @@ dependencies {
     compileOnly(gradleApi())
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.android.common)
+    compileOnly(libs.android.sdkCommon)
+    implementation(libs.guava)
 
     testImplementation(gradleTestKit())
-    testImplementation(libs.guava)
     testImplementation(libs.android.gradlePlugin)
     testImplementation(platform(libs.spock.bom))
     testImplementation(libs.spock.core) { exclude(group = "org.codehaus.groovy") }

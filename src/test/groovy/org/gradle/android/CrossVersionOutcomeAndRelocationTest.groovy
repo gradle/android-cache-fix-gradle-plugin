@@ -43,13 +43,13 @@ class CrossVersionOutcomeAndRelocationTest extends AbstractTest {
 
         withGradleVersion(gradleVersion.version)
             .withProjectDir(originalDir)
-            .withArguments("assemble", "createFullJarDebug", "createFullJarRelease", "--build-cache", "--stacktrace")
+            .withArguments("assemble", "createFullJarDebug", "createFullJarRelease", "--build-cache", "--stacktrace", "--info")
             .build()
 
         when:
         def result = withGradleVersion(gradleVersion.version)
             .withProjectDir(relocatedDir)
-            .withArguments("assemble", "createFullJarDebug", "createFullJarRelease", "--build-cache", "--stacktrace")
+            .withArguments("assemble", "createFullJarDebug", "createFullJarRelease", "--build-cache", "--stacktrace","--info")
             .build()
 
         then:

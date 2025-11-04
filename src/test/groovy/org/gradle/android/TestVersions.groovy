@@ -46,13 +46,6 @@ class TestVersions {
         return latestSupportedGradleVersionFor(VersionNumber.parse(androidVersion))
     }
 
-    // Returns the latest Gradle version that is supported by the Android Gradle Plugin 4.2.2
-    static GradleVersion latestGradleVersionBeforeGradle9() {
-        def filtered = allCandidateTestVersions.values()
-            .findAll { !it.version.startsWith('9.') }
-        return filtered.max()
-    }
-
     static GradleVersion latestSupportedGradleVersionFor(VersionNumber androidVersion) {
         return allCandidateTestVersions.asMap().find {it.key.major == androidVersion.major && it.key.minor == androidVersion.minor }?.value?.max()
     }

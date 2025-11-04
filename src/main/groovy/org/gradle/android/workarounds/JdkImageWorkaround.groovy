@@ -3,7 +3,6 @@ package org.gradle.android.workarounds
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.Lists
 import org.gradle.android.AndroidIssue
-import org.gradle.android.VersionNumber
 import org.gradle.android.Versions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.transform.CacheableTransform
@@ -61,19 +60,12 @@ class JdkImageWorkaround implements Workaround {
         // runtime configuration before querying (and instantiating) task configurations.
         applyRuntimeClasspathNormalization(project)
 
-        if (Versions.CURRENT_ANDROID_VERSION < VersionNumber.parse("9.0.0-alpha06")) {
-            applyToAllAndroidVariantsLegacy(project) { variant ->
-                variant.javaCompileProvider.configure { JavaCompile task ->
-                    jdkTransform(project, task)
-                }
-            }
-        } else {
-            applyToAllAndroidVariants(project) { variant ->
-                variant.configureJavaCompileTask { compileTask ->
-                    jdkTransform(project, compileTask)
-                }
+        applyToAllAndroidVariants(project) { variant ->
+            variant.configureJavaCompileTask { compileTask ->
+                jdkTransform(project, compileTask)
             }
         }
+
     }
 
     private static void jdkTransform(Project project, JavaCompile task) {
@@ -81,20 +73,6 @@ class JdkImageWorkaround implements Workaround {
         if (jdkImageInput != null) {
             setupExtractedJdkImageInputTransform(project, getJvmHome(task))
             replaceCommandLineProvider(task, jdkImageInput)
-        }
-    }
-
-    private static void applyToAllAndroidVariantsLegacy(Project project, Closure<?> configureVariant) {
-        project.plugins.withId("com.android.application") {
-            def android = project.extensions.findByName("android")
-            android.unitTestVariants.all(configureVariant)
-            android.applicationVariants.all(configureVariant)
-        }
-
-        project.plugins.withId("com.android.library") {
-            def android = project.extensions.findByName("android")
-            android.unitTestVariants.all(configureVariant)
-            android.libraryVariants.all(configureVariant)
         }
     }
 
@@ -129,7 +107,7 @@ class JdkImageWorkaround implements Workaround {
     }
 
     static void setupExtractedJdkImageInputTransform(Project project, Provider<Directory> javaHome) {
-        project.dependencies.registerTransform(ExtractJdkImageTransform) {spec ->
+        project.dependencies.registerTransform(ExtractJdkImageTransform) { spec ->
             spec.from.attribute(ArtifactAttributes.ARTIFACT_FORMAT, JDK_IMAGE)
             spec.to.attribute(ArtifactAttributes.ARTIFACT_FORMAT, JDK_IMAGE_EXTRACTED)
             spec.parameters.javaHome = javaHome
@@ -139,7 +117,7 @@ class JdkImageWorkaround implements Workaround {
     static void replaceCommandLineProvider(JavaCompile task, jdkImageInput) {
         Attribute<String> jdkId = Attribute.of("jdk-id", String)
         def jdkConfiguration = task.project.configurations.getByName(JDK_IMAGE_CONFIG_NAME)
-        def extractedJdkImage = jdkConfiguration.incoming.artifactView {viewConfiguration ->
+        def extractedJdkImage = jdkConfiguration.incoming.artifactView { viewConfiguration ->
             viewConfiguration.attributes {
                 it.attribute(ArtifactAttributes.ARTIFACT_FORMAT, JDK_IMAGE_EXTRACTED)
                 it.attribute(jdkId, getJvmVersion(task) + getJvmVendor(task))

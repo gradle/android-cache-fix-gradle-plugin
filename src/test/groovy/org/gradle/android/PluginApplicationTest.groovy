@@ -16,14 +16,14 @@ class PluginApplicationTest extends AbstractTest {
             .writeProject()
 
         expect:
-        def result = withGradleVersion(TestVersions.latestGradleVersionBeforeGradle9().version)
+        def result = withGradleVersion("8.14.3")
             .withProjectDir(projectDir)
             .withArguments("tasks", "--stacktrace")
             .buildAndFail()
-        result.output =~ /Android plugin ${quote(androidVersion)} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please use Android Cache Fix Plugin 2.4.6/
+        result.output =~ /Android plugin ${quote(androidVersion)} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please check #older-android-gradle-plugin-versions/
 
         where:
-        androidVersion << ["4.2.2"]
+        androidVersion << ["8.3.0"]
 
     }
 }

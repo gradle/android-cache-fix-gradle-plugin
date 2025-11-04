@@ -20,7 +20,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -85,7 +84,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -132,20 +130,14 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        if(androidVersion.major < 9) {
-            buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-            buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        }
     }
 
     def "workaround can be disabled via system property"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -179,12 +171,10 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
     def "workaround is enabled when enabled via system property"() {
         def androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
-        Assume.assumeTrue(androidVersion >= VersionNumber.parse("7.1.0-alpha01"))
         def gradleVersion = TestVersions.latestSupportedGradleVersionFor(androidVersion)
         SimpleAndroidApp.builder(temporaryFolder.root, cacheDir)
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
-            .withDatabindingDisabled() // Disabled due to https://issuetracker.google.com/issues/279710208
             .build()
             .writeProject()
 
@@ -264,7 +254,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
             .withAndroidVersion(androidVersion)
             .withKotlinDisabled()
             .withToolchainVersion(toolchainVersion)
-            .withDatabindingDisabled()
             .build()
             .writeProject()
 
@@ -299,11 +288,6 @@ class JdkImageWorkaroundTest extends AbstractTest {
 
         buildResult.task(':app:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
         buildResult.task(':library:compileDebugUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-
-        if (androidVersion.major < 9) {
-            buildResult.task(':app:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-            buildResult.task(':library:compileReleaseUnitTestJavaWithJavac').outcome == TaskOutcome.FROM_CACHE
-        }
 
         where:
         androidVersion << TestVersions.latestAndroidVersions

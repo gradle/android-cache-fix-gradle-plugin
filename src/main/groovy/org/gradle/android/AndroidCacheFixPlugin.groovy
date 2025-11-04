@@ -3,19 +3,9 @@ package org.gradle.android
 import com.google.common.collect.ImmutableList
 import groovy.transform.CompileStatic
 
-import org.gradle.android.workarounds.BundleLibraryClassesWorkaround
-
-import org.gradle.android.workarounds.CompileLibraryResourcesWorkaround
-import org.gradle.android.workarounds.DataBindingMergeDependencyArtifactsWorkaround
 import org.gradle.android.workarounds.JdkImageWorkaround
-import org.gradle.android.workarounds.LibraryJniLibsWorkaround
-import org.gradle.android.workarounds.MergeNativeLibsWorkaround
 
-import org.gradle.android.workarounds.MergeSourceSetFoldersWorkaround
-import org.gradle.android.workarounds.PackageForUnitTestWorkaround
-import org.gradle.android.workarounds.StripDebugSymbolsWorkaround
 import org.gradle.android.workarounds.Workaround
-import org.gradle.android.workarounds.ZipMergingTaskWorkaround
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.slf4j.Logger
@@ -35,16 +25,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         // error instead of a ClassDefNotFound.
         if (isSupportedAndroidVersion()) {
             return Arrays.<Workaround> asList(
-                new MergeNativeLibsWorkaround(),
-                new MergeSourceSetFoldersWorkaround(),
-                new CompileLibraryResourcesWorkaround(),
-                new StripDebugSymbolsWorkaround(),
-                new BundleLibraryClassesWorkaround(),
-                new DataBindingMergeDependencyArtifactsWorkaround(),
-                new LibraryJniLibsWorkaround(),
-                new ZipMergingTaskWorkaround(),
-                new JdkImageWorkaround(),
-                new PackageForUnitTestWorkaround(),
+                new JdkImageWorkaround()
             )
         } else {
             return Collections.emptyList()
@@ -56,7 +37,7 @@ class AndroidCacheFixPlugin implements Plugin<Project> {
         workarounds.addAll(initializeWorkarounds())
 
         if (!isSupportedAndroidVersion()) {
-            throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please use Android Cache Fix Plugin 2.4.6")
+            throw new RuntimeException("Android plugin ${CURRENT_ANDROID_VERSION} is not supported by Android cache fix plugin. For older Android Gradle Plugin versions, please check #older-android-gradle-plugin-versions")
         }
 
         def appliedWorkarounds = []

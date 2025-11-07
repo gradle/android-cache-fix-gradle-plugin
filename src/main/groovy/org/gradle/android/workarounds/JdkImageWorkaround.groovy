@@ -72,6 +72,11 @@ class JdkImageWorkaround implements Workaround {
                 variant.configureJavaCompileTask { compileTask ->
                     jdkTransform(project, compileTask)
                 }
+                variant.nestedComponents.forEach {
+                    it.configureJavaCompileTask { compileTask ->
+                        jdkTransform(project, compileTask)
+                    }
+                }
             }
         }
     }

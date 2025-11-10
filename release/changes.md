@@ -1,0 +1,1 @@
+- [NEW] - JdkImageWorkaround is now applied to nested components supporting Test and AndroidTest variants when using AGP 9.

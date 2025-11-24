@@ -150,6 +150,16 @@ To work around this issue, please apply the [Room Gradle Plugin](https://develop
 
 ## Implementation Notes
 
+### JdkImageWorkaround
+This workaround addresses issues with the JdkImageInput compiler argument, introduced in Android Gradle Plugin 7.1.0 and later. The JdkImageInput argument can introduce non-determinism in the build process, leading to cache misses.
+
+Additionally, the workaround applies runtime classpath normalization by ignoring `metaInf` attributes and ignoring `**/java/lang/invoke/**`. The latter exclusion is primarily based on our observations when comparing builds across different architectures, and it was also discussed in the related issue https://github.com/gradle/android-cache-fix-gradle-plugin/issues/341.
+
+You can opt out of this normalization by adding the following property to your gradle.properties file:
+```
+systemProp.org.gradle.android.cache-fix.JdkImageWorkaround.normalization.enabled=false
+```
+
 ### MergeNativeLibs, StripDebugSymbols, MergeJavaResources, MergeSourceSetFolders, BundleLibraryClassesJar, DataBindingMergeDependencyArtifacts, LibraryJniLibs and ZipMerging Workarounds
 
 It has been observed that caching the `MergeNativeLibsTask`, `StripDebugSymbols`, `MergeSourceSetFolders`, `BundleLibraryClassesJar`, `DataBindingMergeDependencyArtifacts`, `LibraryJniLibs` and  `ZipMergingTask` tasks rarely provide any significant positive avoidance savings.  In fact, they frequently provide negative savings, especially when fetched from a remote cache node.  As such, these workarounds disable caching for these tasks.

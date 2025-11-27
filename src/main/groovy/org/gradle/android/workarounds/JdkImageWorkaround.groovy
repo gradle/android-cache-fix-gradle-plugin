@@ -115,6 +115,12 @@ class JdkImageWorkaround implements Workaround {
             def selector = androidComponents.selector()
             androidComponents.onVariants(selector.all(), configureVariant)
         }
+
+        project.plugins.withId("com.android.kotlin.multiplatform.library") {
+            def androidComponents = project.extensions.findByName("androidComponents")
+            def selector = androidComponents.selector()
+            androidComponents.onVariants(selector.all(), configureVariant)
+        }
     }
 
     static def applyRuntimeClasspathNormalization(Project project) {

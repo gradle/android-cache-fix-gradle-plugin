@@ -19,8 +19,9 @@ class SimpleAndroidApp {
     private final String toolchainVersion
     private final boolean pluginsBlockEnabled
     private final boolean pluginAppliedInPluginBlock
+    private final boolean kotlinMultiplatformEnabled
 
-    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock) {
+    private SimpleAndroidApp(File projectDir, File cacheDir, VersionNumber androidVersion, VersionNumber kotlinVersion, boolean dataBindingEnabled, boolean kotlinEnabled, boolean kaptWorkersEnabled, String toolchainVersion, boolean pluginsBlockEnabled, boolean pluginAppliedInPluginBlock, boolean kotlinMultiplatformEnabled) {
         this.dataBindingEnabled = dataBindingEnabled
         this.projectDir = projectDir
         this.cacheDir = cacheDir
@@ -31,6 +32,7 @@ class SimpleAndroidApp {
         this.toolchainVersion = toolchainVersion
         this.pluginsBlockEnabled = pluginsBlockEnabled
         this.pluginAppliedInPluginBlock = pluginAppliedInPluginBlock
+        this.kotlinMultiplatformEnabled = kotlinMultiplatformEnabled
     }
 
     def writeProject() {
@@ -80,6 +82,7 @@ class SimpleAndroidApp {
                         classpath ('com.android.tools.build:gradle') { version { strictly '$androidVersion' } }
                         ${pluginBuildScriptClasspathConfiguration}
                         ${kotlinPluginDependencyIfEnabled}
+                        ${pluginKotlinMultiplatformIfEnabled}
                     }
                 }
                 ${pluginBlockConfiguration}
@@ -87,6 +90,7 @@ class SimpleAndroidApp {
         if (kotlinEnabled) {
             writeKotlinClass(library, libPackage, libraryActivity)
             writeKotlinClass(app, appPackage, appActivity)
+
         }
         writeActivity(library, libPackage, libraryActivity)
 
@@ -101,6 +105,7 @@ class SimpleAndroidApp {
         file('settings.gradle') << """
                 include ':${app}'
                 include ':${library}'
+                ${addKmpLibrary}
             """.stripIndent()
 
         file("${app}/build.gradle") << subprojectConfiguration("com.android.application", appPackage) << """
@@ -125,6 +130,19 @@ class SimpleAndroidApp {
             """.stripIndent()
 
         configureAndroidSdkHome()
+
+        if (kotlinEnabled && kotlinMultiplatformEnabled) {
+            def kmpLibrary = 'kmpLibrary'
+            def kmpLibPackage = 'org.gradle.android.example.kmp.library'
+            def kmpLibraryActivity = 'KmpLibraryActivity'
+
+            file("${kmpLibrary}/build.gradle") << buildScriptKmpProject("com.android.kotlin.multiplatform.library", kmpLibPackage)
+
+            file("${kmpLibrary}/src/androidTest/AndroidManifest.xml") << CodeSnippets.getXmlEmptyManifest()
+
+            writeActivity(kmpLibrary, kmpLibPackage, kmpLibraryActivity)
+            writeKotlinClass(kmpLibPackage, kmpLibPackage, kmpLibraryActivity)
+        }
     }
 
     private String getPluginBlockConfiguration() {
@@ -167,6 +185,16 @@ class SimpleAndroidApp {
         """.stripIndent() : ""
     }
 
+    private String getPluginKotlinMultiplatformIfEnabled() {
+        return kotlinEnabled && kotlinMultiplatformEnabled? """
+            classpath "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin:${kotlinVersion}"
+        """.stripIndent() : ""
+    }
+
+    private String getAddKmpLibrary() {
+        return kotlinEnabled && kotlinMultiplatformEnabled ? "include ':kmpLibrary'" : ""
+    }
+
     private subprojectConfiguration(String androidPlugin, String namespace) {
         """
             apply plugin: "$androidPlugin"
@@ -196,6 +224,54 @@ class SimpleAndroidApp {
                         checkReleaseBuilds false
                     }
                 }
+            }
+
+            ${toolchainConfigurationIfEnabled}
+        """.stripIndent()
+    }
+
+    private buildScriptKmpProject(String androidPlugin, String namespace) {
+        """
+            apply plugin: "$androidPlugin"
+            apply plugin: "org.jetbrains.kotlin.multiplatform"
+            ${kotlinPluginsIfEnabled}
+            apply plugin: "org.gradle.android.cache-fix"
+
+            kotlin {
+               androidLibrary {
+                   namespace = "$namespace"
+                   compileSdk = 36
+                   minSdk = 24
+
+                   withJava()
+                   withHostTestBuilder {}.configure {}
+                   withDeviceTestBuilder {
+                       it.sourceSetTreeName = "test"
+                   }
+                   androidResources.enable = true
+
+               }
+
+               sourceSets {
+                   androidMain {
+                     dependencies {
+                      implementation 'joda-time:joda-time:2.7'
+                      }
+                   }
+                   androidHostTest {
+                       dependencies {
+                       }
+                   }
+                   androidDeviceTest {
+                       dependencies {
+                       }
+                   }
+               }
+            }
+
+            repositories {
+                google()
+                mavenCentral()
             }
 
             ${toolchainConfigurationIfEnabled}
@@ -268,9 +344,11 @@ class SimpleAndroidApp {
 
     private writeActivity(String basedir, String packageName, String className) {
         String resourceName = className.toLowerCase()
-
-        file("${basedir}/src/main/java/${packageName.replaceAll('\\.', '/')}/HelloActivity.java") <<
+        String sourceSet = className == "KmpLibraryActivity" ? "androidMain" : "main"
+        file("${basedir}/src/${sourceSet}/java/${packageName.replaceAll('\\.', '/')}/HelloActivity.java") <<
             CodeSnippets.getJavaActivity(packageName, resourceName)
+        println(className )
+        println("${basedir}/src/${sourceSet}/java")
 
         file("${basedir}/src/test/java/${packageName.replaceAll('\\.', '/')}/JavaUserTest.java") <<
             CodeSnippets.getJavaSimpleTest(packageName)
@@ -278,7 +356,7 @@ class SimpleAndroidApp {
         file("${basedir}/src/androidTest/java/${packageName.replaceAll('\\.', '/')}/JavaUserAndroidTest.java") <<
             CodeSnippets.getJavaAndroidTest(packageName)
 
-        file("${basedir}/src/main/res/layout/${resourceName}_layout.xml") << CodeSnippets.getXmlGenericLayout()
+        file("${basedir}/src/${sourceSet}/res/layout/${resourceName}_layout.xml") << CodeSnippets.getXmlGenericLayout()
 
         file("${basedir}/src/main/rs/${resourceName}.rs") << CodeSnippets.getRs()
     }
@@ -316,6 +394,7 @@ class SimpleAndroidApp {
         boolean kaptWorkersEnabled = true
         boolean pluginsBlockEnabled = false
         boolean pluginAppliedInPluginBlock = false
+        boolean kotlinMultiplatformEnabled = false
 
         VersionNumber androidVersion = TestVersions.latestAndroidVersionForCurrentJDK()
         VersionNumber kotlinVersion = TestVersions.latestSupportedKotlinVersion()
@@ -380,8 +459,13 @@ class SimpleAndroidApp {
             return this
         }
 
+        Builder withKotlinMultiplatformEnabled() {
+            this.kotlinMultiplatformEnabled = true
+            return this
+        }
+
         SimpleAndroidApp build() {
-            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, pluginsBlockEnabled, pluginAppliedInPluginBlock)
+            return new SimpleAndroidApp(projectDir, cacheDir, androidVersion, kotlinVersion, dataBindingEnabled, kotlinEnabled, kaptWorkersEnabled, toolchainVersion, pluginsBlockEnabled, pluginAppliedInPluginBlock, kotlinMultiplatformEnabled)
         }
     }
 }

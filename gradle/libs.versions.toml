@@ -8,9 +8,9 @@ gradle-pluginPublish = "2.0.0"
 gradle-wrapperUpgrade = "0.12"
 guava = "33.5.0-jre"
 okio = "3.16.4"
-# Gradle plugins must use Groovy 3
+# Gradle plugins must use Groovy 4
 # https://docs.gradle.org/current/userguide/compatibility.html#groovy
-spock = "2.3-groovy-4.0"
+spock = "2.4-groovy-4.0"
 
 [libraries]
 android-common = { module = "com.android.tools:common", version.ref = "android-sdkBuildTools" }

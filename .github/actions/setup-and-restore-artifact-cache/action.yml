@@ -1,0 +1,41 @@
+name: 'Setup and Restore Artifact Cache'
+description: 'Provisions Artifact Cache CLI and restores from cache'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Provision and configure Artifact Cache
+      if: env.ARTIFACT_CACHE_REPO_PASSWORD != ''
+      shell: bash
+      run: |
+        TOOL_DIR="${{ runner.tool_cache }}/develocity/artifact-cache/${{ env.ARTIFACT_CACHE_CLI_VERSION }}"
+        JAR_PATH="$TOOL_DIR/${{ env.ARTIFACT_CACHE_CLI_FILENAME }}.jar"
+        mkdir -p "$TOOL_DIR"
+
+        # Download if not present
+        if [ ! -f "$JAR_PATH" ]; then
+        echo "Downloading Artifact Cache CLI v${{ env.ARTIFACT_CACHE_CLI_VERSION }}..."
+        curl --location --fail --silent --show-error \
+         --connect-timeout 5 --max-time 30 \
+         --retry 3 --retry-delay 3 --retry-max-time 60 \
+         --user "$ARTIFACT_CACHE_REPO_USERNAME:$ARTIFACT_CACHE_REPO_PASSWORD" \
+         "${{ env.ARTIFACT_CACHE_REPO }}/com/gradle/${{ env.ARTIFACT_CACHE_CLI_FILENAME }}/${{ env.ARTIFACT_CACHE_CLI_VERSION }}/${{ env.ARTIFACT_CACHE_CLI_FILENAME }}-${{ env.ARTIFACT_CACHE_CLI_VERSION }}.jar" \
+         --output "$JAR_PATH"
+        fi
+
+        CMD="${{ env[format('JAVA_HOME_21_{0}', runner.arch)] }}/bin/java -jar $JAR_PATH"
+        echo "ARTIFACT_CACHE_CMD=$CMD" >> $GITHUB_ENV
+
+        CMD_OPTS="--dv-server=$DV_SERVER ${ARTIFACT_CACHE_IMAGE:+--image-name=$ARTIFACT_CACHE_IMAGE} $ARTIFACT_CACHE_OPTS"
+        echo "ARTIFACT_CACHE_CMD_OPTS=$CMD_OPTS" >> $GITHUB_ENV
+
+    - name: Restore from Artifact Cache
+      if: env.ARTIFACT_CACHE_REPO_PASSWORD != ''
+      id: restore_cache
+      shell: bash
+      run: $ARTIFACT_CACHE_CMD restore $ARTIFACT_CACHE_CMD_OPTS
+
+    - name: Warn on Cache Restore Failure
+      if: env.ARTIFACT_CACHE_REPO_PASSWORD != '' && steps.restore_cache.outcome == 'failure'
+      shell: bash
+      run: 'echo "WARNING: Could not restore the Artifact Cache. The build will proceed but may be slower."'

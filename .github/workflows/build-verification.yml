@@ -6,6 +6,23 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  # Artifact Cache Configuration
+  ARTIFACT_CACHE_CLI_VERSION: 0.10.0
+
+  # Develocity
+  DV_SERVER: https://ge.solutions-team.gradle.com
+  DEVELOCITY_ACCESS_KEY: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
+
+  # Artifact Cache CLI
+  ARTIFACT_CACHE_REPO_USERNAME: ${{ secrets.ARTIFACT_CACHE_REPO_USERNAME }}
+  ARTIFACT_CACHE_REPO_PASSWORD: ${{ secrets.ARTIFACT_CACHE_REPO_PASSWORD }}
+  ARTIFACT_CACHE_REPO: ${{ secrets.ARTIFACT_CACHE_REPO }}
+
+  # Misc
+  ARTIFACT_CACHE_CLI_FILENAME: develocity-artifact-cache-cli
+  ARTIFACT_CACHE_OPTS: "--gradle-home=/home/runner/.gradle"
+
 jobs:
   generate_versions:
     name: Generate versions
@@ -37,9 +54,16 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
+          cache-disabled: true
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
+      - name: Setup and restore Artifact Cache
+        uses: ./.github/actions/setup-and-restore-artifact-cache
       - name: Run sanityCheck
         run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
+      - name: Store Artifact Cache
+        uses: ./.github/actions/store-artifact-cache
+        with:
+          artifact-name: artifact-cache-${{ github.job }}.log
 
   tests:
     name: Tests
@@ -53,7 +77,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
+          cache-disabled: true
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
+      - name: Setup and restore Artifact Cache
+        uses: ./.github/actions/setup-and-restore-artifact-cache
       - name: Run unit tests
         run: >-
             ./gradlew test
@@ -63,6 +90,10 @@ jobs:
             -Dpts.mode=$PTS_MODE
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
+      - name: Store Artifact Cache
+        uses: ./.github/actions/store-artifact-cache
+        with:
+          artifact-name: artifact-cache-${{ github.job }}.log
 
   android_version_tests:
     name: Android version tests
@@ -108,7 +139,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
+          cache-disabled: true
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
+      - name: Setup and restore Artifact Cache
+        uses: ./.github/actions/setup-and-restore-artifact-cache
       - name: Run integration tests
         run: >-
             ./gradlew testAndroid${{ matrix.versions }}
@@ -118,3 +152,9 @@ jobs:
             -Dpts.mode=$PTS_MODE
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
+      - name: Store Artifact Cache
+        if: strategy.job-index == 0
+        uses: ./.github/actions/store-artifact-cache
+        with:
+          artifact-name: artifact-cache-${{ github.job }}-${{ matrix.versions }}.log
+

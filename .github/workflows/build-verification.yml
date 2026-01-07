@@ -153,6 +153,7 @@ jobs:
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
       - name: Store Artifact Cache
+        if: strategy.job-index == 0
         uses: ./.github/actions/store-artifact-cache
         with:
           artifact-name: artifact-cache-${{ github.job }}-${{ matrix.versions }}.log

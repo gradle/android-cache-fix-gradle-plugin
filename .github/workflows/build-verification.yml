@@ -6,6 +6,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   # Artifact Cache Configuration
   ARTIFACT_CACHE_CLI_VERSION: 0.10.0

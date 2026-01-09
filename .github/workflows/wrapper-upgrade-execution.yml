@@ -1,5 +1,8 @@
 name: Execute Wrapper Upgrade
 
+permissions:
+  contents: read
+
 on:
   schedule:
     - cron:  '0 2 * * *'

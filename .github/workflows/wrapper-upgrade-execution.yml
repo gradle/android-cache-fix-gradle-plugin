@@ -10,6 +10,8 @@ jobs:
     name: Execution
     runs-on: ubuntu-latest
     if: github.repository == 'gradle/android-cache-fix-gradle-plugin'
+    permissions:
+      contents: write
     steps:
       - name: Set up Git configuration
         env:

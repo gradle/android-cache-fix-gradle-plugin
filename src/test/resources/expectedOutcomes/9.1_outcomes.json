@@ -121,6 +121,7 @@
     ":library:javaPreCompileDebug"                       :  "FROM_CACHE",
     ":library:javaPreCompileRelease"                     :  "FROM_CACHE",
     ":library:mapReleaseSourceSetPaths"                  :  "SUCCESS",
+    ":library:mapDebugSourceSetPaths"                    :  "SUCCESS",
     ":library:mergeDebugAssets"                          :  "SUCCESS",
     ":library:mergeDebugConsumerProguardFiles"           :  "SUCCESS",
     ":library:mergeDebugGeneratedProguardFiles"          :  "SUCCESS",

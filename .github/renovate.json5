@@ -10,9 +10,8 @@
     ":ignoreModulesAndTests",
   ],
   "branchPrefix": "renovatebot/",
-  // See https://docs.renovatebot.com/modules/manager/regex/
-  // Dependabot is used for all other updates.
-  "enabledManagers": ["custom.regex"],
+  // Renovate handles all dependency updates.
+  "enabledManagers": ["custom.regex", "gradle-wrapper", "gradle", "github-actions"],
   "customManagers": [
     {
       // Matches AGP versions in files with custom patterns
@@ -58,6 +57,12 @@
       ],
       "commitMessageTopic": "tested AGP versions",
       "groupName": "tested AGP versions",
+    },
+    {
+      // AGP is managed by the custom regex manager for the test matrix
+      "matchManagers": ["gradle"],
+      "matchDepNames": ["com.android.tools.build:gradle"],
+      "enabled": false,
     },
   ],
 }

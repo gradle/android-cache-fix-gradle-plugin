@@ -23,7 +23,6 @@ plugins {
     id("codenarc")
     alias(libs.plugins.gradle.pluginPublish)
     alias(libs.plugins.github.release)
-    alias(libs.plugins.gradle.wrapperUpgrade)
 }
 
 val releaseVersion = releaseVersion()
@@ -52,14 +51,6 @@ dependencies {
     testImplementation(libs.spock.core) { exclude(group = "org.codehaus.groovy") }
     testImplementation(libs.spock.junit4) { exclude(group = "org.codehaus.groovy") }
     testImplementation(libs.junit.jupiter.api)
-}
-
-wrapperUpgrade {
-    gradle {
-        create("android-cache-fix-gradle-plugin") {
-            repo = "gradle/android-cache-fix-gradle-plugin"
-        }
-    }
 }
 
 java {

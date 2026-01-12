@@ -5,7 +5,6 @@ android-gradlePlugin = "8.1.4"
 android-sdkBuildTools = "31.13.2"
 github-release = "2.5.2"
 gradle-pluginPublish = "2.0.0"
-gradle-wrapperUpgrade = "0.12"
 guava = "33.5.0-jre"
 okio = "3.16.4"
 # Gradle plugins must use Groovy 4
@@ -26,4 +25,3 @@ spock-junit4 = { module = "org.spockframework:spock-junit4" }
 [plugins]
 github-release = { id = "com.github.breadmoirai.github-release", version.ref = "github-release" }
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-pluginPublish" }
-gradle-wrapperUpgrade = { id = "org.gradle.wrapper-upgrade", version.ref = "gradle-wrapperUpgrade" }

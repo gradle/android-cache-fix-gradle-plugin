@@ -26,6 +26,8 @@ plugins {
     alias(libs.plugins.gradle.wrapperUpgrade)
 }
 
+apply(from = "gradle-test-execution-system-properties.gradle.kts")
+
 val releaseVersion = releaseVersion()
 val releaseNotes = releaseNotes()
 val isCI = providers.environmentVariable("CI").isPresent

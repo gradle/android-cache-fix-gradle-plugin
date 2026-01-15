@@ -23,7 +23,7 @@ runs:
 
     - name: Persist Artifact Cache Logs
       if: env.ARTIFACT_CACHE_REPO_PASSWORD != ''
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
       with:
         name: ${{ inputs.artifact-name }}
         path: '~/.develocity/artifact-cache/artifact-cache.log'

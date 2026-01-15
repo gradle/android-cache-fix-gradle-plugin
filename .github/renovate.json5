@@ -2,7 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "github>gradle/renovate-agent//presets/dv.json5",
+    "github>gradle/renovate-agent//presets/dv-automerge-minor.json5",
     ":disableDependencyDashboard",
   ],
   "ignorePresets": [
@@ -70,5 +70,13 @@
       "matchPackagePatterns": ["^org\\.spockframework:"],
       "allowedVersions": "/groovy-4/",
     },
+    {
+      "matchManagers": ["gradle"],
+      "groupName": "Gradle dependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    }
   ],
 }

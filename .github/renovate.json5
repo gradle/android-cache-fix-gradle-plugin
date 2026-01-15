@@ -64,5 +64,11 @@
       "matchDepNames": ["com.android.tools.build:gradle"],
       "enabled": false,
     },
+    {
+      // Gradle plugins must use Groovy 4
+      // https://docs.gradle.org/current/userguide/compatibility.html#groovy
+      "matchPackagePatterns": ["^org\\.spockframework:"],
+      "allowedVersions": "/groovy-4/",
+    },
   ],
 }

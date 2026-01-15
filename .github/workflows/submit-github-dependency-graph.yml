@@ -12,13 +12,13 @@ jobs:
   generate-and-submit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-java@v5
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+    - uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5
       with:
         distribution: temurin
         java-version: 21
     - name: Submit dependency graph
-      uses: gradle/actions/dependency-submission@v5
+      uses: gradle/actions/dependency-submission@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
       with:
         develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       env:

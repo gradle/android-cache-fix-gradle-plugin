@@ -44,9 +44,12 @@
       "enabled": false,
     },
     {
-      // In gradle.properties, allow unstable versions
+      // Allow unstable AGP versions to be used for tests
       "matchDepNames": ["com.android.tools.build:gradle"],
-      "matchFileNames": ["gradle\\.properties"],
+      "matchFileNames": [
+        "src/test/resources/versions\\.json",
+        "gradle\\.properties",
+      ],
       "ignoreUnstable": false,
     },
     {

@@ -3,7 +3,6 @@
 # Integration tests guarantee compatibility with newer AGP versions.
 android-gradlePlugin = "8.1.4"
 android-sdkBuildTools = "32.0.0"
-github-release = "2.5.2"
 gradle-pluginPublish = "2.0.0"
 guava = "33.5.0-jre"
 okio = "3.16.4"
@@ -23,5 +22,4 @@ spock-core = { module = "org.spockframework:spock-core" }
 spock-junit4 = { module = "org.spockframework:spock-junit4" }
 
 [plugins]
-github-release = { id = "com.github.breadmoirai.github-release", version.ref = "github-release" }
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-pluginPublish" }

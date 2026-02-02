@@ -22,7 +22,6 @@ plugins {
     id("signing")
     id("codenarc")
     alias(libs.plugins.gradle.pluginPublish)
-    alias(libs.plugins.github.release)
 }
 
 val releaseVersion = releaseVersion()
@@ -212,29 +211,6 @@ signing {
         providers.environmentVariable("PGP_SIGNING_KEY").orNull,
         providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").orNull
     )
-}
-
-githubRelease {
-    token(providers.environmentVariable("ANDROID_CACHE_FIX_PLUGIN_GIT_TOKEN").orNull)
-    owner = "gradle"
-    repo = "android-cache-fix-gradle-plugin"
-    releaseName = releaseVersion
-    tagName = releaseVersion.map { "v$it" }
-    prerelease = false
-    overwrite = false
-    generateReleaseNotes = false
-    body = releaseNotes
-    targetCommitish = "main"
-}
-
-val createReleaseTag = tasks.register<CreateGitTag>("createReleaseTag") {
-    // Ensure tag is created only after successful publishing
-    mustRunAfter(tasks.publishPlugins)
-    tagName = githubRelease.tagName.map { it.toString() }
-}
-
-tasks.githubRelease {
-    dependsOn(createReleaseTag)
 }
 
 tasks.withType<com.gradle.publish.PublishTask>().configureEach {

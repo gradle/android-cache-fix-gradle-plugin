@@ -2,7 +2,7 @@
 # AGP is kept at 8.1 because it includes all referenced classes.
 # Integration tests guarantee compatibility with newer AGP versions.
 android-gradlePlugin = "8.1.4"
-android-sdkBuildTools = "32.0.0"
+android-sdkBuildTools = "32.0.1"
 gradle-pluginPublish = "2.0.0"
 guava = "33.5.0-jre"
 okio = "3.16.4"

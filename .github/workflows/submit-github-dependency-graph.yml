@@ -18,7 +18,7 @@ jobs:
         distribution: temurin
         java-version: 21
     - name: Submit dependency graph
-      uses: gradle/actions/dependency-submission@f29f5a9d7b09a7c6b29859002d29d24e1674c884 # v5
+      uses: gradle/actions/dependency-submission@0723195856401067f7a2779048b490ace7a47d7c # v5
       with:
         develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       env:

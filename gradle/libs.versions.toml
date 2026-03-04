@@ -3,7 +3,7 @@
 # Integration tests guarantee compatibility with newer AGP versions.
 android-gradlePlugin = "8.1.4"
 android-sdkBuildTools = "32.1.0"
-gradle-pluginPublish = "2.0.0"
+gradle-pluginPublish = "2.1.0"
 guava = "33.5.0-jre"
 okio = "3.16.4"
 # Gradle plugins must use Groovy 4

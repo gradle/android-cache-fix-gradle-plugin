@@ -1,6 +1,7 @@
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.FAST
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.STANDARD
 import groovy.json.JsonSlurper
+import org.gradle.plugin.compatibility.compatibility
 
 // Upgrade transitive dependencies in plugin classpath
 buildscript {
@@ -70,6 +71,11 @@ gradlePlugin {
             description = releaseNotes.get()
             implementationClass = "org.gradle.android.AndroidCacheFixPlugin"
             tags.addAll("android", "cache", "fix")
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

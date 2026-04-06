@@ -1,7 +1,7 @@
 {
     "testedVersions": {
-        "9.2.0-alpha05" : [
-            "9.5.0-milestone-5"
+        "9.2.0-alpha07" : [
+            "9.5.0-milestone-7"
         ],
         "9.1.0-rc01" : [
             "9.3.1"

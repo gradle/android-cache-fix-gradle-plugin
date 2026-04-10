@@ -154,7 +154,7 @@ val latestVersion = providers.gradleProperty("org.gradle.android.latestKnownAgpV
 val testedVersions = readTestedVersions()
 
 check(latestVersion.get() in testedVersions) {
-    "The project must be updated to support AGP $latestVersion. Please add it to tested versions."
+    "The project must be updated to support AGP ${latestVersion.get()}. Please add it to tested versions."
 }
 
 val test by testing.suites.existing(JvmTestSuite::class)

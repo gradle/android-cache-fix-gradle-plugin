@@ -53,19 +53,6 @@
       "ignoreUnstable": false,
     },
     {
-      // Customize commit message for AGP version changes
-      "matchFileNames": [
-        "src/test/resources/versions\\.json",
-        "gradle\\.properties",
-      ],
-      "commitMessageTopic": "tested AGP versions",
-    },
-    {
-      // Ignore broken 9.2.0-rc01
-      "matchDepNames": ["com.android.tools.build:gradle"],
-      "allowedVersions": "!/^9\\.2\\.0-rc01$/",
-    },
-    {
       // AGP is managed by the custom regex manager for the test matrix
       "matchManagers": ["gradle"],
       "matchDepNames": ["com.android.tools.build:gradle"],

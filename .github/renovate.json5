@@ -53,15 +53,6 @@
       "ignoreUnstable": false,
     },
     {
-      // Group changes about AGP versions
-      "matchFileNames": [
-        "src/test/resources/versions\\.json",
-        "gradle\\.properties",
-      ],
-      "commitMessageTopic": "tested AGP versions",
-      "groupName": "tested AGP versions",
-    },
-    {
       // AGP is managed by the custom regex manager for the test matrix
       "matchManagers": ["gradle"],
       "matchDepNames": ["com.android.tools.build:gradle"],

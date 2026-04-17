@@ -59,6 +59,24 @@
       "enabled": false,
     },
     {
+      // When the `latestKnownAgpVersion` property in gradle.properties is
+      // bumped, run a post-upgrade script to keep versions.json and the
+      // expectedOutcomes files in sync. See .github/renovate/post-upgrade.sh
+      // for the full rationale. Scoped strictly to gradle.properties so the
+      // hook does NOT fire for the separate versions.json key bumps the
+      // custom regex manager produces for older minors.
+      "matchDepNames": ["com.android.tools.build:gradle"],
+      "matchFileNames": ["gradle.properties"],
+      "postUpgradeTasks": {
+        "commands": ["bash .github/renovate/post-upgrade.sh"],
+        "fileFilters": [
+          "src/test/resources/versions.json",
+          "src/test/resources/expectedOutcomes/*.json",
+        ],
+        "executionMode": "update",
+      },
+    },
+    {
       // Gradle plugins must use Groovy 4
       // https://docs.gradle.org/current/userguide/compatibility.html#groovy
       "matchPackagePatterns": ["^org\\.spockframework:"],

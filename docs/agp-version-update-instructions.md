@@ -7,12 +7,11 @@
 
 ## Minor or major upgrades
 
-1. Update the PR from Renovate (that should be simply updating the `org.gradle.android.latestKnownAgpVersion` property in `gradle.properties`)
-2. Add the new version to `src/test/resources/versions.json` including the Gradle versions it should be tested with
-3. Copy the previous version's `expectedOutcomes` JSON to a new file named as the new version (without the patch number, e.g. `9.0_outcomes.json`, **not** `9.0.0_outcomes.json`). The outcomes files live in `src/test/resources/expectedOutcomes/`.
-4. If checks fail, review for necessary changes (see [Investigating Failures](#investigating-failures))
-5. Make sure the latest stable, beta, and alpha are present in `versions.json`
-6. Merge the PR once all checks have completed successfully
+1. Review the Renovate PR. A post-upgrade hook will have already added the new version to `src/test/resources/versions.json` and scaffolded a new `expectedOutcomes/<major>.<minor>_outcomes.json` file from the previous minor's outcomes.
+2. If the new AGP requires a newer Gradle baseline than the previous minor, widen the Gradle versions array for the new entry in `versions.json` accordingly.
+3. If checks fail, review for necessary changes (see [Investigating Failures](#investigating-failures))
+4. Make sure the latest stable, beta, and alpha are present in `versions.json`
+5. Merge the PR once all checks have completed successfully
 
 ## Investigating failures
 

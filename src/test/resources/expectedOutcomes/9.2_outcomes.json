@@ -35,7 +35,7 @@
     ":app:mapDebugSourceSetPaths"                        :  "SUCCESS",
     ":app:mapReleaseSourceSetPaths"                      :  "SUCCESS",
     ":app:mergeDebugAssets"                              :  "SUCCESS",
-    ":app:mergeDebugGlobalSynthetics"                    :  "FROM_CACHE",
+    ":app:generateDebugGlobalSynthetics"                 :  "FROM_CACHE",
     ":app:mergeDebugJavaResource"                        :  "SUCCESS",
     ":app:mergeDebugJniLibFolders"                       :  "SUCCESS",
     ":app:mergeDebugNativeDebugMetadata"                 :  "NO_SOURCE",

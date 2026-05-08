@@ -1,5 +1,8 @@
 {
     "testedVersions": {
+        "9.3.0-alpha04": [
+            "9.5.0-milestone-7"
+        ],
         "9.2.1": [
             "9.5.0-milestone-7"
         ],

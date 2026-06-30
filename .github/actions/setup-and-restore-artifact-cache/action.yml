@@ -15,12 +15,7 @@ runs:
         # Download if not present
         if [ ! -f "$JAR_PATH" ]; then
         echo "Downloading Artifact Cache CLI v${{ env.ARTIFACT_CACHE_CLI_VERSION }}..."
-        curl --location --fail --silent --show-error \
-         --connect-timeout 5 --max-time 30 \
-         --retry 3 --retry-delay 3 --retry-max-time 60 \
-         --user "$ARTIFACT_CACHE_REPO_USERNAME:$ARTIFACT_CACHE_REPO_PASSWORD" \
-         "${{ env.ARTIFACT_CACHE_REPO }}/com/gradle/${{ env.ARTIFACT_CACHE_CLI_FILENAME }}/${{ env.ARTIFACT_CACHE_CLI_VERSION }}/${{ env.ARTIFACT_CACHE_CLI_FILENAME }}-${{ env.ARTIFACT_CACHE_CLI_VERSION }}.jar" \
-         --output "$JAR_PATH"
+        curl -L -o "$JAR_PATH" https://docs.gradle.com/downloads/develocity-artifact-cache-cli/develocity-artifact-cache-cli-1.3.0.jar
         fi
 
         CMD="${{ env[format('JAVA_HOME_21_{0}', runner.arch)] }}/bin/java -jar $JAR_PATH"

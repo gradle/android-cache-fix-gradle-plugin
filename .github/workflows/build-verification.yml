@@ -10,21 +10,17 @@ permissions:
   contents: read
 
 env:
-  # Artifact Cache Configuration
-  ARTIFACT_CACHE_CLI_VERSION: 0.10.0
+  # Artifact Cache CLI Configuration
+  ARTIFACT_CACHE_CLI_VERSION: 1.3.0
 
   # Develocity
   DV_SERVER: https://ge.solutions-team.gradle.com
   DEVELOCITY_ACCESS_KEY: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
 
-  # Artifact Cache CLI
-  ARTIFACT_CACHE_REPO_USERNAME: ${{ secrets.ARTIFACT_CACHE_REPO_USERNAME }}
-  ARTIFACT_CACHE_REPO_PASSWORD: ${{ secrets.ARTIFACT_CACHE_REPO_PASSWORD }}
-  ARTIFACT_CACHE_REPO: ${{ secrets.ARTIFACT_CACHE_REPO }}
-
   # Misc
   ARTIFACT_CACHE_CLI_FILENAME: develocity-artifact-cache-cli
   ARTIFACT_CACHE_OPTS: "--gradle-home=/home/runner/.gradle"
+  ARTIFACT_CACHE_STORE: "true"
 
 jobs:
   generate_versions:
@@ -59,12 +55,13 @@ jobs:
         with:
           cache-disabled: true
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-      - name: Setup and restore Artifact Cache
+      - name: Setup and restore Universal Cache
         uses: ./.github/actions/setup-and-restore-artifact-cache
       - name: Run sanityCheck
         run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
-      - name: Store Artifact Cache
+      - name: Store Universal Cache
         uses: ./.github/actions/store-artifact-cache
+        if: env.ARTIFACT_CACHE_STORE == 'true'
         with:
           artifact-name: artifact-cache-${{ github.job }}.log
 
@@ -82,7 +79,7 @@ jobs:
         with:
           cache-disabled: true
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-      - name: Setup and restore Artifact Cache
+      - name: Setup and restore Universal Cache
         uses: ./.github/actions/setup-and-restore-artifact-cache
       - name: Run unit tests
         run: >-
@@ -93,8 +90,9 @@ jobs:
             -Dpts.mode=$PTS_MODE
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
-      - name: Store Artifact Cache
+      - name: Store Universal Cache
         uses: ./.github/actions/store-artifact-cache
+        if: env.ARTIFACT_CACHE_STORE == 'true'
         with:
           artifact-name: artifact-cache-${{ github.job }}.log
 
@@ -144,7 +142,7 @@ jobs:
         with:
           cache-disabled: true
           develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-      - name: Setup and restore Artifact Cache
+      - name: Setup and restore Universal Cache
         uses: ./.github/actions/setup-and-restore-artifact-cache
       - name: Run integration tests
         run: >-
@@ -155,8 +153,9 @@ jobs:
             -Dpts.mode=$PTS_MODE
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
-      - name: Store Artifact Cache
+      - name: Store Universal Cache
         uses: ./.github/actions/store-artifact-cache
+        if: env.ARTIFACT_CACHE_STORE == 'true'
         with:
           artifact-name: artifact-cache-${{ github.job }}-${{ matrix.versions }}.log
 

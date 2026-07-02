@@ -11,7 +11,7 @@ permissions:
 
 env:
   # Artifact Cache CLI Configuration
-  ARTIFACT_CACHE_CLI_VERSION: 1.3.0
+  ARTIFACT_CACHE_CLI_VERSION: 1.4.0
 
   # Develocity
   DV_SERVER: https://ge.solutions-team.gradle.com

@@ -136,7 +136,7 @@ static class AndroidJavaCompile_BootClasspath_Workaround implements Workaround {
 
 Fixed by the Android Cache Fix plugin, but unresolved in any current or upcoming preview release of the Android Gradle Plugin:
 
-Not fixed by the Android Cache Fix plugin since it has no workaround:
+Not fixed by the Android Cache Fix plugin since it has no workaround but is fixed in Android Gradle Plugin 9.2.0 or newer:
 
 * CompileLibraryResourcesTask outputs contain absolute paths: https://issuetracker.google.com/issues/282761461
 

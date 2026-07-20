@@ -182,5 +182,5 @@ The Android Cache Fix Gradle plugin is open-source software released under the [
 [develocity-build-validation-scripts]: https://github.com/gradle/develocity-build-validation-scripts
 [develocity-oss-projects]: https://github.com/gradle/develocity-oss-projects
 [quarkus-build-caching-extension]: https://github.com/gradle/quarkus-build-caching-extension
-[develocity]: https://gradle.com/develocity
+[develocity]: https://develocity.ai/
 [apache-license]: https://www.apache.org/licenses/LICENSE-2.0.html

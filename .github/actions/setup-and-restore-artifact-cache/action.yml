@@ -17,12 +17,12 @@ runs:
         curl --location --fail --silent --show-error \
          --connect-timeout 5 --max-time 30 \
          --retry 3 --retry-delay 3 --retry-max-time 60 \
-         "https://docs.gradle.com/downloads/develocity-artifact-cache-cli/develocity-artifact-cache-cli-${{ env.ARTIFACT_CACHE_CLI_VERSION }}.jar" \
+         "https://docs.develocity.ai/downloads/develocity-artifact-cache-cli/develocity-artifact-cache-cli-${{ env.ARTIFACT_CACHE_CLI_VERSION }}.jar" \
          --output "$JAR_PATH"
 
         # Verify SHA-256 checksum
         curl --location --fail --silent --show-error \
-         "https://docs.gradle.com/downloads/develocity-artifact-cache-cli/develocity-artifact-cache-cli-${{ env.ARTIFACT_CACHE_CLI_VERSION }}.jar.sha256" \
+         "https://docs.develocity.ai/downloads/develocity-artifact-cache-cli/develocity-artifact-cache-cli-${{ env.ARTIFACT_CACHE_CLI_VERSION }}.jar.sha256" \
          --output "$JAR_PATH.sha256"
         echo "$(cat "$JAR_PATH.sha256") $JAR_PATH" | sha256sum --check
         rm "$JAR_PATH.sha256"

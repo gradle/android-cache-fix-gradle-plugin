@@ -106,7 +106,7 @@ publishing {
                     developer {
                         name.set("The Gradle team")
                         organization.set("Gradle Inc.")
-                        organizationUrl.set("https://gradle.com")
+                        organizationUrl.set("https://develocity.ai")
                     }
                 }
                 scm {

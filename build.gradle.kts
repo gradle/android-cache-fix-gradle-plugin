@@ -214,6 +214,7 @@ signing {
     setRequired({ gradle.taskGraph.hasTask(":publishPlugins") })
 
     useInMemoryPgpKeys(
+        providers.environmentVariable("PGP_SIGNING_KEY_ID").orNull,
         providers.environmentVariable("PGP_SIGNING_KEY").orNull,
         providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").orNull
     )

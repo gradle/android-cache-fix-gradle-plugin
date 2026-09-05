@@ -5,7 +5,7 @@ android-gradlePlugin = "8.1.4"
 android-sdkBuildTools = "32.3.2"
 gradle-pluginPublish = "2.1.1"
 guava = "33.7.1-jre"
-okio = "3.18.1"
+okio = "3.18.2"
 # Gradle plugins must use Groovy 4
 # https://docs.gradle.org/current/userguide/compatibility.html#groovy
 spock = "2.4-groovy-4.0"

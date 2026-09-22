@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended",
     "github>gradle/renovate-agent//presets/dv-automerge-minor.json5",
+    "github>gradle/dv-solutions//renovate-presets/dv-solutions-repo.json",
     ":disableDependencyDashboard",
   ],
   "ignorePresets": [

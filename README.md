@@ -35,7 +35,7 @@ If you discover an issue related to the Android Gradle Plugin, please file an is
 
 ## Applying the plugin
 
-This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied. We recommend adding the plugin to your project's [conventions plugin](https://docs.gradle.org/current/samples/sample_convention_plugins.html).
+This plugin should be applied anywhere the `com.android.application` or `com.android.library` plugins are applied. We recommend adding the plugin to your project's [conventions plugin](https://docs.gradle.org/current/userguide/implementing_gradle_plugins_convention.html).
 
 <details open>
 <summary>Kotlin</summary>
@@ -80,7 +80,7 @@ plugins {
 
 </details>
 
-If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle. We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#sec:convention_plugins_vs_cross_configuration).
+If you are not using convention plugins and would like a quick way of testing the plugin you can alternatively place it in the root project's build.gradle. We discourage this approach because it uses [cross project configuration](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html#convention_plugins_versus_cross_configuration).
 
 <details open>
 <summary>Kotlin</summary>

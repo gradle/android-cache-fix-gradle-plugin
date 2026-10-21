@@ -8,18 +8,9 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 env:
-  # Artifact Cache CLI Configuration
-  ARTIFACT_CACHE_CLI_VERSION: 1.4.0
-
-  # Develocity
-  DV_SERVER: https://ge.solutions-team.gradle.com
-  DEVELOCITY_ACCESS_KEY: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-
-  # Misc
-  ARTIFACT_CACHE_CLI_FILENAME: develocity-artifact-cache-cli
-  ARTIFACT_CACHE_OPTS: "--gradle-home=/home/runner/.gradle"
   ARTIFACT_CACHE_STORE: "true"
 
 jobs:
@@ -50,20 +41,32 @@ jobs:
         with:
           java-version: 21
           distribution: 'temurin'
+      - name: Get GitHub OIDC token for setup-gradle
+        id: develocity-oidc
+        run: |
+          if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then
+            echo "::warning::No GitHub OIDC token available (e.g. PR from a fork), Develocity will not be authenticated"
+            exit 0
+          fi
+          token=$(curl -sSfG -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            --data-urlencode "audience=https://ge.solutions-team.gradle.com" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -r .value)
+          echo "::add-mask::$token"
+          echo "access-key=ge.solutions-team.gradle.com=$token" >> "$GITHUB_OUTPUT"
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6
         with:
           cache-disabled: true
-          develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-      - name: Setup and restore Universal Cache
-        uses: ./.github/actions/setup-and-restore-artifact-cache
+          develocity-access-key: ${{ steps.develocity-oidc.outputs.access-key }}
+      - name: Setup Develocity Artifact Cache
+        uses: gradle/develocity-artifact-cache-github-action@0d55463728b4cb8d76aab3399fcf261cf1fc4fe5 # v1.1.1
+        with:
+          develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
+          develocity-auth: workload-identity
+          develocity-oidc-audience: https://ge.solutions-team.gradle.com
+          cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
       - name: Run sanityCheck
         run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
-      - name: Store Universal Cache
-        uses: ./.github/actions/store-artifact-cache
-        if: env.ARTIFACT_CACHE_STORE == 'true'
-        with:
-          artifact-name: artifact-cache-${{ github.job }}.log
 
   tests:
     name: Tests
@@ -74,13 +77,30 @@ jobs:
         with:
           java-version: 21
           distribution: 'temurin'
+      - name: Get GitHub OIDC token for setup-gradle
+        id: develocity-oidc
+        run: |
+          if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then
+            echo "::warning::No GitHub OIDC token available (e.g. PR from a fork), Develocity will not be authenticated"
+            exit 0
+          fi
+          token=$(curl -sSfG -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            --data-urlencode "audience=https://ge.solutions-team.gradle.com" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -r .value)
+          echo "::add-mask::$token"
+          echo "access-key=ge.solutions-team.gradle.com=$token" >> "$GITHUB_OUTPUT"
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6
         with:
           cache-disabled: true
-          develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-      - name: Setup and restore Universal Cache
-        uses: ./.github/actions/setup-and-restore-artifact-cache
+          develocity-access-key: ${{ steps.develocity-oidc.outputs.access-key }}
+      - name: Setup Develocity Artifact Cache
+        uses: gradle/develocity-artifact-cache-github-action@0d55463728b4cb8d76aab3399fcf261cf1fc4fe5 # v1.1.1
+        with:
+          develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
+          develocity-auth: workload-identity
+          develocity-oidc-audience: https://ge.solutions-team.gradle.com
+          cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
       - name: Run unit tests
         run: >-
             ./gradlew test
@@ -90,11 +110,6 @@ jobs:
             -Dpts.mode=$PTS_MODE
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
-      - name: Store Universal Cache
-        uses: ./.github/actions/store-artifact-cache
-        if: env.ARTIFACT_CACHE_STORE == 'true'
-        with:
-          artifact-name: artifact-cache-${{ github.job }}.log
 
   android_version_tests:
     name: Android version tests
@@ -137,13 +152,30 @@ jobs:
         with:
           java-version: 21
           distribution: 'temurin'
+      - name: Get GitHub OIDC token for setup-gradle
+        id: develocity-oidc
+        run: |
+          if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then
+            echo "::warning::No GitHub OIDC token available (e.g. PR from a fork), Develocity will not be authenticated"
+            exit 0
+          fi
+          token=$(curl -sSfG -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            --data-urlencode "audience=https://ge.solutions-team.gradle.com" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -r .value)
+          echo "::add-mask::$token"
+          echo "access-key=ge.solutions-team.gradle.com=$token" >> "$GITHUB_OUTPUT"
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6
         with:
           cache-disabled: true
-          develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
-      - name: Setup and restore Universal Cache
-        uses: ./.github/actions/setup-and-restore-artifact-cache
+          develocity-access-key: ${{ steps.develocity-oidc.outputs.access-key }}
+      - name: Setup Develocity Artifact Cache
+        uses: gradle/develocity-artifact-cache-github-action@0d55463728b4cb8d76aab3399fcf261cf1fc4fe5 # v1.1.1
+        with:
+          develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
+          develocity-auth: workload-identity
+          develocity-oidc-audience: https://ge.solutions-team.gradle.com
+          cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
       - name: Run integration tests
         run: >-
             ./gradlew testAndroid${{ matrix.versions }}
@@ -153,9 +185,4 @@ jobs:
             -Dpts.mode=$PTS_MODE
         env:
           PTS_MODE: "${{ github.ref_name == 'main' && 'REMAINING_TESTS' || 'RELEVANT_TESTS' }}"
-      - name: Store Universal Cache
-        uses: ./.github/actions/store-artifact-cache
-        if: env.ARTIFACT_CACHE_STORE == 'true'
-        with:
-          artifact-name: artifact-cache-${{ github.job }}-${{ matrix.versions }}.log
 

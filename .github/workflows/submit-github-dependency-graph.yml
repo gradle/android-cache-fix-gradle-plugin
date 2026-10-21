@@ -7,6 +7,7 @@ on:
   
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   generate-and-submit:
@@ -17,9 +18,21 @@ jobs:
       with:
         distribution: temurin
         java-version: 21
+    - name: Get GitHub OIDC token for dependency-submission
+      id: develocity-oidc
+      run: |
+        if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then
+          echo "::warning::No GitHub OIDC token available (e.g. PR from a fork), Develocity will not be authenticated"
+          exit 0
+        fi
+        token=$(curl -sSfG -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          --data-urlencode "audience=https://ge.solutions-team.gradle.com" \
+          "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -r .value)
+        echo "::add-mask::$token"
+        echo "access-key=ge.solutions-team.gradle.com=$token" >> "$GITHUB_OUTPUT"
     - name: Submit dependency graph
       uses: gradle/actions/dependency-submission@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6
       with:
-        develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
+        develocity-access-key: ${{ steps.develocity-oidc.outputs.access-key }}
       env:
         DEPENDENCY_GRAPH_EXCLUDE_CONFIGURATIONS: '.*[Tt]est(Compile|Runtime)Classpath'

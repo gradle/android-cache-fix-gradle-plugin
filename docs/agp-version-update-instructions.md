@@ -7,6 +7,8 @@
 
 ## Minor or major upgrades
 
+Steps 2 and 3 are done by the `registerAgpVersion` task. The [Register AGP version](../.github/workflows/register-agp-version.yml) workflow runs it when Renovate opens its PR, and pushes the result to Renovate's branch. Review the commit's Gradle versions.
+
 1. Update the PR from Renovate (that should be simply updating the `org.gradle.android.latestKnownAgpVersion` property in `gradle.properties`)
 2. Add the new version to `src/test/resources/versions.json` including the Gradle versions it should be tested with
 3. Copy the previous version's `expectedOutcomes` JSON to a new file named as the new version (without the patch number, e.g. `9.0_outcomes.json`, **not** `9.0.0_outcomes.json`). The outcomes files live in `src/test/resources/expectedOutcomes/`.

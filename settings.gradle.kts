@@ -7,7 +7,7 @@ plugins {
 val isCI = providers.environmentVariable("CI").isPresent
 
 develocity {
-    server = "https://solutions.develocity.cloud"
+    server = "https://ge.solutions-team.gradle.com"
     buildScan {
         uploadInBackground = !isCI
         publishing.onlyIf { it.isAuthenticated }

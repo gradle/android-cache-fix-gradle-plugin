@@ -38,7 +38,7 @@ import java.util.stream.Stream
  *
  * Although this issue was marked as fixed in AGP 7.4.0-alpha07, we are still able to reproduce cache misses
  * with different JDK vendors in recent AGP and JDK versions.
- * Example: https://ge.solutions-team.gradle.com/c/fpylyt2yu7c26/gneeakcvrhijs/task-inputs
+ * Example: https://solutions.develocity.cloud/c/fpylyt2yu7c26/gneeakcvrhijs/task-inputs
  *
  * As a result, the workaround remains necessary to guarantee cache hits between environments.
  * Original issue: https://issuetracker.google.com/issues/234820480 (marked as fixed)

@@ -29,7 +29,7 @@ jobs:
           --data-urlencode "audience=https://ge.solutions-team.gradle.com" \
           "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -r .value)
         echo "::add-mask::$token"
-        echo "access-key=ge.solutions-team.gradle.com=$token" >> "$GITHUB_OUTPUT"
+        echo "access-key=solutions.develocity.cloud=$token" >> "$GITHUB_OUTPUT"
     - name: Submit dependency graph
       uses: gradle/actions/dependency-submission@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6
       with:

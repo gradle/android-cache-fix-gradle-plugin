@@ -63,7 +63,7 @@ jobs:
         with:
           develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
           develocity-auth: workload-identity
-          develocity-oidc-audience: https://ge.solutions-team.gradle.com
+          develocity-oidc-audience: https://solutions.develocity.cloud
           cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
       - name: Run sanityCheck
         run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
@@ -99,7 +99,7 @@ jobs:
         with:
           develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
           develocity-auth: workload-identity
-          develocity-oidc-audience: https://ge.solutions-team.gradle.com
+          develocity-oidc-audience: https://solutions.develocity.cloud
           cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
       - name: Run unit tests
         run: >-
@@ -174,7 +174,7 @@ jobs:
         with:
           develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
           develocity-auth: workload-identity
-          develocity-oidc-audience: https://ge.solutions-team.gradle.com
+          develocity-oidc-audience: https://solutions.develocity.cloud
           cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
       - name: Run integration tests
         run: >-

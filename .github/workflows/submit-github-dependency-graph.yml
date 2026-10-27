@@ -26,7 +26,7 @@ jobs:
           exit 0
         fi
         token=$(curl -sSfG -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-          --data-urlencode "audience=https://ge.solutions-team.gradle.com" \
+          --data-urlencode "audience=https://solutions.develocity.cloud" \
           "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -r .value)
         echo "::add-mask::$token"
         echo "access-key=ge.solutions-team.gradle.com=$token" >> "$GITHUB_OUTPUT"

@@ -59,7 +59,7 @@ jobs:
           cache-disabled: true
           develocity-access-key: ${{ steps.develocity-oidc.outputs.access-key }}
       - name: Setup Develocity Artifact Cache
-        uses: gradle/develocity-artifact-cache-github-action@0d55463728b4cb8d76aab3399fcf261cf1fc4fe5 # v1.1.1
+        uses: gradle/develocity-artifact-cache-github-action@0366b879b8a1dce1303e672064645c5cc228e0b9 # v1.2.0
         with:
           develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
           develocity-auth: workload-identity
@@ -95,7 +95,7 @@ jobs:
           cache-disabled: true
           develocity-access-key: ${{ steps.develocity-oidc.outputs.access-key }}
       - name: Setup Develocity Artifact Cache
-        uses: gradle/develocity-artifact-cache-github-action@0d55463728b4cb8d76aab3399fcf261cf1fc4fe5 # v1.1.1
+        uses: gradle/develocity-artifact-cache-github-action@0366b879b8a1dce1303e672064645c5cc228e0b9 # v1.2.0
         with:
           develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
           develocity-auth: workload-identity
@@ -170,7 +170,7 @@ jobs:
           cache-disabled: true
           develocity-access-key: ${{ steps.develocity-oidc.outputs.access-key }}
       - name: Setup Develocity Artifact Cache
-        uses: gradle/develocity-artifact-cache-github-action@0d55463728b4cb8d76aab3399fcf261cf1fc4fe5 # v1.1.1
+        uses: gradle/develocity-artifact-cache-github-action@0366b879b8a1dce1303e672064645c5cc228e0b9 # v1.2.0
         with:
           develocity-edge-url: https://usw2-edge.solutions-team.gradle.com
           develocity-auth: workload-identity

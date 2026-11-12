@@ -65,6 +65,10 @@ jobs:
           develocity-auth: workload-identity
           develocity-oidc-audience: https://solutions.develocity.cloud
           cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
+          # Auto-generated image names omit the repository, so they collide across repositories on the same Edge
+          image-names: |
+            ${{ github.repository }}~${{ github.workflow }}~${{ github.job }}~${{ github.ref }}~${{ runner.os }}~${{ runner.arch }}
+            ${{ github.repository }}~${{ github.workflow }}~${{ github.job }}~refs/heads/${{ github.base_ref || github.event.repository.default_branch }}~${{ runner.os }}~${{ runner.arch }}
       - name: Run sanityCheck
         run: ./gradlew sanityCheck -Porg.gradle.java.installations.auto-download=false
 
@@ -101,6 +105,10 @@ jobs:
           develocity-auth: workload-identity
           develocity-oidc-audience: https://solutions.develocity.cloud
           cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
+          # Auto-generated image names omit the repository, so they collide across repositories on the same Edge
+          image-names: |
+            ${{ github.repository }}~${{ github.workflow }}~${{ github.job }}~${{ github.ref }}~${{ runner.os }}~${{ runner.arch }}
+            ${{ github.repository }}~${{ github.workflow }}~${{ github.job }}~refs/heads/${{ github.base_ref || github.event.repository.default_branch }}~${{ runner.os }}~${{ runner.arch }}
       - name: Run unit tests
         run: >-
             ./gradlew test
@@ -176,6 +184,10 @@ jobs:
           develocity-auth: workload-identity
           develocity-oidc-audience: https://solutions.develocity.cloud
           cache-read-only: ${{ env.ARTIFACT_CACHE_STORE != 'true' }}
+          # Auto-generated image names omit the repository, so they collide across repositories on the same Edge
+          image-names: |
+            ${{ github.repository }}~${{ github.workflow }}~${{ github.job }}~${{ github.ref }}~${{ runner.os }}~${{ runner.arch }}
+            ${{ github.repository }}~${{ github.workflow }}~${{ github.job }}~refs/heads/${{ github.base_ref || github.event.repository.default_branch }}~${{ runner.os }}~${{ runner.arch }}
       - name: Run integration tests
         run: >-
             ./gradlew testAndroid${{ matrix.versions }}

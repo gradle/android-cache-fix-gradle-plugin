@@ -68,7 +68,7 @@ class TestVersions {
     }
 
 
-    static String kotlinVersion22 = "2.2.0"
+    static String kotlinVersion22 = "2.2.10"
     static String kotlinVersion20 = "2.0.0"
     static String kotlinVersion19 = "1.9.0"
 
@@ -81,7 +81,7 @@ class TestVersions {
             // 7.0.4 < AGP < 8.0.2 → Kotlin 2.0
             return VersionNumber.parse(kotlinVersion20);
         } else {
-            // AGP ≥ 8.0.2 → Kotlin 2.2.0
+            // AGP ≥ 8.0.2 → Kotlin 2.2.10
             return VersionNumber.parse(kotlinVersion22);
         }
     }

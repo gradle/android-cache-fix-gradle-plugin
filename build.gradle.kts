@@ -1,5 +1,6 @@
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.FAST
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionProfile.STANDARD
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.plugin.compatibility.compatibility
 
@@ -153,8 +154,11 @@ tasks.test {
 val latestVersion = providers.gradleProperty("org.gradle.android.latestKnownAgpVersion")
 val testedVersions = readTestedVersions()
 
-check(latestVersion.get() in testedVersions) {
-    "The project must be updated to support AGP ${latestVersion.get()}. Please add it to tested versions."
+// registerAgpVersion is what adds the missing version, so it must be able to run without it
+if ("registerAgpVersion" !in gradle.startParameter.taskNames) {
+    check(latestVersion.get() in testedVersions) {
+        "The project must be updated to support AGP ${latestVersion.get()}. Please add it to tested versions."
+    }
 }
 
 val test = testing.suites.named<JvmTestSuite>("test")
@@ -199,6 +203,25 @@ fun normalizeVersion(version: String): String {
     return version.replace("[.\\-]".toRegex(), "_")
 }
 
+// Registers the latest known AGP version for testing (see docs/agp-version-update-instructions.md) like the newest
+// tested one, which is first in versions.json: same Gradle versions and expected outcomes, to adjust if its tests fail.
+tasks.register("registerAgpVersion") {
+    val version = latestVersion
+    val tested = testedVersions
+    val versionsFile = layout.projectDirectory.file("src/test/resources/versions.json").asFile
+    val outcomesDir = layout.projectDirectory.dir("src/test/resources/expectedOutcomes").asFile
+    doLast {
+        if (version.get() in tested) return@doLast
+        val (newest, gradleVersions) = tested.entries.first()
+        val registered = mapOf(version.get() to gradleVersions) + tested
+        versionsFile.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(mapOf("testedVersions" to registered))) + "\n")
+        fun outcomesOf(agpVersion: String) = File(outcomesDir, "${agpVersion.substringBeforeLast('.')}_outcomes.json")
+        if (!outcomesOf(version.get()).exists()) {
+            outcomesOf(newest).copyTo(outcomesOf(version.get()))
+        }
+    }
+}
+
 // A basic sanity check to run before running all test tasks
 tasks.register("sanityCheck") {
     dependsOn(tasks.withType<CodeNarc>(), tasks.validatePlugins)
@@ -235,8 +258,8 @@ fun releaseNotes(): Provider<String> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun readTestedVersions(): Map<String, Array<String>> {
+fun readTestedVersions(): Map<String, List<String>> {
     val versionFile = providers.fileContents(layout.projectDirectory.file("src/test/resources/versions.json"))
-    val json = JsonSlurper().parse(versionFile.asBytes.get()) as Map<String, Map<String, Array<String>>>
+    val json = JsonSlurper().parse(versionFile.asBytes.get()) as Map<String, Map<String, List<String>>>
     return json.getValue("testedVersions")
 }

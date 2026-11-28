@@ -1,0 +1,38 @@
+name: Register AGP version
+
+# Automates steps 2 and 3 of docs/agp-version-update-instructions.md for Renovate's AGP bump PRs
+on:
+  pull_request:
+    types: [ opened, reopened ]
+    paths: [ gradle.properties ]
+
+permissions:
+  contents: write
+
+jobs:
+  register:
+    name: Register new AGP version
+    if: github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'renovatebot/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.head_ref }}
+          # A token other than GITHUB_TOKEN, so that the push triggers the checks
+          token: ${{ secrets.GH_BOT_GITHUB_TOKEN }}
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          java-version: 21
+          distribution: 'temurin'
+      - name: Register version
+        run: ./gradlew registerAgpVersion
+      # Has no effect if the version is already registered
+      - name: Commit & push changes
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
+        with:
+          commit_author: bot-githubaction <bot-githubaction@gradle.com>
+          commit_user_name: bot-githubaction
+          commit_user_email: bot-githubaction@gradle.com
+          commit_message: Add new AGP version to tested versions
+          commit_options: --signoff
+          file_pattern: src/test/resources
